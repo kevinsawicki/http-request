@@ -25,6 +25,8 @@ import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -691,6 +693,8 @@ public class HttpRequest {
 			output.writeBytes("\"\r\n\r\n");
 			if (value instanceof InputStream)
 				copy((InputStream) value, output);
+			else if (value instanceof File)
+				copy(new FileInputStream((File) value), output);
 			else
 				output.writeBytes(value.toString());
 		} catch (IOException e) {
