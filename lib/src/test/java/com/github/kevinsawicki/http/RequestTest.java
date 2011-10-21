@@ -101,6 +101,55 @@ public class RequestTest extends ServerTestCase {
 	}
 
 	/**
+	 * Make a post with an explicit set of the content length
+	 *
+	 * @throws Exception
+	 */
+	@Test
+	public void postWithLength() throws Exception {
+		final AtomicReference<String> body = new AtomicReference<String>();
+		final AtomicReference<Integer> length = new AtomicReference<Integer>();
+		String url = setUp(new RequestHandler() {
+
+			public void handle(Request request, HttpServletResponse response) {
+				body.set(new String(read()));
+				length.set(request.getContentLength());
+				response.setStatus(HttpServletResponse.SC_OK);
+			}
+		});
+		String data = "hello";
+		int sent = data.getBytes().length;
+		int code = post(url).contentLength(sent).body(data).code();
+		assertEquals(HttpURLConnection.HTTP_OK, code);
+		assertEquals(sent, length.get().intValue());
+		assertEquals(data, body.get());
+	}
+
+	/**
+	 * Make a post in chunked mode
+	 *
+	 * @throws Exception
+	 */
+	@Test
+	public void chunkPost() throws Exception {
+		final AtomicReference<String> body = new AtomicReference<String>();
+		final AtomicReference<String> encoding = new AtomicReference<String>();
+		String url = setUp(new RequestHandler() {
+
+			public void handle(Request request, HttpServletResponse response) {
+				body.set(new String(read()));
+				response.setStatus(HttpServletResponse.SC_OK);
+				encoding.set(request.getHeader("Transfer-Encoding"));
+			}
+		});
+		String data = "hello";
+		int code = post(url).chunk(2).body(data).code();
+		assertEquals(HttpURLConnection.HTTP_OK, code);
+		assertEquals(data, body.get());
+		assertEquals("chunked", encoding.get());
+	}
+
+	/**
 	 * Make a GET request for a non-empty response body
 	 *
 	 * @throws Exception

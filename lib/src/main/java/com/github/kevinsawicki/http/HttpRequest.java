@@ -361,6 +361,17 @@ public class HttpRequest {
 	}
 
 	/**
+	 * Set chunked streaming mode to the given size
+	 *
+	 * @param size
+	 * @return this request
+	 */
+	public HttpRequest chunk(int size) {
+		connection.setChunkedStreamingMode(size);
+		return this;
+	}
+
+	/**
 	 * Set the buffer size used when copying between streams
 	 *
 	 * @param size
@@ -607,7 +618,19 @@ public class HttpRequest {
 	 * @return this request
 	 */
 	public HttpRequest contentLength(final String value) {
-		return header("Content-Length", value);
+		final int length = Integer.parseInt(value);
+		return contentLength(length);
+	}
+
+	/**
+	 * Set the 'Content-Length' request header to the given value
+	 *
+	 * @param value
+	 * @return this request
+	 */
+	public HttpRequest contentLength(final int value) {
+		connection.setFixedLengthStreamingMode(value);
+		return this;
 	}
 
 	/**

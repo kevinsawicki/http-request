@@ -21,7 +21,9 @@
  */
 package com.github.kevinsawicki.http;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -64,13 +66,17 @@ public class ServerTestCase {
 		 * @return content
 		 */
 		protected byte[] read() {
-			byte[] content = new byte[request.getContentLength()];
+			ByteArrayOutputStream content = new ByteArrayOutputStream();
+			final byte[] buffer = new byte[8196];
+			int read;
 			try {
-				request.getInputStream().read(content);
+				InputStream input = request.getInputStream();
+				while ((read = input.read(buffer)) != -1)
+					content.write(buffer, 0, read);
 			} catch (IOException e) {
 				throw new RuntimeException(e);
 			}
-			return content;
+			return content.toByteArray();
 		}
 
 		/**
