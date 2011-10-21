@@ -10,6 +10,7 @@ int response = HttpRequest.get("http://google.com").code();
 ```
 
 Perform a POST request with some data and get the status of the response
+
 ```java
 int response = HttpRequest.post("http://google.com).body("name=kevin").code();
 ```
