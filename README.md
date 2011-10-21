@@ -39,5 +39,5 @@ Perform a multipart POST request
 HttpRequest request = HttpRequest.post("http://google.com");
 request.part("status[body]", "Making a multipart request");
 request.part("status[image]", new File("/home/kevin/Pictures/ide.png"));
-if (200 = requeste.code())
+if (200 = request.code())
   System.out.println("Status was updated");
