@@ -41,3 +41,14 @@ request.part("status[body]", "Making a multipart request");
 request.part("status[image]", new File("/home/kevin/Pictures/ide.png"));
 if (200 = request.code())
   System.out.println("Status was updated");
+```
+
+Perform a POST request with form data
+
+```java
+Map<String, String> data = new HashMap<String, String>();
+data.put("user", "A User");
+data.put("state", "CA");
+int code = HttpRequest.post("http://google.com").form(data).code();
+```
+
