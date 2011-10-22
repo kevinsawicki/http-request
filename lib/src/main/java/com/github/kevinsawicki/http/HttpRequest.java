@@ -58,6 +58,71 @@ import javax.net.ssl.X509TrustManager;
 public class HttpRequest {
 
 	/**
+	 * 'UTF-8' charset name
+	 */
+	public static final String CHARSET_UTF8 = "UTF-8";
+
+	/**
+	 * 'Accept' header name
+	 */
+	public static final String HEADER_ACCEPT = "Accept";
+
+	/**
+	 * 'Accept-Charset' header name
+	 */
+	public static final String HEADER_ACCEPT_CHARSET = "Accept-Charset";
+
+	/**
+	 * 'Accept-Encoding' header name
+	 */
+	public static final String HEADER_ACCEPT_ENCODING = "Accept-Encoding";
+
+	/**
+	 * 'Authentication' header name
+	 */
+	public static final String HEADER_AUTHENTICATION = "Authentication";
+
+	/**
+	 * 'Content-Encoding' header name
+	 */
+	public static final String HEADER_CONTENT_ENCODING = "Content-Encoding";
+
+	/**
+	 * 'Content-Length' header name
+	 */
+	public static final String HEADER_CONTENT_LENGTH = "Content-Length";
+
+	/**
+	 * 'Content-Type' header name
+	 */
+	public static final String HEADER_CONTENT_TYPE = "Content-Type";
+
+	/**
+	 * 'Date' header name
+	 */
+	public static final String HEADER_DATE = "Date";
+
+	/**
+	 * 'Expires' header name
+	 */
+	public static final String HEADER_EXPIRES = "Expires";
+
+	/**
+	 * 'Host' header name
+	 */
+	public static final String HEADER_HOST = "Host";
+
+	/**
+	 * 'Server' header name
+	 */
+	public static final String HEADER_SERVER = "Server";
+
+	/**
+	 * 'User-Agent' header name
+	 */
+	public static final String HEADER_USER_AGENT = "User-Agent";
+
+	/**
 	 * 'GET' request method
 	 */
 	public static final String METHOD_GET = "GET";
@@ -92,10 +157,17 @@ public class HttpRequest {
 	 */
 	public static final String METHOD_TRACE = "TRACE";
 
+	/**
+	 * 'charset' header value parameter
+	 */
+	public static final String PARAM_CHARSET = "charset";
+
 	private static final String BOUNDARY = "----1010101010";
 
 	private static final String CONTENT_TYPE_MULTIPART = "multipart/form-data; boundary="
 			+ BOUNDARY;
+
+	private static final String CONTENT_TYPE_FORM = "application/x-www-form-urlencoded";
 
 	/**
 	 * <p>
@@ -402,7 +474,7 @@ public class HttpRequest {
 		public RequestOutputStream(OutputStream stream, String charsetName) {
 			super(stream);
 			if (charsetName == null)
-				charsetName = "UTF-8";
+				charsetName = CHARSET_UTF8;
 			charset = Charset.forName(charsetName);
 		}
 
@@ -846,7 +918,7 @@ public class HttpRequest {
 	 * @return charset or null if none
 	 */
 	public String charset() {
-		return getParam(contentType(), "charset");
+		return getParam(contentType(), PARAM_CHARSET);
 	}
 
 	/**
@@ -856,7 +928,7 @@ public class HttpRequest {
 	 * @return this request
 	 */
 	public HttpRequest userAgent(String value) {
-		return header("User-Agent", value);
+		return header(HEADER_USER_AGENT, value);
 	}
 
 	/**
@@ -866,7 +938,7 @@ public class HttpRequest {
 	 * @return this request
 	 */
 	public HttpRequest host(String value) {
-		return header("Host", value);
+		return header(HEADER_HOST, value);
 	}
 
 	/**
@@ -876,7 +948,7 @@ public class HttpRequest {
 	 * @return this request
 	 */
 	public HttpRequest acceptEncoding(String value) {
-		return header("Accept-Encoding", value);
+		return header(HEADER_ACCEPT_ENCODING, value);
 	}
 
 	/**
@@ -886,7 +958,7 @@ public class HttpRequest {
 	 * @return this request
 	 */
 	public HttpRequest acceptCharset(String value) {
-		return header("Accept-Charset", value);
+		return header(HEADER_ACCEPT_CHARSET, value);
 	}
 
 	/**
@@ -895,7 +967,7 @@ public class HttpRequest {
 	 * @return this request
 	 */
 	public String contentEncoding() {
-		return header("Content-Encoding");
+		return header(HEADER_CONTENT_ENCODING);
 	}
 
 	/**
@@ -904,7 +976,7 @@ public class HttpRequest {
 	 * @return server
 	 */
 	public String server() {
-		return header("Server");
+		return header(HEADER_SERVER);
 	}
 
 	/**
@@ -913,7 +985,7 @@ public class HttpRequest {
 	 * @return date value, -1 on failures
 	 */
 	public long date() {
-		return connection.getHeaderFieldDate("Date", -1L);
+		return connection.getHeaderFieldDate(HEADER_DATE, -1L);
 	}
 
 	/**
@@ -922,7 +994,7 @@ public class HttpRequest {
 	 * @return expires value, -1 on failures
 	 */
 	public long expires() {
-		return connection.getHeaderFieldDate("Expires", -1L);
+		return connection.getHeaderFieldDate(HEADER_EXPIRES, -1L);
 	}
 
 	/**
@@ -932,7 +1004,7 @@ public class HttpRequest {
 	 * @return this request
 	 */
 	public HttpRequest authentication(final String value) {
-		return header("Authentication", value);
+		return header(HEADER_AUTHENTICATION, value);
 	}
 
 	/**
@@ -944,8 +1016,7 @@ public class HttpRequest {
 	 * @return this request
 	 */
 	public HttpRequest basic(final String name, final String password) {
-		final String credentials = Base64.encode(name + ":" + password);
-		return header("Authentication", "Basic " + credentials);
+		return authentication("Basic " + Base64.encode(name + ":" + password));
 	}
 
 	/**
@@ -955,7 +1026,7 @@ public class HttpRequest {
 	 * @return this request
 	 */
 	public HttpRequest contentType(final String value) {
-		return header("Content-Type", value);
+		return header(HEADER_CONTENT_TYPE, value);
 	}
 
 	/**
@@ -964,7 +1035,7 @@ public class HttpRequest {
 	 * @return response header value
 	 */
 	public String contentType() {
-		return header("Content-Type");
+		return header(HEADER_CONTENT_TYPE);
 	}
 
 	/**
@@ -973,7 +1044,7 @@ public class HttpRequest {
 	 * @return response header value
 	 */
 	public int contentLength() {
-		return connection.getHeaderFieldInt("Content-Length", -1);
+		return connection.getHeaderFieldInt(HEADER_CONTENT_LENGTH, -1);
 	}
 
 	/**
@@ -1005,7 +1076,7 @@ public class HttpRequest {
 	 * @return this request
 	 */
 	public HttpRequest accept(final String value) {
-		return header("Accept", value);
+		return header(HEADER_ACCEPT, value);
 	}
 
 	/**
@@ -1063,7 +1134,8 @@ public class HttpRequest {
 			return this;
 		connection.setDoOutput(true);
 		final String charset = getParam(
-				connection.getRequestProperty("Content-Type"), "charset");
+				connection.getRequestProperty(HEADER_CONTENT_TYPE),
+				PARAM_CHARSET);
 		output = new RequestOutputStream(connection.getOutputStream(), charset);
 		return this;
 	}
@@ -1276,7 +1348,7 @@ public class HttpRequest {
 	 * @return this request
 	 */
 	public HttpRequest form(final Map<?, ?> values) {
-		return form(values, "UTF-8");
+		return form(values, CHARSET_UTF8);
 	}
 
 	/**
@@ -1287,7 +1359,7 @@ public class HttpRequest {
 	 * @return this request
 	 */
 	public HttpRequest form(final Map<?, ?> values, final String charset) {
-		contentType("application/x-www-form-urlencoded;charset=" + charset);
+		contentType(CONTENT_TYPE_FORM + ";" + PARAM_CHARSET + "=" + charset);
 		if (values.isEmpty())
 			return this;
 		final Set<?> set = values.entrySet();
