@@ -1110,6 +1110,17 @@ public class HttpRequest {
 	 * Write part of a multipart request to the request body
 	 *
 	 * @param name
+	 * @param part
+	 * @return this request
+	 */
+	public HttpRequest part(final String name, final String part) {
+		return part(name, null, part);
+	}
+
+	/**
+	 * Write part of a multipart request to the request body
+	 *
+	 * @param name
 	 * @param filename
 	 * @param part
 	 * @return this request
@@ -1133,8 +1144,28 @@ public class HttpRequest {
 	 * @param part
 	 * @return this request
 	 */
-	public HttpRequest part(final String name, final String part) {
+	public HttpRequest part(final String name, final Number part) {
 		return part(name, null, part);
+	}
+
+	/**
+	 * Write part of a multipart request to the request body
+	 *
+	 * @param name
+	 * @param filename
+	 * @param part
+	 * @return this request
+	 */
+	public HttpRequest part(final String name, final String filename,
+			final Number part) {
+		try {
+			startPart();
+			writePartHeader(name, filename);
+			output.write(part.toString());
+		} catch (IOException e) {
+			throw new RequestException(e);
+		}
+		return this;
 	}
 
 	/**
