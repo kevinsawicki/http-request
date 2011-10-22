@@ -26,6 +26,7 @@ import static com.github.kevinsawicki.http.HttpRequest.post;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.util.HashMap;
 import java.util.Map;
@@ -34,6 +35,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import javax.servlet.http.HttpServletResponse;
 
 import org.eclipse.jetty.server.Request;
+import org.eclipse.jetty.util.B64Code;
 import org.junit.Test;
 
 /**
@@ -213,5 +215,35 @@ public class RequestTest extends ServerTestCase {
 		HttpRequest request = get(url);
 		assertEquals(HttpURLConnection.HTTP_OK, request.code());
 		assertEquals("UTF-8", request.charset());
+	}
+
+	/**
+	 * Make a GET request with basic authentication specified
+	 *
+	 * @throws Exception
+	 */
+	@Test
+	public void basicAuthentication() throws Exception {
+		final AtomicReference<String> user = new AtomicReference<String>();
+		final AtomicReference<String> password = new AtomicReference<String>();
+		String url = setUp(new RequestHandler() {
+
+			public void handle(Request request, HttpServletResponse response) {
+				String auth = request.getHeader("Authentication");
+				auth = auth.substring(auth.indexOf(' ') + 1);
+				try {
+					auth = B64Code.decode(auth, "UTF-8");
+				} catch (UnsupportedEncodingException e) {
+					throw new RuntimeException(e);
+				}
+				int colon = auth.indexOf(':');
+				user.set(auth.substring(0, colon));
+				password.set(auth.substring(colon + 1));
+				response.setStatus(HttpServletResponse.SC_OK);
+			}
+		});
+		assertEquals(200, get(url).basic("user", "p4ssw0rd").code());
+		assertEquals("user", user.get());
+		assertEquals("p4ssw0rd", password.get());
 	}
 }
