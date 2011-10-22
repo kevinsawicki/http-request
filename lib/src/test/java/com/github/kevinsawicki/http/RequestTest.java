@@ -24,8 +24,11 @@ package com.github.kevinsawicki.http;
 import static com.github.kevinsawicki.http.HttpRequest.get;
 import static com.github.kevinsawicki.http.HttpRequest.post;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.net.HttpURLConnection;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
 
 import javax.servlet.http.HttpServletResponse;
@@ -123,6 +126,30 @@ public class RequestTest extends ServerTestCase {
 		assertEquals(HttpURLConnection.HTTP_OK, code);
 		assertEquals(sent, length.get().intValue());
 		assertEquals(data, body.get());
+	}
+
+	/**
+	 * Make a post of form data
+	 *
+	 * @throws Exception
+	 */
+	@Test
+	public void postForm() throws Exception {
+		final AtomicReference<String> body = new AtomicReference<String>();
+		String url = setUp(new RequestHandler() {
+
+			public void handle(Request request, HttpServletResponse response) {
+				body.set(new String(read()));
+				response.setStatus(HttpServletResponse.SC_OK);
+			}
+		});
+		Map<String, String> data = new HashMap<String, String>();
+		data.put("name", "user");
+		data.put("number", "100");
+		int code = post(url).form(data).code();
+		assertEquals(HttpURLConnection.HTTP_OK, code);
+		assertTrue(body.get().contains("name=user"));
+		assertTrue(body.get().contains("number=100"));
 	}
 
 	/**

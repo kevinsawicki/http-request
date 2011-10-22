@@ -22,9 +22,8 @@
 package com.github.kevinsawicki.http;
 
 import java.io.BufferedInputStream;
-import java.io.ByteArrayInputStream;
+import java.io.BufferedOutputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -33,11 +32,17 @@ import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.net.URLEncoder;
+import java.nio.charset.Charset;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
 
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.HttpsURLConnection;
@@ -89,6 +94,9 @@ public class HttpRequest {
 
 	private static final String BOUNDARY = "----1010101010";
 
+	private static final String CONTENT_TYPE_MULTIPART = "multipart/form-data; boundary="
+			+ BOUNDARY;
+
 	/**
 	 * Request exception
 	 */
@@ -117,6 +125,39 @@ public class HttpRequest {
 		 */
 		public RequestException(Throwable cause) {
 			super(cause);
+		}
+	}
+
+	/**
+	 * Request output stream
+	 */
+	public static class RequestOutputStream extends BufferedOutputStream {
+
+		private final Charset charset;
+
+		/**
+		 * Create request output stream
+		 *
+		 * @param stream
+		 * @param charsetName
+		 */
+		public RequestOutputStream(OutputStream stream, String charsetName) {
+			super(stream);
+			if (charsetName == null)
+				charsetName = "UTF-8";
+			charset = Charset.forName(charsetName);
+		}
+
+		/**
+		 * Write string to stream
+		 *
+		 * @param value
+		 * @return this stream
+		 * @throws IOException
+		 */
+		public RequestOutputStream write(String value) throws IOException {
+			super.write(value.getBytes(charset));
+			return this;
 		}
 	}
 
@@ -276,9 +317,11 @@ public class HttpRequest {
 
 	private final HttpURLConnection connection;
 
-	private DataOutputStream output;
+	private RequestOutputStream output;
 
-	private int bufferSize = 8196;
+	private boolean multipart;
+
+	private int bufferSize = 8192;
 
 	/**
 	 * Create HTTP connection wrapper
@@ -328,8 +371,8 @@ public class HttpRequest {
 	 * @throws RequestException
 	 */
 	public int code() throws RequestException {
-		closeOutput();
 		try {
+			closeOutput();
 			return connection.getResponseCode();
 		} catch (IOException e) {
 			throw new RequestException(e);
@@ -342,8 +385,8 @@ public class HttpRequest {
 	 * @return message
 	 */
 	public String message() {
-		closeOutput();
 		try {
+			closeOutput();
 			return connection.getResponseMessage();
 		} catch (IOException e) {
 			throw new RequestException(e);
@@ -475,24 +518,24 @@ public class HttpRequest {
 	}
 
 	/**
-	 * Get 'charset' parameter from 'Content-Type' response header
+	 * Get parameter value from header
 	 *
-	 * @return charset or null if none
+	 * @param value
+	 * @param paramName
+	 * @return parameter value or null if none
 	 */
-	public String charset() {
-		String contentType = contentType();
-		if (contentType == null || contentType.length() == 0)
+	protected String getParam(final String value, final String paramName) {
+		if (value == null || value.length() == 0)
 			return null;
-		int postSemi = contentType.indexOf(';') + 1;
-		if (postSemi > 0 && postSemi == contentType.length())
+		int postSemi = value.indexOf(';') + 1;
+		if (postSemi > 0 && postSemi == value.length())
 			return null;
-		String[] params = contentType.substring(postSemi).split(";");
-		final String charsetParam = "charset";
+		String[] params = value.substring(postSemi).trim().split(";");
 		for (String param : params) {
 			String[] split = param.split("=");
 			if (split.length != 2)
 				continue;
-			if (!charsetParam.equals(split[0]))
+			if (!paramName.equals(split[0]))
 				continue;
 
 			String charset = split[1];
@@ -505,6 +548,15 @@ public class HttpRequest {
 			return charset;
 		}
 		return null;
+	}
+
+	/**
+	 * Get 'charset' parameter from 'Content-Type' response header
+	 *
+	 * @return charset or null if none
+	 */
+	public String charset() {
+		return getParam(contentType(), "charset");
 	}
 
 	/**
@@ -535,6 +587,16 @@ public class HttpRequest {
 	 */
 	public HttpRequest acceptEncoding(String value) {
 		return header("Accept-Encoding", value);
+	}
+
+	/**
+	 * Set the 'Accept-Charset' header to given value
+	 *
+	 * @param value
+	 * @return this request
+	 */
+	public HttpRequest acceptCharset(String value) {
+		return header("Accept-Charset", value);
 	}
 
 	/**
@@ -675,16 +737,86 @@ public class HttpRequest {
 	 *
 	 * @return this request
 	 * @throws RequestException
+	 * @throws IOException
 	 */
-	protected HttpRequest closeOutput() throws RequestException {
+	protected HttpRequest closeOutput() throws IOException {
 		if (output == null)
 			return this;
+		if (multipart)
+			output.write("\r\n--" + BOUNDARY + "--\r\n");
+		output.close();
+		output = null;
+		return this;
+	}
+
+	/**
+	 * Open output stream
+	 *
+	 * @return this request
+	 * @throws IOException
+	 */
+	protected HttpRequest openOutput() throws IOException {
+		if (output != null)
+			return this;
+		connection.setDoOutput(true);
+		final String charset = getParam(
+				connection.getRequestProperty("Content-Type"), "charset");
+		output = new RequestOutputStream(connection.getOutputStream(), charset);
+		return this;
+	}
+
+	/**
+	 * Start part of a multipart
+	 *
+	 * @return this request
+	 * @throws IOException
+	 */
+	protected HttpRequest startPart() throws IOException {
+		if (!multipart) {
+			multipart = true;
+			contentType(CONTENT_TYPE_MULTIPART).openOutput();
+			output.write("--" + BOUNDARY + "\r\n");
+		} else
+			output.write("\r\n--" + BOUNDARY + "\r\n");
+		return this;
+	}
+
+	/**
+	 * Write part header
+	 *
+	 * @param name
+	 * @param filename
+	 * @return this request
+	 * @throws IOException
+	 */
+	protected HttpRequest writePartHeader(final String name,
+			final String filename) throws IOException {
+		StringBuilder partBuffer = new StringBuilder();
+		partBuffer.append("Content-Disposition: form-data; name=\"");
+		partBuffer.append(name);
+		if (filename != null) {
+			partBuffer.append("\";filename=\"");
+			partBuffer.append(filename);
+		}
+		partBuffer.append("\"\r\n\r\n");
+		output.write(partBuffer.toString());
+		return this;
+	}
+
+	/**
+	 * Write part of a multipart request to the request body
+	 *
+	 * @param name
+	 * @param filename
+	 * @param part
+	 * @return this request
+	 */
+	public HttpRequest part(final String name, final String filename,
+			final String part) {
 		try {
-			output.writeBytes("\r\n--");
-			output.writeBytes(BOUNDARY);
-			output.writeBytes("--\r\n");
-			output.close();
-			output = null;
+			startPart();
+			writePartHeader(name, filename);
+			output.write(part);
 		} catch (IOException e) {
 			throw new RequestException(e);
 		}
@@ -692,34 +824,71 @@ public class HttpRequest {
 	}
 
 	/**
-	 * Write part to stream
+	 * Write part of a multipart request to the request body
 	 *
 	 * @param name
-	 * @param value
+	 * @param part
 	 * @return this request
-	 * @throws RequestException
 	 */
-	public HttpRequest part(final String name, final Object value)
-			throws RequestException {
-		try {
-			if (output == null) {
-				output = new DataOutputStream(connection.getOutputStream());
-				contentType("multipart/form-data; boundary=" + BOUNDARY);
-				output.writeBytes("--");
-				output.writeBytes(BOUNDARY);
-				output.writeBytes("\r\n");
-			} else
-				output.writeBytes("\r\n--" + BOUNDARY + "\r\n");
+	public HttpRequest part(final String name, final String part) {
+		return part(name, null, part);
+	}
 
-			output.writeBytes("Content-Disposition: form-data; name=\"");
-			output.writeBytes(name);
-			output.writeBytes("\"\r\n\r\n");
-			if (value instanceof InputStream)
-				copy((InputStream) value, output);
-			else if (value instanceof File)
-				copy(new FileInputStream((File) value), output);
-			else
-				output.writeBytes(value.toString());
+	/**
+	 * Write part of a multipart request to the request body
+	 *
+	 * @param name
+	 * @param part
+	 * @return this request
+	 */
+	public HttpRequest part(final String name, final File part) {
+		return part(name, null, part);
+	}
+
+	/**
+	 * Write part of a multipart request to the request body
+	 *
+	 * @param name
+	 * @param filename
+	 * @param part
+	 * @return this request
+	 */
+	public HttpRequest part(final String name, final String filename,
+			final File part) {
+		final InputStream stream;
+		try {
+			stream = new FileInputStream(part);
+		} catch (IOException e) {
+			throw new RequestException(e);
+		}
+		return part(name, filename, stream);
+	}
+
+	/**
+	 * Write part of a multipart request to the request body
+	 *
+	 * @param name
+	 * @param part
+	 * @return this request
+	 */
+	public HttpRequest part(final String name, final InputStream part) {
+		return part(name, null, part);
+	}
+
+	/**
+	 * Write part of a multipart request to the request body
+	 *
+	 * @param name
+	 * @param filename
+	 * @param part
+	 * @return this request
+	 */
+	public HttpRequest part(final String name, final String filename,
+			final InputStream part) {
+		try {
+			startPart();
+			writePartHeader(name, filename);
+			copy(part, output);
 		} catch (IOException e) {
 			throw new RequestException(e);
 		}
@@ -734,8 +903,8 @@ public class HttpRequest {
 	 * @throws RequestException
 	 */
 	public HttpRequest body(final InputStream input) throws RequestException {
-		connection.setDoOutput(true);
 		try {
+			openOutput();
 			copy(input, connection.getOutputStream());
 		} catch (IOException e) {
 			throw new RequestException(e);
@@ -744,39 +913,73 @@ public class HttpRequest {
 	}
 
 	/**
-	 * Write string as UTF-8 bytes to request body
+	 * Write string to request body
+	 * <p>
+	 * The charset configured via {@link #contentType(String)} will be used and
+	 * UTF-8 will be used if it is unset.
 	 *
 	 * @param value
 	 * @return this request
 	 * @throws RequestException
 	 */
 	public HttpRequest body(final String value) throws RequestException {
-		return body(value, "UTF-8");
+		try {
+			openOutput();
+			output.write(value);
+		} catch (IOException e) {
+			throw new RequestException(e);
+		}
+		return this;
 	}
 
 	/**
-	 * Write string in given charset to request body.
+	 * Write the values in the map as form data to the request body
 	 * <p>
-	 * The platform's default charset will be used if charset is null
+	 * The values specified will be URL-encoded and sent with the
+	 * 'application/x-www-form-urlencoded' content-type
 	 *
-	 * @param value
+	 * @param values
+	 * @return this request
+	 */
+	public HttpRequest form(final Map<?, ?> values) {
+		return form(values, "UTF-8");
+	}
+
+	/**
+	 * Write the values in the map as encoded form data to the request body
+	 *
+	 * @param values
 	 * @param charset
 	 * @return this request
-	 * @throws RequestException
 	 */
-	public HttpRequest body(final String value, final String charset)
-			throws RequestException {
-		connection.setDoOutput(true);
-		final byte[] bytes;
-		if (charset != null)
-			try {
-				bytes = value.getBytes(charset);
-			} catch (UnsupportedEncodingException e) {
-				throw new RequestException(e);
+	public HttpRequest form(final Map<?, ?> values, final String charset) {
+		contentType("application/x-www-form-urlencoded;charset=" + charset);
+		try {
+			openOutput();
+			final Set<?> set = values.entrySet();
+			@SuppressWarnings({ "unchecked", "rawtypes" })
+			final Iterator<Entry> entries = (Iterator<Entry>) set.iterator();
+			if (!entries.hasNext())
+				return this;
+			@SuppressWarnings("rawtypes")
+			Entry value = entries.next();
+			output.write(URLEncoder.encode(value.getKey().toString(), charset));
+			output.write('=');
+			output.write(URLEncoder
+					.encode(value.getValue().toString(), charset));
+			while (entries.hasNext()) {
+				value = entries.next();
+				output.write('&');
+				output.write(URLEncoder.encode(value.getKey().toString(),
+						charset));
+				output.write('=');
+				output.write(URLEncoder.encode(value.getValue().toString(),
+						charset));
 			}
-		else
-			bytes = value.getBytes();
-		return body(new ByteArrayInputStream(bytes));
+		} catch (IOException e) {
+			throw new RequestException(e);
+		}
+		return this;
 	}
 
 	/**
