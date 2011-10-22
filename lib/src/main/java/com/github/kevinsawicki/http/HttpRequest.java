@@ -485,6 +485,38 @@ public class HttpRequest {
 	}
 
 	/**
+	 * Get error stream to response
+	 *
+	 * @return stream
+	 */
+	public InputStream errorStream() {
+		return connection.getErrorStream();
+	}
+
+	/**
+	 * Get error stream as string
+	 *
+	 * @return error string
+	 * @throws RequestException
+	 */
+	public String errorString() throws RequestException {
+		final InputStream stream = errorStream();
+		if (stream == null)
+			return "";
+		final ByteArrayOutputStream output = new ByteArrayOutputStream(
+				contentLength());
+		copy(buffer(), output);
+		final String charset = charset();
+		if (charset == null)
+			return output.toString();
+		try {
+			return output.toString(charset);
+		} catch (UnsupportedEncodingException e) {
+			throw new RequestException(e);
+		}
+	}
+
+	/**
 	 * Set read timeout on connection to value
 	 *
 	 * @param timeout
@@ -954,13 +986,13 @@ public class HttpRequest {
 	 */
 	public HttpRequest form(final Map<?, ?> values, final String charset) {
 		contentType("application/x-www-form-urlencoded;charset=" + charset);
+		if (values.isEmpty())
+			return this;
+		final Set<?> set = values.entrySet();
+		@SuppressWarnings({ "unchecked", "rawtypes" })
+		final Iterator<Entry> entries = (Iterator<Entry>) set.iterator();
 		try {
 			openOutput();
-			final Set<?> set = values.entrySet();
-			@SuppressWarnings({ "unchecked", "rawtypes" })
-			final Iterator<Entry> entries = (Iterator<Entry>) set.iterator();
-			if (!entries.hasNext())
-				return this;
 			@SuppressWarnings("rawtypes")
 			Entry value = entries.next();
 			output.write(URLEncoder.encode(value.getKey().toString(), charset));
