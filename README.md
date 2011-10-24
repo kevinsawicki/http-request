@@ -57,4 +57,7 @@ data.put("user", "A User");
 data.put("state", "CA");
 int code = HttpRequest.post("http://google.com").form(data).code();
 ```
+## Contributors
 
+* [Kevin Sawicki](https://github.com/kevinsawicki) :: [contributions](https://github.com/kevinsawicki/http-request/commits?author=kevinsawicki)
+* [Eddie Ringle](https://github.com/eddieringle) :: [contributions](https://github.com/kevinsawicki/http-request/commits?author=eddieringle)
