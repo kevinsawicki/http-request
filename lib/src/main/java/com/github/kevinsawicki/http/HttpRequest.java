@@ -83,6 +83,11 @@ public class HttpRequest {
 	public static final String HEADER_AUTHENTICATION = "Authentication";
 
 	/**
+	 * 'Cache-Control' header name
+	 */
+	public static final String HEADER_CACHE_CONTROL = "Cache-Control";
+
+	/**
 	 * 'Content-Encoding' header name
 	 */
 	public static final String HEADER_CONTENT_ENCODING = "Content-Encoding";
@@ -1017,6 +1022,15 @@ public class HttpRequest {
 	 */
 	public long date() {
 		return connection.getHeaderFieldDate(HEADER_DATE, -1L);
+	}
+
+	/**
+	 * Get the 'Cache-Control' header from the response
+	 *
+	 * @return cache control
+	 */
+	public String cacheControl() {
+		return header(HEADER_CACHE_CONTROL);
 	}
 
 	/**
