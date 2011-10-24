@@ -921,6 +921,26 @@ public class HttpRequest {
 	}
 
 	/**
+	 * Get a date header from the response
+	 *
+	 * @param name
+	 * @return date, -1 on failures
+	 */
+	public long dateHeader(String name) {
+		return connection.getHeaderFieldDate(name, -1L);
+	}
+
+	/**
+	 * Get an integer header from the response
+	 *
+	 * @param name
+	 * @return integer, -1 on failures
+	 */
+	public int intHeader(String name) {
+		return connection.getHeaderFieldInt(name, -1);
+	}
+
+	/**
 	 * Get parameter value from header
 	 *
 	 * @param value
@@ -1026,7 +1046,7 @@ public class HttpRequest {
 	 * @return date value, -1 on failures
 	 */
 	public long date() {
-		return connection.getHeaderFieldDate(HEADER_DATE, -1L);
+		return dateHeader(HEADER_DATE);
 	}
 
 	/**
@@ -1044,7 +1064,7 @@ public class HttpRequest {
 	 * @return expires value, -1 on failures
 	 */
 	public long expires() {
-		return connection.getHeaderFieldDate(HEADER_EXPIRES, -1L);
+		return dateHeader(HEADER_EXPIRES);
 	}
 
 	/**
@@ -1103,7 +1123,7 @@ public class HttpRequest {
 	 * @return response header value
 	 */
 	public int contentLength() {
-		return connection.getHeaderFieldInt(HEADER_CONTENT_LENGTH, -1);
+		return intHeader(HEADER_CONTENT_LENGTH);
 	}
 
 	/**
