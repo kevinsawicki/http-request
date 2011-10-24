@@ -27,6 +27,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -843,7 +844,7 @@ public class HttpRequest {
 	}
 
 	/**
-	 * Get stream to response
+	 * Get stream to response body
 	 *
 	 * @return stream
 	 * @throws RequestException
@@ -854,6 +855,40 @@ public class HttpRequest {
 		} catch (IOException e) {
 			throw new RequestException(e);
 		}
+	}
+
+	/**
+	 * Stream response body to file
+	 *
+	 * @param file
+	 * @return this request
+	 */
+	public HttpRequest stream(final File file) {
+		final OutputStream output;
+		try {
+			output = new BufferedOutputStream(new FileOutputStream(file));
+		} catch (FileNotFoundException e) {
+			throw new RequestException(e);
+		}
+		try {
+			return stream(output);
+		} finally {
+			try {
+				output.close();
+			} catch (IOException e) {
+				throw new RequestException(e);
+			}
+		}
+	}
+
+	/**
+	 * Stream response to given output stream
+	 *
+	 * @param output
+	 * @return this request
+	 */
+	public HttpRequest stream(final OutputStream output) {
+		return copy(buffer(), output);
 	}
 
 	/**
@@ -1387,7 +1422,7 @@ public class HttpRequest {
 			final File part) throws RequestException {
 		final InputStream stream;
 		try {
-			stream = new FileInputStream(part);
+			stream = new BufferedInputStream(new FileInputStream(part));
 		} catch (IOException e) {
 			throw new RequestException(e);
 		}
@@ -1436,9 +1471,9 @@ public class HttpRequest {
 	 * @throws RequestException
 	 */
 	public HttpRequest body(final File input) throws RequestException {
-		final FileInputStream stream;
+		final InputStream stream;
 		try {
-			stream = new FileInputStream(input);
+			stream = new BufferedInputStream(new FileInputStream(input));
 		} catch (FileNotFoundException e) {
 			throw new RequestException(e);
 		}
