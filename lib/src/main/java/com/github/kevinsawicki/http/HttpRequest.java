@@ -118,6 +118,11 @@ public class HttpRequest {
 	public static final String HEADER_HOST = "Host";
 
 	/**
+	 * 'Location' header name
+	 */
+	public static final String HEADER_LOCATION = "Location";
+
+	/**
 	 * 'Server' header name
 	 */
 	public static final String HEADER_SERVER = "Server";
@@ -1040,6 +1045,15 @@ public class HttpRequest {
 	 */
 	public long expires() {
 		return connection.getHeaderFieldDate(HEADER_EXPIRES, -1L);
+	}
+
+	/**
+	 * Get the 'Location' header from the response
+	 *
+	 * @return location
+	 */
+	public String location() {
+		return header(HEADER_LOCATION);
 	}
 
 	/**
