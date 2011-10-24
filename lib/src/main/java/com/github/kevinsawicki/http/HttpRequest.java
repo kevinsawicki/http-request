@@ -26,6 +26,7 @@ import java.io.BufferedOutputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -1428,6 +1429,23 @@ public class HttpRequest {
 	}
 
 	/**
+	 * Write contents of file to request body
+	 *
+	 * @param input
+	 * @return this request
+	 * @throws RequestException
+	 */
+	public HttpRequest body(final File input) throws RequestException {
+		final FileInputStream stream;
+		try {
+			stream = new FileInputStream(input);
+		} catch (FileNotFoundException e) {
+			throw new RequestException(e);
+		}
+		return body(stream);
+	}
+
+	/**
 	 * Write stream to request body
 	 *
 	 * @param input
@@ -1437,7 +1455,7 @@ public class HttpRequest {
 	public HttpRequest body(final InputStream input) throws RequestException {
 		try {
 			openOutput();
-			copy(input, connection.getOutputStream());
+			copy(input, output);
 		} catch (IOException e) {
 			throw new RequestException(e);
 		}
