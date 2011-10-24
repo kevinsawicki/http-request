@@ -16,7 +16,7 @@ to add convenience and common patterns to the act of making HTTP requests such a
 a fluid-interface for building requests and support for features such as multipart
 requests.
 
-*Bottom line:* The single goal of this library is to improve the usability of the
+**Bottom line:** The single goal of this library is to improve the usability of the
 `HttpURLConnection` class.
 
 ### What are the dependencies?
