@@ -883,6 +883,24 @@ public class HttpRequest {
 	}
 
 	/**
+	 * Set header names to given values.
+	 * <p>
+	 * Each name should be followed by the corresponding value and the number of
+	 * arguments must be divisible by 2.
+	 *
+	 * @param headers
+	 * @return this request
+	 */
+	public HttpRequest headers(final String... headers) {
+		if (headers == null || headers.length == 0 || headers.length % 2 != 0)
+			throw new IllegalArgumentException(
+					"Headers must be non-null, non-empty and divisible by two");
+		for (int i = 0; i < headers.length; i += 2)
+			header(headers[i], headers[i + 1]);
+		return this;
+	}
+
+	/**
 	 * Get a response header
 	 *
 	 * @param name
