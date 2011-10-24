@@ -710,6 +710,10 @@ public class HttpRequest {
 		}
 	}
 
+	public String toString() {
+		return connection.getRequestMethod() + " " + connection.getURL();
+	}
+
 	/**
 	 * Get underlying connection
 	 *
