@@ -34,6 +34,7 @@ int response = HttpRequest.post("http://google.com").body("name=kevin").code();
 ```
 
 Authenticate using Basic authentication
+
 ```java
 int response = HttpRequest.get("http://google.com").basic("username", "p4ssw0rd").code();
 ```
