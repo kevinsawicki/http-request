@@ -108,6 +108,11 @@ public class HttpRequest {
 	public static final String HEADER_DATE = "Date";
 
 	/**
+	 * 'ETag' header name
+	 */
+	public static final String HEADER_ETAG = "ETag";
+
+	/**
 	 * 'Expires' header name
 	 */
 	public static final String HEADER_EXPIRES = "Expires";
@@ -116,6 +121,11 @@ public class HttpRequest {
 	 * 'Host' header name
 	 */
 	public static final String HEADER_HOST = "Host";
+
+	/**
+	 * 'Last-Modified' header name
+	 */
+	public static final String HEADER_LAST_MODIFIED = "Last-Modified";
 
 	/**
 	 * 'Location' header name
@@ -1067,12 +1077,30 @@ public class HttpRequest {
 	}
 
 	/**
+	 * Get the 'ETag' header from the response
+	 *
+	 * @return entity tag
+	 */
+	public String eTag() {
+		return header(HEADER_ETAG);
+	}
+
+	/**
 	 * Get the 'Expires' header from the response
 	 *
 	 * @return expires value, -1 on failures
 	 */
 	public long expires() {
 		return dateHeader(HEADER_EXPIRES);
+	}
+
+	/**
+	 * Get the 'Last-Modified' header from the response
+	 *
+	 * @return last modified value, -1 on failures
+	 */
+	public long lastModified() {
+		return dateHeader(HEADER_LAST_MODIFIED);
 	}
 
 	/**
