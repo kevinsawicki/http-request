@@ -43,7 +43,7 @@ int response = HttpRequest.get("http://google.com").code();
 Perform a GET request and get the body of the response
 
 ```java
-String response = HttpRequest.get("http://google.com").string();
+String response = HttpRequest.get("http://google.com").body();
 System.out.println("Response was: " + response);
 ```
 

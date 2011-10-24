@@ -805,7 +805,7 @@ public class HttpRequest {
 	 * @return string
 	 * @throws RequestException
 	 */
-	public String string() throws RequestException {
+	public String body() throws RequestException {
 		final ByteArrayOutputStream output = new ByteArrayOutputStream(
 				contentLength());
 		copy(buffer(), output);

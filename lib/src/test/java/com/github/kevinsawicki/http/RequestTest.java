@@ -62,7 +62,7 @@ public class RequestTest extends ServerTestCase {
 		int code = request.code();
 		assertEquals("GET", method.get());
 		assertEquals(HttpURLConnection.HTTP_OK, code);
-		assertEquals("", request.string());
+		assertEquals("", request.body());
 	}
 
 	/**
@@ -194,7 +194,7 @@ public class RequestTest extends ServerTestCase {
 		});
 		HttpRequest request = get(url);
 		assertEquals(HttpURLConnection.HTTP_OK, request.code());
-		assertEquals("hello", request.string());
+		assertEquals("hello", request.body());
 		assertEquals("hello".getBytes().length, request.contentLength());
 	}
 
