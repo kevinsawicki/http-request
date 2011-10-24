@@ -662,6 +662,8 @@ public class HttpRequest {
 
 	private boolean multipart;
 
+	private boolean form;
+
 	private int bufferSize = 8192;
 
 	/**
@@ -1370,7 +1372,10 @@ public class HttpRequest {
 	 * @return this request
 	 */
 	public HttpRequest form(final Map<?, ?> values, final String charset) {
-		contentType(CONTENT_TYPE_FORM + ";" + PARAM_CHARSET + "=" + charset);
+		if (!form) {
+			contentType(CONTENT_TYPE_FORM + ";" + PARAM_CHARSET + "=" + charset);
+			form = true;
+		}
 		if (values.isEmpty())
 			return this;
 		final Set<?> set = values.entrySet();
