@@ -7,17 +7,30 @@ to make requests and access the response.
 
 ### Why was this written?
 
-This library was written to make HTTP requests simple and easy when using a HttpURLConnection.
+This library was written to make HTTP requests simple and easy when using a `HttpURLConnection`.
 
-Libraries like [Apache HttpComponents](http://hc.apache.org) are great but sometimes for either simplicity, or perhaps for the environment you are deploying to (Android), you just want to use a good old-fashioned `HttpURLConnection`.  This library seeks to add convenience and common patterns to the act of making HTTP requests such as a fluid-interface for building requests and support for features such as multipart requests.
+Libraries like [Apache HttpComponents](http://hc.apache.org) are great but sometimes
+for either simplicity, or perhaps for the environment you are deploying to (Android),
+you just want to use a good old-fashioned `HttpURLConnection`.  This library seeks
+to add convenience and common patterns to the act of making HTTP requests such as
+a fluid-interface for building requests and support for features such as multipart
+requests.
+
+*Bottom line:* The single goal of this library is to improve the usability of the
+`HttpURLConnection` class.
 
 ### What are the dependencies?
 
-None.  The goal of this library is to be a single class class with some inner static classes.  The test project does require [Jetty](http://eclipse.org/jetty/) in order to test requests against an actual HTTP server implementation.
+None.  The goal of this library is to be a single class class with some inner static
+classes.  The test project does require [Jetty](http://eclipse.org/jetty/) in order
+to test requests against an actual HTTP server implementation.
 
 ### How are exceptions managed?
 
-The `HttpRequest` class does not throw any checked exceptions, instead all low-level exceptions are wrapped up in a `RequestException` which extends `RuntimeException`.  You can access the underlying exception by catching `RequestException` and calling `getCause()`.
+The `HttpRequest` class does not throw any checked exceptions, instead all low-level
+exceptions are wrapped up in a `RequestException` which extends `RuntimeException`.
+You can access the underlying exception by catching `RequestException` and calling
+`getCause()`.
 
 
 ## Examples
