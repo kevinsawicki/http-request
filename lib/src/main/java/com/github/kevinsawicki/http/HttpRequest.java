@@ -39,6 +39,7 @@ import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -1466,7 +1467,7 @@ public class HttpRequest {
 	/**
 	 * Write the values in the map as form data to the request body
 	 * <p>
-	 * The values specified will be URL-encoded and sent with the
+	 * The pair specified will be URL-encoded and sent with the
 	 * 'application/x-www-form-urlencoded' content-type
 	 *
 	 * @param values
@@ -1475,6 +1476,38 @@ public class HttpRequest {
 	 */
 	public HttpRequest form(final Map<?, ?> values) throws RequestException {
 		return form(values, CHARSET_UTF8);
+	}
+
+	/**
+	 * Write the name/value pair as form data to the request body
+	 * <p>
+	 * The pair specified will be URL-encoded and sent with the
+	 * 'application/x-www-form-urlencoded' content-type
+	 *
+	 * @param name
+	 * @param value
+	 * @return this request
+	 * @throws RequestException
+	 */
+	public HttpRequest form(final Object name, final Object value) {
+		return form(name, value, null);
+	}
+
+	/**
+	 * Write the name/value pair as form data to the request body
+	 * <p>
+	 * The values specified will be URL-encoded and sent with the
+	 * 'application/x-www-form-urlencoded' content-type
+	 *
+	 * @param name
+	 * @param value
+	 * @param charset
+	 * @return this request
+	 * @throws RequestException
+	 */
+	public HttpRequest form(final Object name, final Object value,
+			final String charset) {
+		return form(Collections.singletonMap(name, value), charset);
 	}
 
 	/**
@@ -1499,19 +1532,21 @@ public class HttpRequest {
 		try {
 			openOutput();
 			@SuppressWarnings("rawtypes")
-			Entry value = entries.next();
-			output.write(URLEncoder.encode(value.getKey().toString(), charset));
+			Entry entry = entries.next();
+			output.write(URLEncoder.encode(entry.getKey().toString(), charset));
 			output.write('=');
-			output.write(URLEncoder
-					.encode(value.getValue().toString(), charset));
+			Object value = entry.getValue();
+			if (value != null)
+				output.write(URLEncoder.encode(value.toString(), charset));
 			while (entries.hasNext()) {
-				value = entries.next();
+				entry = entries.next();
 				output.write('&');
-				output.write(URLEncoder.encode(value.getKey().toString(),
+				output.write(URLEncoder.encode(entry.getKey().toString(),
 						charset));
 				output.write('=');
-				output.write(URLEncoder.encode(value.getValue().toString(),
-						charset));
+				value = entry.getValue();
+				if (value != null)
+					output.write(URLEncoder.encode(value.toString(), charset));
 			}
 		} catch (IOException e) {
 			throw new RequestException(e);
