@@ -645,6 +645,17 @@ public class HttpRequest {
 		return new HttpRequest(url, METHOD_TRACE);
 	}
 
+	/**
+	 * Set the 'http.keepAlive' property to the given value.
+	 * <p>
+	 * This setting will apply to requests.
+	 *
+	 * @param keepAlive
+	 */
+	public static void keepAlive(boolean keepAlive) {
+		System.setProperty("http.keepAlive", Boolean.toString(keepAlive));
+	}
+
 	private final HttpURLConnection connection;
 
 	private RequestOutputStream output;
