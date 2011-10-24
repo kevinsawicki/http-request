@@ -27,6 +27,13 @@ Perform a GET request and get the status of the response
 int response = HttpRequest.get("http://google.com").code();
 ```
 
+Perform a GET request and get the body of the response
+
+```java
+String response = HttpRequest.get("http://google.com").string();
+System.out.println("Response was: " + response);
+```
+
 Perform a POST request with some data and get the status of the response
 
 ```java
