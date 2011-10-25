@@ -1476,6 +1476,19 @@ public class HttpRequest {
 	}
 
 	/**
+	 * Write a multipart header to the response body
+	 *
+	 * @param name
+	 * @param value
+	 * @return this request
+	 * @throws RequestException
+	 */
+	public HttpRequest partHeader(String name, String value)
+			throws RequestException {
+		return send(name).send(": ").send(value).send("\r\n\r\n");
+	}
+
+	/**
 	 * Write contents of file to request body
 	 *
 	 * @param input
