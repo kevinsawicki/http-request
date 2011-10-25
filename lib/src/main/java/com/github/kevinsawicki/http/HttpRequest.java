@@ -948,6 +948,17 @@ public class HttpRequest {
 	}
 
 	/**
+	 * Set header name to given value
+	 *
+	 * @param name
+	 * @param value
+	 * @return this request
+	 */
+	public HttpRequest header(final String name, final Number value) {
+		return header(name, value.toString());
+	}
+
+	/**
 	 * Set header names to given values.
 	 * <p>
 	 * Each name should be followed by the corresponding value and the number of
