@@ -753,6 +753,26 @@ public class HttpRequest {
 	}
 
 	/**
+	 * Is the response code a 200 OK?
+	 *
+	 * @return true if 200, false otherwise
+	 * @throws RequestException
+	 */
+	public boolean ok() throws RequestException {
+		return HttpURLConnection.HTTP_OK == code();
+	}
+
+	/**
+	 * Is the response code a 201 Created?
+	 *
+	 * @return true if 201, false otherwise
+	 * @throws RequestException
+	 */
+	public boolean created() throws RequestException {
+		return HttpURLConnection.HTTP_CREATED == code();
+	}
+
+	/**
 	 * Get status message of the response
 	 *
 	 * @return message
