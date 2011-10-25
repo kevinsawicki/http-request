@@ -23,6 +23,7 @@ package com.github.kevinsawicki.http;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -863,7 +864,7 @@ public class HttpRequest {
 	 * @param file
 	 * @return this request
 	 */
-	public HttpRequest stream(final File file) {
+	public HttpRequest body(final File file) {
 		final OutputStream output;
 		try {
 			output = new BufferedOutputStream(new FileOutputStream(file));
@@ -1470,14 +1471,25 @@ public class HttpRequest {
 	 * @return this request
 	 * @throws RequestException
 	 */
-	public HttpRequest body(final File input) throws RequestException {
+	public HttpRequest send(final File input) throws RequestException {
 		final InputStream stream;
 		try {
 			stream = new BufferedInputStream(new FileInputStream(input));
 		} catch (FileNotFoundException e) {
 			throw new RequestException(e);
 		}
-		return body(stream);
+		return send(stream);
+	}
+
+	/**
+	 * Write byte array to request body
+	 *
+	 * @param input
+	 * @return this request
+	 * @throws RequestException
+	 */
+	public HttpRequest send(final byte[] input) throws RequestException {
+		return send(new ByteArrayInputStream(input));
 	}
 
 	/**
@@ -1487,7 +1499,7 @@ public class HttpRequest {
 	 * @return this request
 	 * @throws RequestException
 	 */
-	public HttpRequest body(final InputStream input) throws RequestException {
+	public HttpRequest send(final InputStream input) throws RequestException {
 		try {
 			openOutput();
 			copy(input, output);
@@ -1507,7 +1519,7 @@ public class HttpRequest {
 	 * @return this request
 	 * @throws RequestException
 	 */
-	public HttpRequest body(final String value) throws RequestException {
+	public HttpRequest send(final String value) throws RequestException {
 		try {
 			openOutput();
 			output.write(value);

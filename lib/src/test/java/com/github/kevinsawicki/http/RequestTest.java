@@ -100,7 +100,7 @@ public class RequestTest extends ServerTestCase {
 				response.setStatus(HttpServletResponse.SC_OK);
 			}
 		});
-		int code = post(url).body("hello").code();
+		int code = post(url).send("hello").code();
 		assertEquals(HttpURLConnection.HTTP_OK, code);
 		assertEquals("hello", body.get());
 	}
@@ -124,7 +124,7 @@ public class RequestTest extends ServerTestCase {
 		});
 		String data = "hello";
 		int sent = data.getBytes().length;
-		int code = post(url).contentLength(sent).body(data).code();
+		int code = post(url).contentLength(sent).send(data).code();
 		assertEquals(HttpURLConnection.HTTP_OK, code);
 		assertEquals(sent, length.get().intValue());
 		assertEquals(data, body.get());
@@ -172,7 +172,7 @@ public class RequestTest extends ServerTestCase {
 			}
 		});
 		String data = "hello";
-		int code = post(url).chunk(2).body(data).code();
+		int code = post(url).chunk(2).send(data).code();
 		assertEquals(HttpURLConnection.HTTP_OK, code);
 		assertEquals(data, body.get());
 		assertEquals("chunked", encoding.get());

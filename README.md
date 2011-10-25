@@ -50,7 +50,7 @@ System.out.println("Response was: " + response);
 Perform a POST request with some data and get the status of the response
 
 ```java
-int response = HttpRequest.post("http://google.com").body("name=kevin").code();
+int response = HttpRequest.post("http://google.com").send("name=kevin").code();
 ```
 
 Authenticate using Basic authentication
