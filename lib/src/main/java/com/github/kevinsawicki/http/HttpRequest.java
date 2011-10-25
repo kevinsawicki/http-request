@@ -31,6 +31,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
@@ -822,23 +823,37 @@ public class HttpRequest {
 	}
 
 	/**
-	 * Get response as String
+	 * Get response as String in given charset.
+	 * <p>
+	 * This will fallback to using the platform's default character if the given
+	 * charset is null.
+	 *
+	 * @param charset
+	 * @return string
+	 * @throws RequestException
+	 */
+	public String body(final String charset) throws RequestException {
+		final ByteArrayOutputStream output = new ByteArrayOutputStream(
+				contentLength());
+		copy(buffer(), output);
+		if (charset != null)
+			try {
+				return output.toString(charset);
+			} catch (UnsupportedEncodingException e) {
+				throw new RequestException(e);
+			}
+		else
+			return output.toString();
+	}
+
+	/**
+	 * Get response as String using character returned from {@link #charset()}
 	 *
 	 * @return string
 	 * @throws RequestException
 	 */
 	public String body() throws RequestException {
-		final ByteArrayOutputStream output = new ByteArrayOutputStream(
-				contentLength());
-		copy(buffer(), output);
-		final String charset = charset();
-		if (charset == null)
-			return output.toString();
-		try {
-			return output.toString(charset);
-		} catch (UnsupportedEncodingException e) {
-			throw new RequestException(e);
-		}
+		return body(charset());
 	}
 
 	/**
@@ -876,6 +891,40 @@ public class HttpRequest {
 		} catch (IOException e) {
 			throw new RequestException(e);
 		}
+	}
+
+	/**
+	 * Get reader to response body using given character set.
+	 * <p>
+	 * This will fallback to using the platform's default character if the given
+	 * charset is null.
+	 *
+	 * @param charset
+	 * @return reader
+	 * @throws RequestException
+	 */
+	public InputStreamReader reader(final String charset)
+			throws RequestException {
+		final InputStream stream = stream();
+		if (charset != null)
+			try {
+				return new InputStreamReader(stream, charset);
+			} catch (UnsupportedEncodingException e) {
+				throw new RequestException(e);
+			}
+		else
+			return new InputStreamReader(stream);
+	}
+
+	/**
+	 * Get response to response body using the character set returned from
+	 * {@link #charset()}
+	 *
+	 * @return reader
+	 * @throws RequestException
+	 */
+	public InputStreamReader reader() throws RequestException {
+		return reader(charset());
 	}
 
 	/**
