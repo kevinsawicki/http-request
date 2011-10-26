@@ -1294,8 +1294,7 @@ public class HttpRequest {
 	 * @return this request
 	 */
 	public HttpRequest contentLength(final String value) {
-		final int length = Integer.parseInt(value);
-		return contentLength(length);
+		return contentLength(Integer.parseInt(value));
 	}
 
 	/**
