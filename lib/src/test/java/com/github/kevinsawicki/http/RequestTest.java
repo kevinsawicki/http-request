@@ -26,6 +26,7 @@ import static com.github.kevinsawicki.http.HttpRequest.post;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+import java.io.BufferedReader;
 import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.util.HashMap;
@@ -242,8 +243,28 @@ public class RequestTest extends ServerTestCase {
 				response.setStatus(HttpServletResponse.SC_OK);
 			}
 		});
-		assertEquals(200, get(url).basic("user", "p4ssw0rd").code());
+		assertTrue(get(url).basic("user", "p4ssw0rd").ok());
 		assertEquals("user", user.get());
 		assertEquals("p4ssw0rd", password.get());
+	}
+
+	/**
+	 * Make a GET and get response as a input stream reader
+	 *
+	 * @throws Exception
+	 */
+	@Test
+	public void getReader() throws Exception {
+		String url = setUp(new RequestHandler() {
+
+			public void handle(Request request, HttpServletResponse response) {
+				response.setStatus(HttpServletResponse.SC_OK);
+				write("hello");
+			}
+		});
+		HttpRequest request = get(url);
+		assertTrue(request.ok());
+		BufferedReader reader = new BufferedReader(request.reader());
+		assertEquals("hello", reader.readLine());
 	}
 }
