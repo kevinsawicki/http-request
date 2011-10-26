@@ -148,6 +148,11 @@ public class HttpRequest {
 	public static final String HEADER_USER_AGENT = "User-Agent";
 
 	/**
+	 * 'DELETE' request method
+	 */
+	public static final String METHOD_DELETE = "DELETE";
+
+	/**
 	 * 'GET' request method
 	 */
 	public static final String METHOD_GET = "GET";
@@ -156,11 +161,6 @@ public class HttpRequest {
 	 * 'HEAD' request method
 	 */
 	public static final String METHOD_HEAD = "HEAD";
-
-	/**
-	 * 'DELETE' request method
-	 */
-	public static final String METHOD_DELETE = "DELETE";
 
 	/**
 	 * 'OPTIONS' options method
