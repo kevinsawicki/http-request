@@ -1026,7 +1026,7 @@ public class HttpRequest {
 	 * @return this request
 	 */
 	public HttpRequest header(final String name, final Number value) {
-		return header(name, value.toString());
+		return header(name, value != null ? value.toString() : null);
 	}
 
 	/**
