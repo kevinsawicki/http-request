@@ -219,10 +219,6 @@ public class HttpRequest {
 		private final static String PREFERRED_ENCODING = "US-ASCII";
 
 		/** The 64 valid Base64 values. */
-		/*
-		 * Host platform me be something funny like EBCDIC, so we hardcode these
-		 * values.
-		 */
 		private final static byte[] _STANDARD_ALPHABET = { (byte) 'A',
 				(byte) 'B', (byte) 'C', (byte) 'D', (byte) 'E', (byte) 'F',
 				(byte) 'G', (byte) 'H', (byte) 'I', (byte) 'J', (byte) 'K',
@@ -277,19 +273,6 @@ public class HttpRequest {
 
 			byte[] ALPHABET = _STANDARD_ALPHABET;
 
-			// 1 2 3
-			// 01234567890123456789012345678901 Bit position
-			// --------000000001111111122222222 Array position from threeBytes
-			// --------| || || || | Six bit groups to index ALPHABET
-			// >>18 >>12 >> 6 >> 0 Right shift necessary
-			// 0x3f 0x3f 0x3f Additional AND
-
-			// Create buffer with zero-padding if there are only one or two
-			// significant bytes passed in the array.
-			// We have to shift left 24 in order to flush out the 1's that
-			// appear
-			// when Java treats a value as negative that is cast from a byte to
-			// an int.
 			int inBuff = (numSigBytes > 0 ? ((source[srcOffset] << 24) >>> 8)
 					: 0)
 					| (numSigBytes > 1 ? ((source[srcOffset + 1] << 24) >>> 16)
@@ -374,15 +357,12 @@ public class HttpRequest {
 		 */
 		public static String encodeBytes(byte[] source, int off, int len) {
 			byte[] encoded = encodeBytesToBytes(source, off, len);
-
-			// Return value according to relevant encoding.
 			try {
 				return new String(encoded, PREFERRED_ENCODING);
 			} catch (UnsupportedEncodingException uue) {
 				return new String(encoded);
 			}
-
-		} // end encodeBytes
+		}
 
 		/**
 		 * Similar to {@link #encodeBytes(byte[], int, int)} but returns a byte
@@ -438,12 +418,7 @@ public class HttpRequest {
 				e += 4;
 			}
 
-			// Only resize array if we didn't guess it right.
 			if (e <= outBuff.length - 1) {
-				// If breaking lines and the last byte falls right at
-				// the line length (76 bytes per line), there will be
-				// one extra byte, and the array will need to be resized.
-				// Not too bad of an estimate on array size, I'd say.
 				byte[] finalOut = new byte[e];
 				System.arraycopy(outBuff, 0, finalOut, 0, e);
 				return finalOut;
