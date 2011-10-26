@@ -29,6 +29,7 @@ import static org.junit.Assert.assertTrue;
 import java.io.BufferedReader;
 import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
@@ -266,5 +267,24 @@ public class RequestTest extends ServerTestCase {
 		assertTrue(request.ok());
 		BufferedReader reader = new BufferedReader(request.reader());
 		assertEquals("hello", reader.readLine());
+	}
+
+	/**
+	 * Make a GET and get response body as byte array
+	 *
+	 * @throws Exception
+	 */
+	@Test
+	public void getBytes() throws Exception {
+		String url = setUp(new RequestHandler() {
+
+			public void handle(Request request, HttpServletResponse response) {
+				response.setStatus(HttpServletResponse.SC_OK);
+				write("hello");
+			}
+		});
+		HttpRequest request = get(url);
+		assertTrue(request.ok());
+		assertTrue(Arrays.equals("hello".getBytes(), request.bytes()));
 	}
 }
