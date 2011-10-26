@@ -24,7 +24,11 @@ package com.github.kevinsawicki.http;
 import static com.github.kevinsawicki.http.HttpRequest.get;
 import static com.github.kevinsawicki.http.HttpRequest.post;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+
+import com.github.kevinsawicki.http.HttpRequest.RequestException;
 
 import java.io.BufferedReader;
 import java.io.UnsupportedEncodingException;
@@ -46,6 +50,14 @@ import org.junit.Test;
 public class RequestTest extends ServerTestCase {
 
 	/**
+	 * Create requerst with malformed URL
+	 */
+	@Test(expected = RequestException.class)
+	public void malformedStringUrl() {
+		HttpRequest.get("\\m/");
+	}
+
+	/**
 	 * Make a GET request with an empty body response
 	 *
 	 * @throws Exception
@@ -61,8 +73,15 @@ public class RequestTest extends ServerTestCase {
 			}
 		});
 		HttpRequest request = get(url);
+		assertNotNull(request.getConnection());
 		int code = request.code();
+		assertTrue(request.ok());
+		assertFalse(request.created());
+		assertFalse(request.badRequest());
+		assertFalse(request.serverError());
+		assertFalse(request.notFound());
 		assertEquals("GET", method.get());
+		assertEquals("OK", request.message());
 		assertEquals(HttpURLConnection.HTTP_OK, code);
 		assertEquals("", request.body());
 	}
@@ -79,12 +98,15 @@ public class RequestTest extends ServerTestCase {
 
 			public void handle(Request request, HttpServletResponse response) {
 				method.set(request.getMethod());
-				response.setStatus(HttpServletResponse.SC_OK);
+				response.setStatus(HttpServletResponse.SC_CREATED);
 			}
 		});
-		int code = post(url).code();
+		HttpRequest request = post(url);
+		int code = request.code();
 		assertEquals("POST", method.get());
-		assertEquals(HttpURLConnection.HTTP_OK, code);
+		assertFalse(request.ok());
+		assertTrue(request.created());
+		assertEquals(HttpURLConnection.HTTP_CREATED, code);
 	}
 
 	/**
@@ -220,6 +242,25 @@ public class RequestTest extends ServerTestCase {
 	}
 
 	/**
+	 * Make a GET request with a response that includes a charset parameter
+	 *
+	 * @throws Exception
+	 */
+	@Test
+	public void getWithResponseCharsetAsSecondParam() throws Exception {
+		String url = setUp(new RequestHandler() {
+
+			public void handle(Request request, HttpServletResponse response) {
+				response.setStatus(HttpServletResponse.SC_OK);
+				response.setContentType("text/html; param1=val1; charset=UTF-8");
+			}
+		});
+		HttpRequest request = get(url);
+		assertEquals(HttpURLConnection.HTTP_OK, request.code());
+		assertEquals("UTF-8", request.charset());
+	}
+
+	/**
 	 * Make a GET request with basic authentication specified
 	 *
 	 * @throws Exception
@@ -286,5 +327,24 @@ public class RequestTest extends ServerTestCase {
 		HttpRequest request = get(url);
 		assertTrue(request.ok());
 		assertTrue(Arrays.equals("hello".getBytes(), request.bytes()));
+	}
+
+	/**
+	 * Make a GET request that returns an error string
+	 *
+	 * @throws Exception
+	 */
+	@Test
+	public void getError() throws Exception {
+		String url = setUp(new RequestHandler() {
+
+			public void handle(Request request, HttpServletResponse response) {
+				response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+				write("error");
+			}
+		});
+		HttpRequest request = get(url);
+		assertTrue(request.notFound());
+		assertEquals("error", request.errorString());
 	}
 }
