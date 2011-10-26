@@ -75,7 +75,8 @@ Perform a POST request with form data
 Map<String, String> data = new HashMap<String, String>();
 data.put("user", "A User");
 data.put("state", "CA");
-int code = HttpRequest.post("http://google.com").form(data).code();
+if (HttpRequest.post("http://google.com").form(data).created())
+  System.out.println("User was created");
 ```
 ## Contributors
 
