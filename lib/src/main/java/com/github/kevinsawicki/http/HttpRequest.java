@@ -1094,7 +1094,7 @@ public class HttpRequest {
 		if (value == null || value.length() == 0)
 			return null;
 		int postSemi = value.indexOf(';') + 1;
-		if (postSemi > 0 && postSemi == value.length())
+		if (postSemi == 0 || postSemi == value.length())
 			return null;
 		String[] params = value.substring(postSemi).trim().split(";");
 		for (String param : params) {
