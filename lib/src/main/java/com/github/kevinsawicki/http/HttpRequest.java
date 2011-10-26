@@ -989,7 +989,7 @@ public class HttpRequest {
 			return "";
 		final ByteArrayOutputStream output = new ByteArrayOutputStream(
 				contentLength());
-		copy(buffer(), output);
+		copy(new BufferedInputStream(stream, bufferSize), output);
 		final String charset = charset();
 		if (charset == null)
 			return output.toString();
