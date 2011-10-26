@@ -495,9 +495,11 @@ public class HttpRequest {
 		 *
 		 * @param stream
 		 * @param charsetName
+		 * @param bufferSize
 		 */
-		public RequestOutputStream(OutputStream stream, String charsetName) {
-			super(stream);
+		public RequestOutputStream(OutputStream stream, String charsetName,
+				int bufferSize) {
+			super(stream, bufferSize);
 			if (charsetName == null)
 				charsetName = CHARSET_UTF8;
 			charset = Charset.forName(charsetName);
@@ -810,7 +812,7 @@ public class HttpRequest {
 	}
 
 	/**
-	 * Set the buffer size used when copying between streams
+	 * Set the size used when buffering and copying between streams
 	 *
 	 * @param size
 	 * @return this request
@@ -876,7 +878,7 @@ public class HttpRequest {
 	 * @throws RequestException
 	 */
 	public BufferedInputStream buffer() throws RequestException {
-		return new BufferedInputStream(stream());
+		return new BufferedInputStream(stream(), bufferSize);
 	}
 
 	/**
@@ -1369,7 +1371,8 @@ public class HttpRequest {
 		final String charset = getParam(
 				connection.getRequestProperty(HEADER_CONTENT_TYPE),
 				PARAM_CHARSET);
-		output = new RequestOutputStream(connection.getOutputStream(), charset);
+		output = new RequestOutputStream(connection.getOutputStream(), charset,
+				bufferSize);
 		return this;
 	}
 
