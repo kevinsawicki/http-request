@@ -1096,15 +1096,15 @@ public class HttpRequest {
 		int postSemi = value.indexOf(';') + 1;
 		if (postSemi == 0 || postSemi == value.length())
 			return null;
-		String[] params = value.substring(postSemi).trim().split(";");
+		String[] params = value.substring(postSemi).split(";");
 		for (String param : params) {
 			String[] split = param.split("=");
 			if (split.length != 2)
 				continue;
-			if (!paramName.equals(split[0]))
+			if (!paramName.equals(split[0].trim()))
 				continue;
 
-			String charset = split[1];
+			String charset = split[1].trim();
 			int length = charset.length();
 			if (length == 0)
 				continue;
