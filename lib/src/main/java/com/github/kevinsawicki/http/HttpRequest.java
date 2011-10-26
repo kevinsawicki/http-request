@@ -776,6 +776,36 @@ public class HttpRequest {
 	}
 
 	/**
+	 * Is the response code a 500 Internal Server Error?
+	 *
+	 * @return true if 500, false otherwise
+	 * @throws RequestException
+	 */
+	public boolean serverError() throws RequestException {
+		return HttpURLConnection.HTTP_INTERNAL_ERROR == code();
+	}
+
+	/**
+	 * Is the response code a 400 Bad Request?
+	 *
+	 * @return true if 400, false otherwise
+	 * @throws RequestException
+	 */
+	public boolean badRequest() throws RequestException {
+		return HttpURLConnection.HTTP_BAD_REQUEST == code();
+	}
+
+	/**
+	 * Is the response code a 404 Not Found?
+	 *
+	 * @return true if 404, false otherwise
+	 * @throws RequestException
+	 */
+	public boolean notFound() throws RequestException {
+		return HttpURLConnection.HTTP_NOT_FOUND == code();
+	}
+
+	/**
 	 * Get status message of the response
 	 *
 	 * @return message
