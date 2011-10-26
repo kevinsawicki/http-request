@@ -1402,7 +1402,7 @@ public class HttpRequest {
 	 */
 	protected HttpRequest writePartHeader(final String name,
 			final String filename) throws IOException {
-		StringBuilder partBuffer = new StringBuilder();
+		final StringBuilder partBuffer = new StringBuilder();
 		partBuffer.append("Content-Disposition: form-data; name=\"");
 		partBuffer.append(name);
 		if (filename != null) {
@@ -1628,7 +1628,7 @@ public class HttpRequest {
 	/**
 	 * Write the values in the map as form data to the request body
 	 * <p>
-	 * The pair specified will be URL-encoded and sent with the
+	 * The pairs specified will be URL-encoded and sent with the
 	 * 'application/x-www-form-urlencoded' content-type
 	 *
 	 * @param values
