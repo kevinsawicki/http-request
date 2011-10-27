@@ -1276,6 +1276,17 @@ public class HttpRequest {
 	}
 
 	/**
+	 * Set the 'If-Modified-Since' request header to the given value
+	 *
+	 * @param value
+	 * @return this request
+	 */
+	public HttpRequest ifModifiedSince(final long value) {
+		connection.setIfModifiedSince(value);
+		return this;
+	}
+
+	/**
 	 * Set the 'Content-Type' request header to the given value
 	 *
 	 * @param value
