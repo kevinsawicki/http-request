@@ -902,13 +902,13 @@ public class HttpRequest {
 			}
 		else {
 			InputStream stream = connection.getErrorStream();
-			if (stream == null)
-				try {
-					stream = connection.getInputStream();
-				} catch (IOException e) {
-					throw new RequestException(e);
-				}
-			return stream;
+			if (stream != null)
+				return stream;
+			try {
+				return connection.getInputStream();
+			} catch (IOException e) {
+				throw new RequestException(e);
+			}
 		}
 	}
 
