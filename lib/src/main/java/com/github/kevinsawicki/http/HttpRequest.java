@@ -983,7 +983,7 @@ public class HttpRequest {
 	 * @return error string
 	 * @throws RequestException
 	 */
-	public String errorString() throws RequestException {
+	public String errorBody() throws RequestException {
 		final InputStream stream = errorStream();
 		if (stream == null)
 			return "";
