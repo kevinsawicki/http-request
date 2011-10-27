@@ -36,6 +36,7 @@ import java.net.HttpURLConnection;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
 
 import javax.servlet.http.HttpServletResponse;
@@ -608,5 +609,62 @@ public class RequestTest extends ServerTestCase {
 		});
 		assertTrue(HttpRequest.get(url).accept("application/json").ok());
 		assertEquals("application/json", header.get());
+	}
+
+	/**
+	 * Verify 'Accept-Charset' request header
+	 *
+	 * @throws Exception
+	 */
+	@Test
+	public void acceptCharsetHeader() throws Exception {
+		final AtomicReference<String> header = new AtomicReference<String>();
+		String url = setUp(new RequestHandler() {
+
+			public void handle(Request request, HttpServletResponse response) {
+				response.setStatus(HttpServletResponse.SC_OK);
+				header.set(request.getHeader("Accept-Charset"));
+			}
+		});
+		assertTrue(HttpRequest.get(url).acceptCharset("UTF-8").ok());
+		assertEquals("UTF-8", header.get());
+	}
+
+	/**
+	 * Verify 'Accept-Encoding' request header
+	 *
+	 * @throws Exception
+	 */
+	@Test
+	public void acceptEncodingHeader() throws Exception {
+		final AtomicReference<String> header = new AtomicReference<String>();
+		String url = setUp(new RequestHandler() {
+
+			public void handle(Request request, HttpServletResponse response) {
+				response.setStatus(HttpServletResponse.SC_OK);
+				header.set(request.getHeader("Accept-Encoding"));
+			}
+		});
+		assertTrue(HttpRequest.get(url).acceptEncoding("compress").ok());
+		assertEquals("compress", header.get());
+	}
+
+	/**
+	 * Verify 'If-Modified-Since' request header
+	 *
+	 * @throws Exception
+	 */
+	@Test
+	public void ifModifiedSinceHeader() throws Exception {
+		final AtomicLong header = new AtomicLong();
+		String url = setUp(new RequestHandler() {
+
+			public void handle(Request request, HttpServletResponse response) {
+				response.setStatus(HttpServletResponse.SC_OK);
+				header.set(request.getDateHeader("If-Modified-Since"));
+			}
+		});
+		assertTrue(HttpRequest.get(url).ifModifiedSince(5000).ok());
+		assertEquals(5000, header.get());
 	}
 }
