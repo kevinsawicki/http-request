@@ -888,10 +888,21 @@ public class HttpRequest {
 	 * @throws RequestException
 	 */
 	public InputStream stream() throws RequestException {
-		try {
-			return connection.getInputStream();
-		} catch (IOException e) {
-			throw new RequestException(e);
+		if (code() < HttpURLConnection.HTTP_BAD_REQUEST)
+			try {
+				return connection.getInputStream();
+			} catch (IOException e) {
+				throw new RequestException(e);
+			}
+		else {
+			InputStream stream = connection.getErrorStream();
+			if (stream == null)
+				try {
+					stream = connection.getInputStream();
+				} catch (IOException e) {
+					throw new RequestException(e);
+				}
+			return stream;
 		}
 	}
 
@@ -961,38 +972,6 @@ public class HttpRequest {
 	 */
 	public HttpRequest stream(final OutputStream output) {
 		return copy(buffer(), output);
-	}
-
-	/**
-	 * Get error stream to response
-	 *
-	 * @return stream
-	 */
-	public InputStream errorStream() {
-		return connection.getErrorStream();
-	}
-
-	/**
-	 * Get error stream as string
-	 *
-	 * @return error string
-	 * @throws RequestException
-	 */
-	public String errorBody() throws RequestException {
-		final InputStream stream = errorStream();
-		if (stream == null)
-			return "";
-		final ByteArrayOutputStream output = new ByteArrayOutputStream(
-				contentLength());
-		copy(new BufferedInputStream(stream, bufferSize), output);
-		final String charset = charset();
-		if (charset == null)
-			return output.toString();
-		try {
-			return output.toString(charset);
-		} catch (UnsupportedEncodingException e) {
-			throw new RequestException(e);
-		}
 	}
 
 	/**

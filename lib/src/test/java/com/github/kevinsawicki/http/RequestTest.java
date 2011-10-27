@@ -346,7 +346,7 @@ public class RequestTest extends ServerTestCase {
 		});
 		HttpRequest request = get(url);
 		assertTrue(request.notFound());
-		assertEquals("error", request.errorBody());
+		assertEquals("error", request.body());
 	}
 
 	/**
@@ -364,7 +364,7 @@ public class RequestTest extends ServerTestCase {
 		});
 		HttpRequest request = get(url);
 		assertTrue(request.ok());
-		assertEquals("", request.errorBody());
+		assertEquals("", request.body());
 	}
 
 	/**
