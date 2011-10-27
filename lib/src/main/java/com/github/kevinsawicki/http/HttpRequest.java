@@ -123,11 +123,6 @@ public class HttpRequest {
 	public static final String HEADER_EXPIRES = "Expires";
 
 	/**
-	 * 'Host' header name
-	 */
-	public static final String HEADER_HOST = "Host";
-
-	/**
 	 * 'Last-Modified' header name
 	 */
 	public static final String HEADER_LAST_MODIFIED = "Last-Modified";
@@ -1149,16 +1144,6 @@ public class HttpRequest {
 	 */
 	public HttpRequest userAgent(final String value) {
 		return header(HEADER_USER_AGENT, value);
-	}
-
-	/**
-	 * Set the 'Host' header to given value
-	 *
-	 * @param value
-	 * @return this request
-	 */
-	public HttpRequest host(final String value) {
-		return header(HEADER_HOST, value);
 	}
 
 	/**
