@@ -347,4 +347,266 @@ public class RequestTest extends ServerTestCase {
 		assertTrue(request.notFound());
 		assertEquals("error", request.errorString());
 	}
+
+	/**
+	 * Make a GET request that returns an empty error string
+	 *
+	 * @throws Exception
+	 */
+	@Test
+	public void noError() throws Exception {
+		String url = setUp(new RequestHandler() {
+
+			public void handle(Request request, HttpServletResponse response) {
+				response.setStatus(HttpServletResponse.SC_OK);
+			}
+		});
+		HttpRequest request = get(url);
+		assertTrue(request.ok());
+		assertEquals("", request.errorString());
+	}
+
+	/**
+	 * Verify 'Server' header
+	 *
+	 * @throws Exception
+	 */
+	@Test
+	public void serverHeader() throws Exception {
+		String url = setUp(new RequestHandler() {
+
+			public void handle(Request request, HttpServletResponse response) {
+				response.setStatus(HttpServletResponse.SC_OK);
+				response.setHeader("Server", "aserver");
+			}
+		});
+		assertEquals("aserver", get(url).server());
+	}
+
+	/**
+	 * Verify 'Expires' header
+	 *
+	 * @throws Exception
+	 */
+	@Test
+	public void expiresHeader() throws Exception {
+		String url = setUp(new RequestHandler() {
+
+			public void handle(Request request, HttpServletResponse response) {
+				response.setStatus(HttpServletResponse.SC_OK);
+				response.setDateHeader("Expires", 1234000);
+			}
+		});
+		assertEquals(1234000, get(url).expires());
+	}
+
+	/**
+	 * Verify 'Last-Modified' header
+	 *
+	 * @throws Exception
+	 */
+	@Test
+	public void lastModifiedHeader() throws Exception {
+		String url = setUp(new RequestHandler() {
+
+			public void handle(Request request, HttpServletResponse response) {
+				response.setStatus(HttpServletResponse.SC_OK);
+				response.setDateHeader("Last-Modified", 555000);
+			}
+		});
+		assertEquals(555000, get(url).lastModified());
+	}
+
+	/**
+	 * Verify 'Date' header
+	 *
+	 * @throws Exception
+	 */
+	@Test
+	public void dateHeader() throws Exception {
+		String url = setUp(new RequestHandler() {
+
+			public void handle(Request request, HttpServletResponse response) {
+				response.setStatus(HttpServletResponse.SC_OK);
+				response.setDateHeader("Date", 66000);
+			}
+		});
+		assertEquals(66000, get(url).date());
+	}
+
+	/**
+	 * Verify 'ETag' header
+	 *
+	 * @throws Exception
+	 */
+	@Test
+	public void eTagHeader() throws Exception {
+		String url = setUp(new RequestHandler() {
+
+			public void handle(Request request, HttpServletResponse response) {
+				response.setStatus(HttpServletResponse.SC_OK);
+				response.setHeader("ETag", "abcd");
+			}
+		});
+		assertEquals("abcd", get(url).eTag());
+	}
+
+	/**
+	 * Verify 'Location' header
+	 *
+	 * @throws Exception
+	 */
+	@Test
+	public void locationHeader() throws Exception {
+		String url = setUp(new RequestHandler() {
+
+			public void handle(Request request, HttpServletResponse response) {
+				response.setStatus(HttpServletResponse.SC_OK);
+				response.setHeader("Location", "http://nowhere");
+			}
+		});
+		assertEquals("http://nowhere", get(url).location());
+	}
+
+	/**
+	 * Verify 'Content-Encoding' header
+	 *
+	 * @throws Exception
+	 */
+	@Test
+	public void contentEncodingHeader() throws Exception {
+		String url = setUp(new RequestHandler() {
+
+			public void handle(Request request, HttpServletResponse response) {
+				response.setStatus(HttpServletResponse.SC_OK);
+				response.setHeader("Content-Encoding", "gzip");
+			}
+		});
+		assertEquals("gzip", get(url).contentEncoding());
+	}
+
+	/**
+	 * Verify 'Cache-Control' header
+	 *
+	 * @throws Exception
+	 */
+	@Test
+	public void cacheControlHeader() throws Exception {
+		String url = setUp(new RequestHandler() {
+
+			public void handle(Request request, HttpServletResponse response) {
+				response.setStatus(HttpServletResponse.SC_OK);
+				response.setHeader("Cache-Control", "no-cache");
+			}
+		});
+		assertEquals("no-cache", get(url).cacheControl());
+	}
+
+	/**
+	 * Verify null headers
+	 *
+	 * @throws Exception
+	 */
+	@Test(expected = IllegalArgumentException.class)
+	public void nullHeaders() throws Exception {
+		String url = setUp(new RequestHandler() {
+
+			public void handle(Request request, HttpServletResponse response) {
+				response.setStatus(HttpServletResponse.SC_OK);
+			}
+		});
+		HttpRequest.get(url).headers((String[]) null);
+	}
+
+	/**
+	 * Verify empty headers
+	 *
+	 * @throws Exception
+	 */
+	@Test(expected = IllegalArgumentException.class)
+	public void emptyHeaders() throws Exception {
+		String url = setUp(new RequestHandler() {
+
+			public void handle(Request request, HttpServletResponse response) {
+				response.setStatus(HttpServletResponse.SC_OK);
+			}
+		});
+		HttpRequest.get(url).headers(new String[0]);
+	}
+
+	/**
+	 * Verify odd-number headers arguments
+	 *
+	 * @throws Exception
+	 */
+	@Test(expected = IllegalArgumentException.class)
+	public void oddHeaders() throws Exception {
+		String url = setUp(new RequestHandler() {
+
+			public void handle(Request request, HttpServletResponse response) {
+				response.setStatus(HttpServletResponse.SC_OK);
+			}
+		});
+		HttpRequest.get(url).headers("a", "b", "c");
+	}
+
+	/**
+	 * Verify headers
+	 *
+	 * @throws Exception
+	 */
+	@Test
+	public void headers() throws Exception {
+		final AtomicReference<String> h1 = new AtomicReference<String>();
+		final AtomicReference<String> h2 = new AtomicReference<String>();
+		String url = setUp(new RequestHandler() {
+
+			public void handle(Request request, HttpServletResponse response) {
+				response.setStatus(HttpServletResponse.SC_OK);
+				h1.set(request.getHeader("h1"));
+				h2.set(request.getHeader("h2"));
+			}
+		});
+		assertTrue(HttpRequest.get(url).headers("h1", "v1", "h2", "v2").ok());
+		assertEquals("v1", h1.get());
+		assertEquals("v2", h2.get());
+	}
+
+	/**
+	 * Verify 'User-Agent' request header
+	 *
+	 * @throws Exception
+	 */
+	@Test
+	public void userAgentHeader() throws Exception {
+		final AtomicReference<String> header = new AtomicReference<String>();
+		String url = setUp(new RequestHandler() {
+
+			public void handle(Request request, HttpServletResponse response) {
+				response.setStatus(HttpServletResponse.SC_OK);
+				header.set(request.getHeader("User-Agent"));
+			}
+		});
+		assertTrue(HttpRequest.get(url).userAgent("browser 1.0").ok());
+		assertEquals("browser 1.0", header.get());
+	}
+
+	/**
+	 * Verify 'Accept' request header
+	 *
+	 * @throws Exception
+	 */
+	@Test
+	public void acceptHeader() throws Exception {
+		final AtomicReference<String> header = new AtomicReference<String>();
+		String url = setUp(new RequestHandler() {
+
+			public void handle(Request request, HttpServletResponse response) {
+				response.setStatus(HttpServletResponse.SC_OK);
+				header.set(request.getHeader("Accept"));
+			}
+		});
+		assertTrue(HttpRequest.get(url).accept("application/json").ok());
+		assertEquals("application/json", header.get());
+	}
 }
