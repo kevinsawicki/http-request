@@ -1044,11 +1044,16 @@ public class HttpRequest {
 	 * @return this request
 	 */
 	public HttpRequest headers(final String... headers) {
-		if (headers == null || headers.length == 0 || headers.length % 2 != 0)
+		if (headers == null)
+			throw new IllegalArgumentException("Headers cannot be null");
+		final int length = headers.length;
+		if (length == 0)
+			throw new IllegalArgumentException("Headers cannot be empty");
+		if (length % 2 != 0)
 			throw new IllegalArgumentException(
-					"Headers must be non-null, non-empty and divisible by two");
+					"Headers length must be divisible by two");
 
-		for (int i = 0; i < headers.length; i += 2)
+		for (int i = 0; i < length; i += 2)
 			header(headers[i], headers[i + 1]);
 		return this;
 	}
