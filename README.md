@@ -34,32 +34,33 @@ You can access the underlying exception by catching `RequestException` and calli
 
 
 ## Examples
-Perform a GET request and get the status of the response
+
+### Perform a GET request and get the status of the response
 
 ```java
 int response = HttpRequest.get("http://google.com").code();
 ```
 
-Perform a GET request and get the body of the response
+### Perform a GET request and get the body of the response
 
 ```java
 String response = HttpRequest.get("http://google.com").body();
 System.out.println("Response was: " + response);
 ```
 
-Perform a POST request with some data and get the status of the response
+### Perform a POST request with some data and get the status of the response
 
 ```java
 int response = HttpRequest.post("http://google.com").send("name=kevin").code();
 ```
 
-Authenticate using Basic authentication
+### Authenticate using Basic authentication
 
 ```java
 int response = HttpRequest.get("http://google.com").basic("username", "p4ssw0rd").code();
 ```
 
-Perform a multipart POST request
+### Perform a multipart POST request
 
 ```java
 HttpRequest request = HttpRequest.post("http://google.com");
@@ -69,7 +70,7 @@ if (request.ok())
   System.out.println("Status was updated");
 ```
 
-Perform a POST request with form data
+### Perform a POST request with form data
 
 ```java
 Map<String, String> data = new HashMap<String, String>();
@@ -78,6 +79,20 @@ data.put("state", "CA");
 if (HttpRequest.post("http://google.com").form(data).created())
   System.out.println("User was created");
 ```
+
+### Copy body of response to a file
+
+```java
+File output = new File("/output/request.out");
+int response = HttpRequest.get("http://google.com").body(output).code();
+```
+### Post contents of a file
+
+```java
+File input = new File("/input/data.txt");
+int response = HttpRequest.post("http://google.com").send(input).code();
+```
+
 ## Contributors
 
 * [Kevin Sawicki](https://github.com/kevinsawicki) :: [contributions](https://github.com/kevinsawicki/http-request/commits?author=kevinsawicki)
