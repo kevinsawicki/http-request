@@ -1001,13 +1001,24 @@ public class HttpRequest {
 	}
 
 	/**
-	 * Set read timeout on connection to value
+	 * Set read timeout on connection to given value
 	 *
 	 * @param timeout
 	 * @return this request
 	 */
 	public HttpRequest readTimeout(final int timeout) {
 		connection.setReadTimeout(timeout);
+		return this;
+	}
+
+	/**
+	 * Set read timeout on connection to given value
+	 *
+	 * @param timeout
+	 * @return this request
+	 */
+	public HttpRequest connectTimeout(final int timeout) {
+		connection.setConnectTimeout(timeout);
 		return this;
 	}
 
