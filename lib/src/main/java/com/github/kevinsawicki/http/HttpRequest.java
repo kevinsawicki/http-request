@@ -21,6 +21,12 @@
  */
 package com.github.kevinsawicki.http;
 
+import static java.net.HttpURLConnection.HTTP_BAD_REQUEST;
+import static java.net.HttpURLConnection.HTTP_CREATED;
+import static java.net.HttpURLConnection.HTTP_INTERNAL_ERROR;
+import static java.net.HttpURLConnection.HTTP_NOT_FOUND;
+import static java.net.HttpURLConnection.HTTP_OK;
+
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.ByteArrayInputStream;
@@ -732,7 +738,7 @@ public class HttpRequest {
 	 * @throws RequestException
 	 */
 	public boolean ok() throws RequestException {
-		return HttpURLConnection.HTTP_OK == code();
+		return HTTP_OK == code();
 	}
 
 	/**
@@ -742,7 +748,7 @@ public class HttpRequest {
 	 * @throws RequestException
 	 */
 	public boolean created() throws RequestException {
-		return HttpURLConnection.HTTP_CREATED == code();
+		return HTTP_CREATED == code();
 	}
 
 	/**
@@ -752,7 +758,7 @@ public class HttpRequest {
 	 * @throws RequestException
 	 */
 	public boolean serverError() throws RequestException {
-		return HttpURLConnection.HTTP_INTERNAL_ERROR == code();
+		return HTTP_INTERNAL_ERROR == code();
 	}
 
 	/**
@@ -762,7 +768,7 @@ public class HttpRequest {
 	 * @throws RequestException
 	 */
 	public boolean badRequest() throws RequestException {
-		return HttpURLConnection.HTTP_BAD_REQUEST == code();
+		return HTTP_BAD_REQUEST == code();
 	}
 
 	/**
@@ -772,7 +778,7 @@ public class HttpRequest {
 	 * @throws RequestException
 	 */
 	public boolean notFound() throws RequestException {
-		return HttpURLConnection.HTTP_NOT_FOUND == code();
+		return HTTP_NOT_FOUND == code();
 	}
 
 	/**
@@ -888,7 +894,7 @@ public class HttpRequest {
 	 * @throws RequestException
 	 */
 	public InputStream stream() throws RequestException {
-		if (code() < HttpURLConnection.HTTP_BAD_REQUEST)
+		if (code() < HTTP_BAD_REQUEST)
 			try {
 				return connection.getInputStream();
 			} catch (IOException e) {
