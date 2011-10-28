@@ -21,8 +21,13 @@
  */
 package com.github.kevinsawicki.http;
 
+import static com.github.kevinsawicki.http.HttpRequest.delete;
 import static com.github.kevinsawicki.http.HttpRequest.get;
 import static com.github.kevinsawicki.http.HttpRequest.post;
+import static com.github.kevinsawicki.http.HttpRequest.put;
+import static com.github.kevinsawicki.http.HttpRequest.head;
+import static com.github.kevinsawicki.http.HttpRequest.options;
+import static com.github.kevinsawicki.http.HttpRequest.trace;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -33,6 +38,7 @@ import com.github.kevinsawicki.http.HttpRequest.RequestException;
 import java.io.BufferedReader;
 import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -88,6 +94,265 @@ public class RequestTest extends ServerTestCase {
 	}
 
 	/**
+	 * Make a GET request with an empty body response
+	 *
+	 * @throws Exception
+	 */
+	@Test
+	public void getUrlEmpty() throws Exception {
+		final AtomicReference<String> method = new AtomicReference<String>();
+		String url = setUp(new RequestHandler() {
+
+			public void handle(Request request, HttpServletResponse response) {
+				method.set(request.getMethod());
+				response.setStatus(HttpServletResponse.SC_OK);
+			}
+		});
+		HttpRequest request = get(new URL(url));
+		assertNotNull(request.getConnection());
+		int code = request.code();
+		assertTrue(request.ok());
+		assertFalse(request.created());
+		assertFalse(request.badRequest());
+		assertFalse(request.serverError());
+		assertFalse(request.notFound());
+		assertEquals("GET", method.get());
+		assertEquals("OK", request.message());
+		assertEquals(HttpURLConnection.HTTP_OK, code);
+		assertEquals("", request.body());
+	}
+
+	/**
+	 * Make a DELETE request with an empty body response
+	 *
+	 * @throws Exception
+	 */
+	@Test
+	public void deleteEmpty() throws Exception {
+		final AtomicReference<String> method = new AtomicReference<String>();
+		String url = setUp(new RequestHandler() {
+
+			public void handle(Request request, HttpServletResponse response) {
+				method.set(request.getMethod());
+				response.setStatus(HttpServletResponse.SC_OK);
+			}
+		});
+		HttpRequest request = delete(url);
+		assertNotNull(request.getConnection());
+		assertTrue(request.ok());
+		assertFalse(request.notFound());
+		assertEquals("DELETE", method.get());
+		assertEquals("", request.body());
+	}
+
+	/**
+	 * Make a DELETE request with an empty body response
+	 *
+	 * @throws Exception
+	 */
+	@Test
+	public void deleteUrlEmpty() throws Exception {
+		final AtomicReference<String> method = new AtomicReference<String>();
+		String url = setUp(new RequestHandler() {
+
+			public void handle(Request request, HttpServletResponse response) {
+				method.set(request.getMethod());
+				response.setStatus(HttpServletResponse.SC_OK);
+			}
+		});
+		HttpRequest request = delete(new URL(url));
+		assertNotNull(request.getConnection());
+		assertTrue(request.ok());
+		assertFalse(request.notFound());
+		assertEquals("DELETE", method.get());
+		assertEquals("", request.body());
+	}
+
+	/**
+	 * Make an OPTIONS request with an empty body response
+	 *
+	 * @throws Exception
+	 */
+	@Test
+	public void optionsEmpty() throws Exception {
+		final AtomicReference<String> method = new AtomicReference<String>();
+		String url = setUp(new RequestHandler() {
+
+			public void handle(Request request, HttpServletResponse response) {
+				method.set(request.getMethod());
+				response.setStatus(HttpServletResponse.SC_OK);
+			}
+		});
+		HttpRequest request = options(url);
+		assertNotNull(request.getConnection());
+		assertTrue(request.ok());
+		assertFalse(request.notFound());
+		assertEquals("OPTIONS", method.get());
+		assertEquals("", request.body());
+	}
+
+	/**
+	 * Make an OPTIONS request with an empty body response
+	 *
+	 * @throws Exception
+	 */
+	@Test
+	public void optionsUrlEmpty() throws Exception {
+		final AtomicReference<String> method = new AtomicReference<String>();
+		String url = setUp(new RequestHandler() {
+
+			public void handle(Request request, HttpServletResponse response) {
+				method.set(request.getMethod());
+				response.setStatus(HttpServletResponse.SC_OK);
+			}
+		});
+		HttpRequest request = options(new URL(url));
+		assertNotNull(request.getConnection());
+		assertTrue(request.ok());
+		assertFalse(request.notFound());
+		assertEquals("OPTIONS", method.get());
+		assertEquals("", request.body());
+	}
+
+	/**
+	 * Make a HEAD request with an empty body response
+	 *
+	 * @throws Exception
+	 */
+	@Test
+	public void headEmpty() throws Exception {
+		final AtomicReference<String> method = new AtomicReference<String>();
+		String url = setUp(new RequestHandler() {
+
+			public void handle(Request request, HttpServletResponse response) {
+				method.set(request.getMethod());
+				response.setStatus(HttpServletResponse.SC_OK);
+			}
+		});
+		HttpRequest request = head(url);
+		assertNotNull(request.getConnection());
+		assertTrue(request.ok());
+		assertFalse(request.notFound());
+		assertEquals("HEAD", method.get());
+		assertEquals("", request.body());
+	}
+
+	/**
+	 * Make a HEAD request with an empty body response
+	 *
+	 * @throws Exception
+	 */
+	@Test
+	public void headUrlEmpty() throws Exception {
+		final AtomicReference<String> method = new AtomicReference<String>();
+		String url = setUp(new RequestHandler() {
+
+			public void handle(Request request, HttpServletResponse response) {
+				method.set(request.getMethod());
+				response.setStatus(HttpServletResponse.SC_OK);
+			}
+		});
+		HttpRequest request = head(new URL(url));
+		assertNotNull(request.getConnection());
+		assertTrue(request.ok());
+		assertFalse(request.notFound());
+		assertEquals("HEAD", method.get());
+		assertEquals("", request.body());
+	}
+
+	/**
+	 * Make a PUT request with an empty body response
+	 *
+	 * @throws Exception
+	 */
+	@Test
+	public void putEmpty() throws Exception {
+		final AtomicReference<String> method = new AtomicReference<String>();
+		String url = setUp(new RequestHandler() {
+
+			public void handle(Request request, HttpServletResponse response) {
+				method.set(request.getMethod());
+				response.setStatus(HttpServletResponse.SC_OK);
+			}
+		});
+		HttpRequest request = put(url);
+		assertNotNull(request.getConnection());
+		assertTrue(request.ok());
+		assertFalse(request.notFound());
+		assertEquals("PUT", method.get());
+		assertEquals("", request.body());
+	}
+
+	/**
+	 * Make a PUT request with an empty body response
+	 *
+	 * @throws Exception
+	 */
+	@Test
+	public void putUrlEmpty() throws Exception {
+		final AtomicReference<String> method = new AtomicReference<String>();
+		String url = setUp(new RequestHandler() {
+
+			public void handle(Request request, HttpServletResponse response) {
+				method.set(request.getMethod());
+				response.setStatus(HttpServletResponse.SC_OK);
+			}
+		});
+		HttpRequest request = put(new URL(url));
+		assertNotNull(request.getConnection());
+		assertTrue(request.ok());
+		assertFalse(request.notFound());
+		assertEquals("PUT", method.get());
+		assertEquals("", request.body());
+	}
+
+	/**
+	 * Make a PUT request with an empty body response
+	 *
+	 * @throws Exception
+	 */
+	@Test
+	public void traceEmpty() throws Exception {
+		final AtomicReference<String> method = new AtomicReference<String>();
+		String url = setUp(new RequestHandler() {
+
+			public void handle(Request request, HttpServletResponse response) {
+				method.set(request.getMethod());
+				response.setStatus(HttpServletResponse.SC_OK);
+			}
+		});
+		HttpRequest request = trace(url);
+		assertNotNull(request.getConnection());
+		assertTrue(request.ok());
+		assertFalse(request.notFound());
+		assertEquals("TRACE", method.get());
+		assertEquals("", request.body());
+	}
+
+	/**
+	 * Make a TRACE request with an empty body response
+	 *
+	 * @throws Exception
+	 */
+	@Test
+	public void traceUrlEmpty() throws Exception {
+		final AtomicReference<String> method = new AtomicReference<String>();
+		String url = setUp(new RequestHandler() {
+
+			public void handle(Request request, HttpServletResponse response) {
+				method.set(request.getMethod());
+				response.setStatus(HttpServletResponse.SC_OK);
+			}
+		});
+		HttpRequest request = trace(new URL(url));
+		assertNotNull(request.getConnection());
+		assertTrue(request.ok());
+		assertFalse(request.notFound());
+		assertEquals("TRACE", method.get());
+		assertEquals("", request.body());
+	}
+
+	/**
 	 * Make a POST request with an empty request body
 	 *
 	 * @throws Exception
@@ -103,6 +368,29 @@ public class RequestTest extends ServerTestCase {
 			}
 		});
 		HttpRequest request = post(url);
+		int code = request.code();
+		assertEquals("POST", method.get());
+		assertFalse(request.ok());
+		assertTrue(request.created());
+		assertEquals(HttpURLConnection.HTTP_CREATED, code);
+	}
+
+	/**
+	 * Make a POST request with an empty request body
+	 *
+	 * @throws Exception
+	 */
+	@Test
+	public void postUrlEmpty() throws Exception {
+		final AtomicReference<String> method = new AtomicReference<String>();
+		String url = setUp(new RequestHandler() {
+
+			public void handle(Request request, HttpServletResponse response) {
+				method.set(request.getMethod());
+				response.setStatus(HttpServletResponse.SC_CREATED);
+			}
+		});
+		HttpRequest request = post(new URL(url));
 		int code = request.code();
 		assertEquals("POST", method.get());
 		assertFalse(request.ok());
