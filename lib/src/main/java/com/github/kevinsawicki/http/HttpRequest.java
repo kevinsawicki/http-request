@@ -437,21 +437,6 @@ public class HttpRequest {
 		private static final long serialVersionUID = -1170466989781746231L;
 
 		/**
-		 * @param message
-		 * @param cause
-		 */
-		public RequestException(String message, Throwable cause) {
-			super(message, cause);
-		}
-
-		/**
-		 * @param message
-		 */
-		public RequestException(String message) {
-			super(message);
-		}
-
-		/**
 		 * @param cause
 		 */
 		public RequestException(Throwable cause) {
