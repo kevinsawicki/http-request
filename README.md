@@ -48,6 +48,15 @@ String response = HttpRequest.get("http://google.com").body();
 System.out.println("Response was: " + response);
 ```
 
+### Working with request/response headers
+
+```java
+String contentType = HttpRequest.get("http://google.com")
+                                .accept("application/json") //Sets request header
+                                .contentType(); //Gets response header
+System.out.println("Response content type was " + contentType);
+```                  
+
 ### Perform a POST request with some data and get the status of the response
 
 ```java
