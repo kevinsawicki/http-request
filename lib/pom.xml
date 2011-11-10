@@ -28,10 +28,8 @@
 
 	<scm>
 		<url>https://github.com/kevinsawicki/http-request</url>
-		<connection>scm:git:git://github.com/kevinsawicki/http-request.git
-		</connection>
-		<developerConnection>scm:git:git@github.com:kevinsawicki/http-request.git
-		</developerConnection>
+		<connection>scm:git:git://github.com/kevinsawicki/http-request.git</connection>
+		<developerConnection>scm:git:git@github.com:kevinsawicki/http-request.git</developerConnection>
 	</scm>
 
 	<developers>
