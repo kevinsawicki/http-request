@@ -13,6 +13,13 @@
 	<artifactId>http-request</artifactId>
 	<version>0.1-SNAPSHOT</version>
 	<url>https://github.com/kevinsawicki/http-request</url>
+	<description>Library for making HTTP requests</description>
+	<inceptionYear>2011</inceptionYear>
+	
+	<issueManagement>
+		<url>https://github.com/kevinsawicki/http-request/issues</url>
+		<system>GitHub Issues</system>
+	</issueManagement>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
