@@ -114,7 +114,7 @@ String eTag = request.eTag();
 //Later on check if changes exist
 boolean unchanged = HttpRequest.get("http://google.com")
                                .ifNoneMatch(eTag)
-                               .notModified());
+                               .notModified();
 ```
 
 ## Contributors
