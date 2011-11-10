@@ -102,6 +102,18 @@ File input = new File("/input/data.txt");
 int response = HttpRequest.post("http://google.com").send(input).code();
 ```
 
+### Using entity tags for caching
+File latest = new File("/data/cache.json");
+HttpRequest request = HttpRequest.get("http://google.com");
+//Copy response to file
+request.body(latest);
+//Store eTag of response
+String eTag = request.eTag();
+//Later on check if changes exist
+boolean unchanged = HttpRequest.get("http://google.com")
+                               .ifNoneMatch(eTag)
+                               .notModified());
+
 ## Contributors
 
 * [Kevin Sawicki](https://github.com/kevinsawicki) :: [contributions](https://github.com/kevinsawicki/http-request/commits?author=kevinsawicki)
