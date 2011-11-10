@@ -25,6 +25,7 @@ import static java.net.HttpURLConnection.HTTP_BAD_REQUEST;
 import static java.net.HttpURLConnection.HTTP_CREATED;
 import static java.net.HttpURLConnection.HTTP_INTERNAL_ERROR;
 import static java.net.HttpURLConnection.HTTP_NOT_FOUND;
+import static java.net.HttpURLConnection.HTTP_NOT_MODIFIED;
 import static java.net.HttpURLConnection.HTTP_OK;
 
 import java.io.BufferedInputStream;
@@ -769,6 +770,16 @@ public class HttpRequest {
 	 */
 	public boolean notFound() throws RequestException {
 		return HTTP_NOT_FOUND == code();
+	}
+
+	/**
+	 * Is the response code a 304 Not Modified?
+	 *
+	 * @return true if 404, false otherwise
+	 * @throws RequestException
+	 */
+	public boolean notModified() throws RequestException {
+		return HTTP_NOT_MODIFIED == code();
 	}
 
 	/**
