@@ -103,6 +103,8 @@ int response = HttpRequest.post("http://google.com").send(input).code();
 ```
 
 ### Using entity tags for caching
+
+```java
 File latest = new File("/data/cache.json");
 HttpRequest request = HttpRequest.get("http://google.com");
 //Copy response to file
@@ -113,6 +115,7 @@ String eTag = request.eTag();
 boolean unchanged = HttpRequest.get("http://google.com")
                                .ifNoneMatch(eTag)
                                .notModified());
+```
 
 ## Contributors
 
