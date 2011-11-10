@@ -66,6 +66,9 @@ import javax.net.ssl.X509TrustManager;
 /**
  * A fluid interface for making HTTP requests using an underlying
  * {@link HttpURLConnection} (or sub-class).
+ * <p>
+ * Each instance supports making a single request and cannot be reused across
+ * requests.
  */
 public class HttpRequest {
 
