@@ -129,6 +129,11 @@ public class HttpRequest {
 	public static final String HEADER_EXPIRES = "Expires";
 
 	/**
+	 * 'If-None-Match' header name
+	 */
+	public static final String HEADER_IF_NONE_MATCH = "If-None-Match";
+
+	/**
 	 * 'Last-Modified' header name
 	 */
 	public static final String HEADER_LAST_MODIFIED = "Last-Modified";
@@ -1239,6 +1244,16 @@ public class HttpRequest {
 	public HttpRequest ifModifiedSince(final long value) {
 		connection.setIfModifiedSince(value);
 		return this;
+	}
+
+	/**
+	 * Set the 'If-None-Match' request header to the given value
+	 *
+	 * @param value
+	 * @return this request
+	 */
+	public HttpRequest ifNoneMatch(final String value) {
+		return header(HEADER_IF_NONE_MATCH, value);
 	}
 
 	/**
