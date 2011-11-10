@@ -45,8 +45,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.nio.charset.Charset;
-import java.security.KeyManagementException;
-import java.security.NoSuchAlgorithmException;
+import java.security.GeneralSecurityException;
 import java.security.SecureRandom;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
@@ -438,7 +437,7 @@ public class HttpRequest {
 	}
 
 	/**
-	 * Request exception
+	 * Request exception whose cause is always an {@link IOException}
 	 */
 	public static class RequestException extends RuntimeException {
 
@@ -448,7 +447,7 @@ public class HttpRequest {
 		/**
 		 * @param cause
 		 */
-		public RequestException(Throwable cause) {
+		public RequestException(final IOException cause) {
 			super(cause);
 		}
 	}
@@ -1768,10 +1767,8 @@ public class HttpRequest {
 		try {
 			context = SSLContext.getInstance("TLS");
 			context.init(null, trustAllCerts, new SecureRandom());
-		} catch (KeyManagementException e) {
-			throw new RequestException(e);
-		} catch (NoSuchAlgorithmException e) {
-			throw new RequestException(e);
+		} catch (GeneralSecurityException e) {
+			throw new RequestException(new IOException(e.getLocalizedMessage()));
 		}
 		((HttpsURLConnection) connection).setSSLSocketFactory(context
 				.getSocketFactory());
