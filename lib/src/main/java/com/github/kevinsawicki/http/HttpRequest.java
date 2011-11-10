@@ -89,9 +89,9 @@ public class HttpRequest {
 	public static final String HEADER_ACCEPT_ENCODING = "Accept-Encoding";
 
 	/**
-	 * 'Authentication' header name
+	 * 'Authorization' header name
 	 */
-	public static final String HEADER_AUTHENTICATION = "Authentication";
+	public static final String HEADER_AUTHORIZATION = "Authorization";
 
 	/**
 	 * 'Cache-Control' header name
@@ -1209,17 +1209,17 @@ public class HttpRequest {
 	}
 
 	/**
-	 * Set the 'Authentication' header to given value
+	 * Set the 'Authorization' header to given value
 	 *
 	 * @param value
 	 * @return this request
 	 */
-	public HttpRequest authentication(final String value) {
-		return header(HEADER_AUTHENTICATION, value);
+	public HttpRequest authorization(final String value) {
+		return header(HEADER_AUTHORIZATION, value);
 	}
 
 	/**
-	 * Set the 'Authentication' header to given values in Basic authentication
+	 * Set the 'Authorization' header to given values in Basic authentication
 	 * format
 	 *
 	 * @param name
@@ -1227,7 +1227,7 @@ public class HttpRequest {
 	 * @return this request
 	 */
 	public HttpRequest basic(final String name, final String password) {
-		return authentication("Basic " + Base64.encode(name + ":" + password));
+		return authorization("Basic " + Base64.encode(name + ":" + password));
 	}
 
 	/**
