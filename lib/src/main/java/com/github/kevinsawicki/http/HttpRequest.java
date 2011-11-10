@@ -779,7 +779,7 @@ public class HttpRequest {
 	/**
 	 * Is the response code a 304 Not Modified?
 	 *
-	 * @return true if 404, false otherwise
+	 * @return true if 304, false otherwise
 	 * @throws RequestException
 	 */
 	public boolean notModified() throws RequestException {
