@@ -48,6 +48,12 @@ String response = HttpRequest.get("http://google.com").body();
 System.out.println("Response was: " + response);
 ```
 
+### Print the response of a GET request to standard out
+
+```java
+HttpRequest.get("http://google.com").receive(System.out);
+```
+
 ### Working with request/response headers
 
 ```java

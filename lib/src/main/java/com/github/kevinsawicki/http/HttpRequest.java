@@ -30,6 +30,7 @@ import static java.net.HttpURLConnection.HTTP_OK;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
+import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -44,6 +45,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.nio.CharBuffer;
 import java.nio.charset.Charset;
 import java.security.GeneralSecurityException;
 import java.security.SecureRandom;
@@ -955,7 +957,7 @@ public class HttpRequest {
 	 * @param file
 	 * @return this request
 	 */
-	public HttpRequest body(final File file) {
+	public HttpRequest receive(final File file) {
 		final OutputStream output;
 		try {
 			output = new BufferedOutputStream(new FileOutputStream(file));
@@ -963,7 +965,7 @@ public class HttpRequest {
 			throw new RequestException(e);
 		}
 		try {
-			return stream(output);
+			return receive(output);
 		} finally {
 			try {
 				output.close();
@@ -979,8 +981,38 @@ public class HttpRequest {
 	 * @param output
 	 * @return this request
 	 */
-	public HttpRequest stream(final OutputStream output) {
+	public HttpRequest receive(final OutputStream output) {
 		return copy(buffer(), output);
+	}
+
+	/**
+	 * Receive response into the given appendable
+	 *
+	 * @param appendable
+	 * @return this request
+	 * @throws RequestException
+	 */
+	public HttpRequest receive(final Appendable appendable)
+			throws RequestException {
+		final BufferedReader reader = new BufferedReader(reader());
+		final CharBuffer buffer = CharBuffer.allocate(bufferSize);
+		try {
+			int read;
+			while ((read = reader.read(buffer)) != -1) {
+				buffer.rewind();
+				appendable.append(buffer, 0, read);
+				buffer.rewind();
+			}
+		} catch (IOException e) {
+			throw new RequestException(e);
+		} finally {
+			try {
+				reader.close();
+			} catch (IOException e) {
+				throw new RequestException(e);
+			}
+		}
+		return this;
 	}
 
 	/**
