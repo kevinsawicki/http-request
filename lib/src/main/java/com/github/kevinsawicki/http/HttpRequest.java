@@ -1278,6 +1278,18 @@ public class HttpRequest {
 	}
 
 	/**
+	 * Set the 'Content-Type' request header to the given value and charset
+	 *
+	 * @param value
+	 * @param charset
+	 * @return this request
+	 */
+	public HttpRequest contentType(final String value, final String charset) {
+		final String separator = "; " + PARAM_CHARSET + "=";
+		return header(HEADER_CONTENT_TYPE, value + separator + charset);
+	}
+
+	/**
 	 * Get the 'Content-Type' header from the response
 	 *
 	 * @return response header value
@@ -1694,7 +1706,7 @@ public class HttpRequest {
 	public HttpRequest form(final Map<?, ?> values, final String charset)
 			throws RequestException {
 		if (!form) {
-			contentType(CONTENT_TYPE_FORM + ";" + PARAM_CHARSET + "=" + charset);
+			contentType(CONTENT_TYPE_FORM, charset);
 			form = true;
 		}
 		if (values.isEmpty())
