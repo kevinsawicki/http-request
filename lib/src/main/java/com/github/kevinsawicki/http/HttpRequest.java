@@ -1308,7 +1308,7 @@ public class HttpRequest {
 	 * @return this request
 	 */
 	public HttpRequest contentType(final String value) {
-		return header(HEADER_CONTENT_TYPE, value);
+		return contentType(value, null);
 	}
 
 	/**
@@ -1319,8 +1319,11 @@ public class HttpRequest {
 	 * @return this request
 	 */
 	public HttpRequest contentType(final String value, final String charset) {
-		final String separator = "; " + PARAM_CHARSET + "=";
-		return header(HEADER_CONTENT_TYPE, value + separator + charset);
+		if (charset != null) {
+			final String separator = "; " + PARAM_CHARSET + "=";
+			return header(HEADER_CONTENT_TYPE, value + separator + charset);
+		} else
+			return header(HEADER_CONTENT_TYPE, value);
 	}
 
 	/**
@@ -1709,7 +1712,7 @@ public class HttpRequest {
 	 * @throws RequestException
 	 */
 	public HttpRequest form(final Object name, final Object value) {
-		return form(name, value, null);
+		return form(name, value, CHARSET_UTF8);
 	}
 
 	/**
