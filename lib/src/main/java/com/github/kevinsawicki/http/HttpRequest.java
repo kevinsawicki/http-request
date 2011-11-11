@@ -198,7 +198,7 @@ public class HttpRequest {
 	 */
 	public static final String PARAM_CHARSET = "charset";
 
-	private static final String BOUNDARY = "----1010101010";
+	private static final String BOUNDARY = "00content0boundary00";
 
 	private static final String CONTENT_TYPE_MULTIPART = "multipart/form-data; boundary="
 			+ BOUNDARY;
