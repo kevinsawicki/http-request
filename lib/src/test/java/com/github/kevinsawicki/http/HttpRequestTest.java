@@ -32,10 +32,14 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import com.github.kevinsawicki.http.HttpRequest.HttpRequestException;
 
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -52,9 +56,9 @@ import org.eclipse.jetty.util.B64Code;
 import org.junit.Test;
 
 /**
- * Unit tests of HttpRequest
+ * Unit tests of {@link HttpRequest}
  */
-public class RequestTest extends ServerTestCase {
+public class HttpRequestTest extends ServerTestCase {
 
 	/**
 	 * Create requerst with malformed URL
@@ -954,5 +958,37 @@ public class RequestTest extends ServerTestCase {
 		});
 		assertTrue(HttpRequest.get(url).ifModifiedSince(5000).ok());
 		assertEquals(5000, header.get());
+	}
+
+	/**
+	 * Verify multipart with file parameter
+	 *
+	 * @throws Exception
+	 */
+	@Test
+	public void multipartFile() throws Exception {
+		final StringBuilder body = new StringBuilder();
+		String url = setUp(new RequestHandler() {
+
+			public void handle(Request request, HttpServletResponse response) {
+				response.setStatus(HttpServletResponse.SC_OK);
+				char[] buffer = new char[8192];
+				int read;
+				try {
+					while ((read = request.getReader().read(buffer)) != -1)
+						body.append(buffer, 0, read);
+				} catch (IOException e) {
+					fail();
+				}
+			}
+		});
+		File file = File.createTempFile("body", ".txt");
+		new FileWriter(file).append("content1").close();
+		HttpRequest request = HttpRequest.post(url);
+		request.part("description", "content2");
+		request.part("body", file.getName(), file);
+		assertTrue(request.ok());
+		assertTrue(body.toString().contains("content1"));
+		assertTrue(body.toString().contains("content2"));
 	}
 }
