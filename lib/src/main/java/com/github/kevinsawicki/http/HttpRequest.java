@@ -449,8 +449,17 @@ public class HttpRequest {
 		/**
 		 * @param cause
 		 */
-		public HttpRequestException(final IOException cause) {
+		protected HttpRequestException(final IOException cause) {
 			super(cause);
+		}
+
+		/**
+		 * Get {@link IOException} that triggered this request exception
+		 *
+		 * @return {@link IOException} cause
+		 */
+		public IOException getCause() {
+			return (IOException) super.getCause();
 		}
 	}
 
