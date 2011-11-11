@@ -28,9 +28,9 @@ to test requests against an actual HTTP server implementation.
 ### How are exceptions managed?
 
 The `HttpRequest` class does not throw any checked exceptions, instead all low-level
-exceptions are wrapped up in a `RequestException` which extends `RuntimeException`.
-You can access the underlying exception by catching `RequestException` and calling
-`getCause()`.
+exceptions are wrapped up in a `HttpRequestException` which extends `RuntimeException`.
+You can access the underlying exception by catching `HttpRequestException` and calling
+`getCause()` which will always return the original `IOException`.
 
 
 ## Examples
