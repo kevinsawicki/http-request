@@ -561,7 +561,7 @@ public class RequestTest extends ServerTestCase {
 		String url = setUp(new RequestHandler() {
 
 			public void handle(Request request, HttpServletResponse response) {
-				String auth = request.getHeader("Authentication");
+				String auth = request.getHeader("Authorization");
 				auth = auth.substring(auth.indexOf(' ') + 1);
 				try {
 					auth = B64Code.decode(auth, "UTF-8");
