@@ -1486,10 +1486,8 @@ public class HttpRequest {
 		final StringBuilder partBuffer = new StringBuilder();
 		partBuffer.append("Content-Disposition: form-data; name=\"");
 		partBuffer.append(name);
-		if (filename != null) {
-			partBuffer.append("\";filename=\"");
-			partBuffer.append(filename);
-		}
+		if (filename != null)
+			partBuffer.append("\"; filename=\"").append(filename);
 		partBuffer.append("\"\r\n\r\n");
 		output.write(partBuffer.toString());
 		return this;
