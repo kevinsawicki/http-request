@@ -23,17 +23,17 @@ package com.github.kevinsawicki.http;
 
 import static com.github.kevinsawicki.http.HttpRequest.delete;
 import static com.github.kevinsawicki.http.HttpRequest.get;
-import static com.github.kevinsawicki.http.HttpRequest.post;
-import static com.github.kevinsawicki.http.HttpRequest.put;
 import static com.github.kevinsawicki.http.HttpRequest.head;
 import static com.github.kevinsawicki.http.HttpRequest.options;
+import static com.github.kevinsawicki.http.HttpRequest.post;
+import static com.github.kevinsawicki.http.HttpRequest.put;
 import static com.github.kevinsawicki.http.HttpRequest.trace;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
-import com.github.kevinsawicki.http.HttpRequest.RequestException;
+import com.github.kevinsawicki.http.HttpRequest.HttpRequestException;
 
 import java.io.BufferedReader;
 import java.io.UnsupportedEncodingException;
@@ -59,7 +59,7 @@ public class RequestTest extends ServerTestCase {
 	/**
 	 * Create requerst with malformed URL
 	 */
-	@Test(expected = RequestException.class)
+	@Test(expected = HttpRequestException.class)
 	public void malformedStringUrl() {
 		HttpRequest.get("\\m/");
 	}
