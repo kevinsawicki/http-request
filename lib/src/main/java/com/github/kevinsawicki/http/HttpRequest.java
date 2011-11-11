@@ -836,6 +836,19 @@ public class HttpRequest {
 	}
 
 	/**
+	 * Create byte array output stream
+	 *
+	 * @return stream
+	 */
+	protected ByteArrayOutputStream byteStream() {
+		final int size = contentLength();
+		if (size > 0)
+			return new ByteArrayOutputStream(size);
+		else
+			return new ByteArrayOutputStream();
+	}
+
+	/**
 	 * Get response as String in given charset.
 	 * <p>
 	 * This will fallback to using the platform's default character if the given
@@ -846,8 +859,7 @@ public class HttpRequest {
 	 * @throws RequestException
 	 */
 	public String body(final String charset) throws RequestException {
-		final ByteArrayOutputStream output = new ByteArrayOutputStream(
-				contentLength());
+		final ByteArrayOutputStream output = byteStream();
 		copy(buffer(), output);
 		if (charset != null)
 			try {
@@ -876,8 +888,7 @@ public class HttpRequest {
 	 * @throws RequestException
 	 */
 	public byte[] bytes() throws RequestException {
-		final ByteArrayOutputStream output = new ByteArrayOutputStream(
-				contentLength());
+		final ByteArrayOutputStream output = byteStream();
 		copy(buffer(), output);
 		return output.toByteArray();
 	}
