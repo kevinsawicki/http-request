@@ -1484,13 +1484,11 @@ public class HttpRequest {
 	protected HttpRequest writePartHeader(final String name,
 			final String filename) throws IOException {
 		final StringBuilder partBuffer = new StringBuilder();
-		partBuffer.append("Content-Disposition: form-data; name=\"");
-		partBuffer.append(name);
+		partBuffer.append("form-data; name=\"").append(name);
 		if (filename != null)
 			partBuffer.append("\"; filename=\"").append(filename);
-		partBuffer.append("\"\r\n\r\n");
-		output.write(partBuffer.toString());
-		return this;
+		partBuffer.append('"');
+		return partHeader("Content-Disposition", partBuffer.toString());
 	}
 
 	/**
