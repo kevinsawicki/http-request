@@ -69,6 +69,14 @@ public class HttpRequestTest extends ServerTestCase {
 	}
 
 	/**
+	 * Set request buffer size to negative value
+	 */
+	@Test(expected = IllegalArgumentException.class)
+	public void negativeBufferSize() {
+		get("http://localhost").bufferSize(-1);
+	}
+
+	/**
 	 * Make a GET request with an empty body response
 	 *
 	 * @throws Exception
@@ -91,6 +99,7 @@ public class HttpRequestTest extends ServerTestCase {
 		assertFalse(request.badRequest());
 		assertFalse(request.serverError());
 		assertFalse(request.notFound());
+		assertFalse(request.notModified());
 		assertEquals("GET", method.get());
 		assertEquals("OK", request.message());
 		assertEquals(HttpURLConnection.HTTP_OK, code);
@@ -904,6 +913,25 @@ public class HttpRequestTest extends ServerTestCase {
 	}
 
 	/**
+	 * Verify 'If-None-Match' request header
+	 *
+	 * @throws Exception
+	 */
+	@Test
+	public void ifNoneMatchHeader() throws Exception {
+		final AtomicReference<String> header = new AtomicReference<String>();
+		String url = setUp(new RequestHandler() {
+
+			public void handle(Request request, HttpServletResponse response) {
+				response.setStatus(HttpServletResponse.SC_OK);
+				header.set(request.getHeader("If-None-Match"));
+			}
+		});
+		assertTrue(HttpRequest.get(url).ifNoneMatch("eid").ok());
+		assertEquals("eid", header.get());
+	}
+
+	/**
 	 * Verify 'Accept-Charset' request header
 	 *
 	 * @throws Exception
@@ -990,5 +1018,50 @@ public class HttpRequestTest extends ServerTestCase {
 		assertTrue(request.ok());
 		assertTrue(body.toString().contains("content1"));
 		assertTrue(body.toString().contains("content2"));
+	}
+
+	/**
+	 * Verify response in {@link Appendable}
+	 *
+	 * @throws Exception
+	 */
+	@Test
+	public void receiveAppendable() throws Exception {
+		final StringBuilder body = new StringBuilder();
+		String url = setUp(new RequestHandler() {
+
+			public void handle(Request request, HttpServletResponse response) {
+				response.setStatus(HttpServletResponse.SC_OK);
+				try {
+					response.getWriter().print("content");
+				} catch (IOException e) {
+					fail();
+				}
+			}
+		});
+		assertTrue(HttpRequest.post(url).receive(body).ok());
+		assertEquals(body.toString(), "content");
+	}
+
+	/**
+	 * Verify certificate and host helpers on HTTPS connection
+	 *
+	 * @throws Exception
+	 */
+	@Test
+	public void httpsTrust() throws Exception {
+		assertNotNull(HttpRequest.get("https://localhost").trustAllCerts()
+				.trustAllHosts());
+	}
+
+	/**
+	 * Verify certificate and host helpers ignore non-HTTPS connection
+	 *
+	 * @throws Exception
+	 */
+	@Test
+	public void httpTrust() throws Exception {
+		assertNotNull(HttpRequest.get("http://localhost").trustAllCerts()
+				.trustAllHosts());
 	}
 }
