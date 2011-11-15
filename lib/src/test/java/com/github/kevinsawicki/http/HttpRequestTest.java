@@ -37,6 +37,7 @@ import static org.junit.Assert.fail;
 import com.github.kevinsawicki.http.HttpRequest.HttpRequestException;
 
 import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
@@ -64,11 +65,24 @@ import org.junit.Test;
 public class HttpRequestTest extends ServerTestCase {
 
 	/**
-	 * Create requerst with malformed URL
+	 * Create request with malformed URL
 	 */
 	@Test(expected = HttpRequestException.class)
 	public void malformedStringUrl() {
 		HttpRequest.get("\\m/");
+	}
+
+	/**
+	 * Create request with malformed URL
+	 */
+	@Test
+	public void malformedStringUrlCause() {
+		try {
+			HttpRequest.delete("\\m/");
+			fail("Exception not thrown");
+		} catch (HttpRequestException e) {
+			assertNotNull(e.getCause());
+		}
 	}
 
 	/**
@@ -544,10 +558,11 @@ public class HttpRequestTest extends ServerTestCase {
 		Map<String, String> data = new HashMap<String, String>();
 		data.put("name", "user");
 		data.put("number", "100");
-		int code = post(url).form(data).code();
+		int code = post(url).form(data).form("zip", "12345").code();
 		assertEquals(HttpURLConnection.HTTP_OK, code);
 		assertTrue(body.get().contains("name=user"));
 		assertTrue(body.get().contains("number=100"));
+		assertTrue(body.get().contains("zip=12345"));
 	}
 
 	/**
@@ -1059,12 +1074,12 @@ public class HttpRequestTest extends ServerTestCase {
 	}
 
 	/**
-	 * Verify multipart with file parameter
+	 * Verify multipart with file, stream, number, and string parameters
 	 *
 	 * @throws Exception
 	 */
 	@Test
-	public void multipartFile() throws Exception {
+	public void postMultipart() throws Exception {
 		final StringBuilder body = new StringBuilder();
 		String url = setUp(new RequestHandler() {
 
@@ -1084,10 +1099,15 @@ public class HttpRequestTest extends ServerTestCase {
 		new FileWriter(file).append("content1").close();
 		HttpRequest request = HttpRequest.post(url);
 		request.part("description", "content2");
+		request.part("size", file.length());
 		request.part("body", file.getName(), file);
+		request.part("stream", new ByteArrayInputStream("content3".getBytes()));
 		assertTrue(request.ok());
-		assertTrue(body.toString().contains("content1"));
-		assertTrue(body.toString().contains("content2"));
+		assertTrue(body.toString().contains("content1\r\n"));
+		assertTrue(body.toString().contains("content2\r\n"));
+		assertTrue(body.toString().contains("content3\r\n"));
+		assertTrue(body.toString().contains(
+				Long.toString(file.length()) + "\r\n"));
 	}
 
 	/**
