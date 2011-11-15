@@ -1047,7 +1047,7 @@ public class HttpRequest {
 	}
 
 	/**
-	 * Set read timeout on connection to given value
+	 * Set connect timeout on connection to given value
 	 *
 	 * @param timeout
 	 * @return this request
