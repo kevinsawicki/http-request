@@ -41,7 +41,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.Reader;
 import java.io.UnsupportedEncodingException;
+import java.io.Writer;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
@@ -1036,6 +1039,18 @@ public class HttpRequest {
 	}
 
 	/**
+	 * Receive response into the given writer
+	 *
+	 * @param writer
+	 * @return this request
+	 * @throws HttpRequestException
+	 */
+	public HttpRequest receive(final Writer writer) throws HttpRequestException {
+		final BufferedReader reader = new BufferedReader(reader());
+		return copy(reader, writer);
+	}
+
+	/**
 	 * Set read timeout on connection to given value
 	 *
 	 * @param timeout
@@ -1396,7 +1411,7 @@ public class HttpRequest {
 	}
 
 	/**
-	 * Copy between streams
+	 * Copy from input stream to output stream
 	 *
 	 * @param input
 	 * @param output
@@ -1406,6 +1421,33 @@ public class HttpRequest {
 	protected HttpRequest copy(final InputStream input,
 			final OutputStream output) throws HttpRequestException {
 		final byte[] buffer = new byte[bufferSize];
+		int read;
+		try {
+			while ((read = input.read(buffer)) != -1)
+				output.write(buffer, 0, read);
+		} catch (IOException e) {
+			throw new HttpRequestException(e);
+		} finally {
+			try {
+				input.close();
+			} catch (IOException e) {
+				throw new HttpRequestException(e);
+			}
+		}
+		return this;
+	}
+
+	/**
+	 * Copy from reader to writer
+	 *
+	 * @param input
+	 * @param output
+	 * @return this request
+	 * @throws HttpRequestException
+	 */
+	protected HttpRequest copy(final Reader input, final Writer output)
+			throws HttpRequestException {
+		final char[] buffer = new char[bufferSize];
 		int read;
 		try {
 			while ((read = input.read(buffer)) != -1)
@@ -1679,6 +1721,32 @@ public class HttpRequest {
 			copy(input, output);
 		} catch (IOException e) {
 			throw new HttpRequestException(e);
+		}
+		return this;
+	}
+
+	/**
+	 * Write stream to request body
+	 *
+	 * @param input
+	 * @return this request
+	 * @throws HttpRequestException
+	 */
+	public HttpRequest send(final Reader input) throws HttpRequestException {
+		try {
+			openOutput();
+		} catch (IOException e) {
+			throw new HttpRequestException(e);
+		}
+		final Writer writer = new OutputStreamWriter(output, output.charset);
+		try {
+			copy(input, writer);
+		} finally {
+			try {
+				writer.flush();
+			} catch (IOException e) {
+				throw new HttpRequestException(e);
+			}
 		}
 		return this;
 	}

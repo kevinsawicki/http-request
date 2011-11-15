@@ -38,9 +38,12 @@ import com.github.kevinsawicki.http.HttpRequest.HttpRequestException;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
+import java.io.Writer;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Arrays;
@@ -104,6 +107,8 @@ public class HttpRequestTest extends ServerTestCase {
 		assertEquals("OK", request.message());
 		assertEquals(HttpURLConnection.HTTP_OK, code);
 		assertEquals("", request.body());
+		assertNotNull(request.toString());
+		assertFalse(request.toString().length() == 0);
 	}
 
 	/**
@@ -427,6 +432,71 @@ public class HttpRequestTest extends ServerTestCase {
 			}
 		});
 		int code = post(url).send("hello").code();
+		assertEquals(HttpURLConnection.HTTP_OK, code);
+		assertEquals("hello", body.get());
+	}
+
+	/**
+	 * Make a POST request with a non-empty request body
+	 *
+	 * @throws Exception
+	 */
+	@Test
+	public void postNonEmptyFile() throws Exception {
+		final AtomicReference<String> body = new AtomicReference<String>();
+		String url = setUp(new RequestHandler() {
+
+			public void handle(Request request, HttpServletResponse response) {
+				body.set(new String(read()));
+				response.setStatus(HttpServletResponse.SC_OK);
+			}
+		});
+		File file = File.createTempFile("post", ".txt");
+		new FileWriter(file).append("hello").close();
+		int code = post(url).send(file).code();
+		assertEquals(HttpURLConnection.HTTP_OK, code);
+		assertEquals("hello", body.get());
+	}
+
+	/**
+	 * Make a POST request with a non-empty request body
+	 *
+	 * @throws Exception
+	 */
+	@Test
+	public void postNonEmptyReader() throws Exception {
+		final AtomicReference<String> body = new AtomicReference<String>();
+		String url = setUp(new RequestHandler() {
+
+			public void handle(Request request, HttpServletResponse response) {
+				body.set(new String(read()));
+				response.setStatus(HttpServletResponse.SC_OK);
+			}
+		});
+		File file = File.createTempFile("post", ".txt");
+		new FileWriter(file).append("hello").close();
+		int code = post(url).send(new FileReader(file)).code();
+		assertEquals(HttpURLConnection.HTTP_OK, code);
+		assertEquals("hello", body.get());
+	}
+
+	/**
+	 * Make a POST request with a non-empty request body
+	 *
+	 * @throws Exception
+	 */
+	@Test
+	public void postNonEmptyByteArray() throws Exception {
+		final AtomicReference<String> body = new AtomicReference<String>();
+		String url = setUp(new RequestHandler() {
+
+			public void handle(Request request, HttpServletResponse response) {
+				body.set(new String(read()));
+				response.setStatus(HttpServletResponse.SC_OK);
+			}
+		});
+		int code = post(url).send("hello".getBytes(HttpRequest.CHARSET_UTF8))
+				.code();
 		assertEquals(HttpURLConnection.HTTP_OK, code);
 		assertEquals("hello", body.get());
 	}
@@ -1041,6 +1111,29 @@ public class HttpRequestTest extends ServerTestCase {
 		});
 		assertTrue(HttpRequest.post(url).receive(body).ok());
 		assertEquals(body.toString(), "content");
+	}
+
+	/**
+	 * Verify response in {@link Writer}
+	 *
+	 * @throws Exception
+	 */
+	@Test
+	public void receiveWriter() throws Exception {
+		String url = setUp(new RequestHandler() {
+
+			public void handle(Request request, HttpServletResponse response) {
+				response.setStatus(HttpServletResponse.SC_OK);
+				try {
+					response.getWriter().print("content");
+				} catch (IOException e) {
+					fail();
+				}
+			}
+		});
+		StringWriter writer = new StringWriter();
+		assertTrue(HttpRequest.post(url).receive(writer).ok());
+		assertEquals(writer.toString(), "content");
 	}
 
 	/**
