@@ -1589,14 +1589,7 @@ public class HttpRequest {
 	 */
 	public HttpRequest part(final String name, final String filename,
 			final Number part) throws HttpRequestException {
-		try {
-			startPart();
-			writePartHeader(name, filename);
-			output.write(part.toString());
-		} catch (IOException e) {
-			throw new HttpRequestException(e);
-		}
-		return this;
+		return part(name, filename, part != null ? part.toString() : null);
 	}
 
 	/**
