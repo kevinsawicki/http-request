@@ -1114,8 +1114,7 @@ public class HttpRequest {
 	 * @throws HttpRequestException
 	 */
 	public HttpRequest receive(final Writer writer) throws HttpRequestException {
-		final BufferedReader reader = new BufferedReader(reader());
-		return copy(reader, writer);
+		return copy(new BufferedReader(reader()), writer);
 	}
 
 	/**
