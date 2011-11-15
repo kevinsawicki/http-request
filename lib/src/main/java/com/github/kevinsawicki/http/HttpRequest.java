@@ -50,7 +50,9 @@ import java.net.URL;
 import java.net.URLEncoder;
 import java.nio.CharBuffer;
 import java.nio.charset.Charset;
+import java.security.AccessController;
 import java.security.GeneralSecurityException;
+import java.security.PrivilegedAction;
 import java.security.SecureRandom;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
@@ -663,7 +665,73 @@ public class HttpRequest {
 	 * @param keepAlive
 	 */
 	public static void keepAlive(boolean keepAlive) {
-		System.setProperty("http.keepAlive", Boolean.toString(keepAlive));
+		setProperty("http.keepAlive", Boolean.toString(keepAlive));
+	}
+
+	/**
+	 * Set the 'http.proxyHost' & 'https.proxyHost' properties to the given
+	 * value.
+	 * <p>
+	 * This setting will apply to requests.
+	 *
+	 * @param host
+	 */
+	public static void proxyHost(String host) {
+		setProperty("http.proxyHost", host);
+		setProperty("https.proxyHost", host);
+	}
+
+	/**
+	 * Set the 'http.proxyPort' & 'https.proxyPort' properties to the given
+	 * value.
+	 * <p>
+	 * This setting will apply to requests.
+	 *
+	 * @param port
+	 */
+	public static void proxyPort(int port) {
+		String portValue = Integer.toString(port);
+		setProperty("http.proxyPort", portValue);
+		setProperty("https.proxyPort", portValue);
+	}
+
+	/**
+	 * Set the 'http.nonProxyHosts' properties to the given value. Hosts will be
+	 * separated by a '|' character.
+	 * <p>
+	 * This setting will apply to requests.
+	 *
+	 * @param hosts
+	 */
+	public static void nonProxyHosts(String... hosts) {
+		if (hosts == null)
+			hosts = new String[0];
+		if (hosts.length > 0) {
+			StringBuilder separated = new StringBuilder();
+			int last = hosts.length - 1;
+			for (int i = 0; i < last; i++)
+				separated.append(hosts[i]).append('|');
+			separated.append(hosts[last]);
+			setProperty("http.nonProxyHosts", separated.toString());
+		} else
+			setProperty("http.nonProxyHosts", hosts[0]);
+	}
+
+	/**
+	 * Set property to given value
+	 *
+	 * @param name
+	 * @param value
+	 * @return previous value
+	 */
+	private static final String setProperty(final String name,
+			final String value) {
+		return AccessController.doPrivileged(new PrivilegedAction<String>() {
+
+			public String run() {
+				return System.setProperty(name, value);
+			}
+		});
 	}
 
 	private final HttpURLConnection connection;
