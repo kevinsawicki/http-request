@@ -99,7 +99,7 @@ if (HttpRequest.post("http://google.com").form(data).created())
 
 ```java
 File output = new File("/output/request.out");
-int response = HttpRequest.get("http://google.com").body(output).code();
+HttpRequest.get("http://google.com").receive(output);
 ```
 ### Post contents of a file
 
