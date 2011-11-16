@@ -33,10 +33,12 @@ import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.Closeable;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.Flushable;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -61,6 +63,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.concurrent.Callable;
 
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.HttpsURLConnection;
@@ -465,6 +468,106 @@ public class HttpRequest {
 		 */
 		public IOException getCause() {
 			return (IOException) super.getCause();
+		}
+	}
+
+	/**
+	 * Class that ensures a {@link Closeable} gets closed with proper exception
+	 * handling.
+	 *
+	 * @param <V>
+	 */
+	protected static abstract class CloseOperation<V> implements Callable<V> {
+
+		private Closeable closeable;
+
+		/**
+		 * Create closer for operation
+		 *
+		 * @param closeable
+		 */
+		protected CloseOperation(Closeable closeable) {
+			this.closeable = closeable;
+		}
+
+		/**
+		 * Run operation
+		 *
+		 * @return result
+		 * @throws HttpRequestException
+		 * @throws IOException
+		 */
+		protected abstract V run() throws HttpRequestException, IOException;
+
+		public V call() throws HttpRequestException {
+			boolean thrown = false;
+			try {
+				return run();
+			} catch (HttpRequestException e) {
+				thrown = true;
+				throw e;
+			} catch (IOException e) {
+				thrown = true;
+				throw new HttpRequestException(e);
+			} catch (Exception e) {
+				throw new RuntimeException("Unexpected exception thrown", e);
+			} finally {
+				try {
+					closeable.close();
+				} catch (IOException e) {
+					if (!thrown)
+						throw new HttpRequestException(e);
+				}
+			}
+		}
+	}
+
+	/**
+	 * Class that and ensures a {@link Flushable} gets flushed with proper
+	 * exception handling.
+	 *
+	 * @param <V>
+	 */
+	protected static abstract class FlushOperation<V> implements Callable<V> {
+
+		private Flushable flushable;
+
+		/**
+		 * Create flush operation
+		 *
+		 * @param flushable
+		 */
+		protected FlushOperation(Flushable flushable) {
+			this.flushable = flushable;
+		}
+
+		/**
+		 * Run operation
+		 *
+		 * @return result
+		 * @throws HttpRequestException
+		 * @throws IOException
+		 */
+		protected abstract V run() throws HttpRequestException, IOException;
+
+		public V call() throws HttpRequestException {
+			boolean thrown = false;
+			try {
+				return run();
+			} catch (HttpRequestException e) {
+				thrown = true;
+				throw e;
+			} catch (IOException e) {
+				thrown = true;
+				throw new HttpRequestException(e);
+			} finally {
+				try {
+					flushable.flush();
+				} catch (IOException e) {
+					if (!thrown)
+						throw new HttpRequestException(e);
+				}
+			}
 		}
 	}
 
@@ -1064,20 +1167,13 @@ public class HttpRequest {
 		} catch (FileNotFoundException e) {
 			throw new HttpRequestException(e);
 		}
-		HttpRequestException exception = null;
-		try {
-			return receive(output);
-		} catch (HttpRequestException e) {
-			exception = null;
-		} finally {
-			try {
-				output.close();
-			} catch (IOException e) {
-				if (exception == null)
-					exception = new HttpRequestException(e);
+		return new CloseOperation<HttpRequest>(output) {
+
+			protected HttpRequest run() throws HttpRequestException,
+					IOException {
+				return receive(output);
 			}
-		}
-		throw exception;
+		}.call();
 	}
 
 	/**
@@ -1106,27 +1202,19 @@ public class HttpRequest {
 	public HttpRequest receive(final Appendable appendable)
 			throws HttpRequestException {
 		final BufferedReader reader = new BufferedReader(reader(), bufferSize);
-		final CharBuffer buffer = CharBuffer.allocate(bufferSize);
-		HttpRequestException exception = null;
-		try {
-			int read;
-			while ((read = reader.read(buffer)) != -1) {
-				buffer.rewind();
-				appendable.append(buffer, 0, read);
-				buffer.rewind();
+		return new CloseOperation<HttpRequest>(reader) {
+
+			public HttpRequest run() throws IOException {
+				final CharBuffer buffer = CharBuffer.allocate(bufferSize);
+				int read;
+				while ((read = reader.read(buffer)) != -1) {
+					buffer.rewind();
+					appendable.append(buffer, 0, read);
+					buffer.rewind();
+				}
+				return HttpRequest.this;
 			}
-			return this;
-		} catch (IOException e) {
-			exception = new HttpRequestException(e);
-		} finally {
-			try {
-				reader.close();
-			} catch (IOException e) {
-				if (exception == null)
-					exception = new HttpRequestException(e);
-			}
-		}
-		throw exception;
+		}.call();
 	}
 
 	/**
@@ -1138,20 +1226,12 @@ public class HttpRequest {
 	 */
 	public HttpRequest receive(final Writer writer) throws HttpRequestException {
 		final BufferedReader reader = new BufferedReader(reader(), bufferSize);
-		HttpRequestException exception = null;
-		try {
-			return copy(reader, writer);
-		} catch (IOException e) {
-			exception = new HttpRequestException(e);
-		} finally {
-			try {
-				reader.close();
-			} catch (IOException e) {
-				if (exception == null)
-					exception = new HttpRequestException(e);
+		return new CloseOperation<HttpRequest>(reader) {
+
+			public HttpRequest run() throws IOException {
+				return copy(reader, writer);
 			}
-		}
-		throw exception;
+		}.call();
 	}
 
 	/**
@@ -1524,24 +1604,16 @@ public class HttpRequest {
 	 */
 	protected HttpRequest copy(final InputStream input,
 			final OutputStream output) throws IOException {
-		final byte[] buffer = new byte[bufferSize];
-		int read;
-		IOException exception = null;
-		try {
-			while ((read = input.read(buffer)) != -1)
-				output.write(buffer, 0, read);
-			return this;
-		} catch (IOException e) {
-			exception = e;
-		} finally {
-			try {
-				input.close();
-			} catch (IOException e) {
-				if (exception == null)
-					exception = e;
+		return new CloseOperation<HttpRequest>(input) {
+
+			public HttpRequest run() throws IOException {
+				final byte[] buffer = new byte[bufferSize];
+				int read;
+				while ((read = input.read(buffer)) != -1)
+					output.write(buffer, 0, read);
+				return HttpRequest.this;
 			}
-		}
-		throw exception;
+		}.call();
 	}
 
 	/**
@@ -1554,24 +1626,16 @@ public class HttpRequest {
 	 */
 	protected HttpRequest copy(final Reader input, final Writer output)
 			throws IOException {
-		final char[] buffer = new char[bufferSize];
-		int read;
-		IOException exception = null;
-		try {
-			while ((read = input.read(buffer)) != -1)
-				output.write(buffer, 0, read);
-			return this;
-		} catch (IOException e) {
-			exception = e;
-		} finally {
-			try {
-				input.close();
-			} catch (IOException e) {
-				if (exception == null)
-					exception = e;
+		return new CloseOperation<HttpRequest>(input) {
+
+			public HttpRequest run() throws IOException {
+				final char[] buffer = new char[bufferSize];
+				int read;
+				while ((read = input.read(buffer)) != -1)
+					output.write(buffer, 0, read);
+				return HttpRequest.this;
 			}
-		}
-		throw exception;
+		}.call();
 	}
 
 	/**
@@ -1842,20 +1906,12 @@ public class HttpRequest {
 			throw new HttpRequestException(e);
 		}
 		final Writer writer = new OutputStreamWriter(output, output.charset);
-		HttpRequestException exception = null;
-		try {
-			return copy(input, writer);
-		} catch (IOException e) {
-			exception = new HttpRequestException(e);
-		} finally {
-			try {
-				writer.flush();
-			} catch (IOException e) {
-				if (exception == null)
-					exception = new HttpRequestException(e);
+		return new FlushOperation<HttpRequest>(writer) {
+
+			protected HttpRequest run() throws IOException {
+				return copy(input, writer);
 			}
-		}
-		throw exception;
+		}.call();
 	}
 
 	/**
