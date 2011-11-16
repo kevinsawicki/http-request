@@ -940,7 +940,11 @@ public class HttpRequest {
 	 */
 	public String body(final String charset) throws HttpRequestException {
 		final ByteArrayOutputStream output = byteStream();
-		copy(buffer(), output);
+		try {
+			copy(buffer(), output);
+		} catch (IOException e) {
+			throw new HttpRequestException(e);
+		}
 		if (charset != null)
 			try {
 				return output.toString(charset);
@@ -969,7 +973,11 @@ public class HttpRequest {
 	 */
 	public byte[] bytes() throws HttpRequestException {
 		final ByteArrayOutputStream output = byteStream();
-		copy(buffer(), output);
+		try {
+			copy(buffer(), output);
+		} catch (IOException e) {
+			throw new HttpRequestException(e);
+		}
 		return output.toByteArray();
 	}
 
@@ -1056,15 +1064,20 @@ public class HttpRequest {
 		} catch (FileNotFoundException e) {
 			throw new HttpRequestException(e);
 		}
+		HttpRequestException exception = null;
 		try {
 			return receive(output);
+		} catch (HttpRequestException e) {
+			exception = null;
 		} finally {
 			try {
 				output.close();
 			} catch (IOException e) {
-				throw new HttpRequestException(e);
+				if (exception == null)
+					exception = new HttpRequestException(e);
 			}
 		}
+		throw exception;
 	}
 
 	/**
@@ -1072,9 +1085,15 @@ public class HttpRequest {
 	 *
 	 * @param output
 	 * @return this request
+	 * @throws HttpRequestException
 	 */
-	public HttpRequest receive(final OutputStream output) {
-		return copy(buffer(), output);
+	public HttpRequest receive(final OutputStream output)
+			throws HttpRequestException {
+		try {
+			return copy(buffer(), output);
+		} catch (IOException e) {
+			throw new HttpRequestException(e);
+		}
 	}
 
 	/**
@@ -1088,6 +1107,7 @@ public class HttpRequest {
 			throws HttpRequestException {
 		final BufferedReader reader = new BufferedReader(reader());
 		final CharBuffer buffer = CharBuffer.allocate(bufferSize);
+		HttpRequestException exception = null;
 		try {
 			int read;
 			while ((read = reader.read(buffer)) != -1) {
@@ -1095,16 +1115,18 @@ public class HttpRequest {
 				appendable.append(buffer, 0, read);
 				buffer.rewind();
 			}
+			return this;
 		} catch (IOException e) {
-			throw new HttpRequestException(e);
+			exception = new HttpRequestException(e);
 		} finally {
 			try {
 				reader.close();
 			} catch (IOException e) {
-				throw new HttpRequestException(e);
+				if (exception == null)
+					exception = new HttpRequestException(e);
 			}
 		}
-		return this;
+		throw exception;
 	}
 
 	/**
@@ -1115,7 +1137,21 @@ public class HttpRequest {
 	 * @throws HttpRequestException
 	 */
 	public HttpRequest receive(final Writer writer) throws HttpRequestException {
-		return copy(new BufferedReader(reader()), writer);
+		final BufferedReader reader = new BufferedReader(reader());
+		HttpRequestException exception = null;
+		try {
+			return copy(reader, writer);
+		} catch (IOException e) {
+			exception = new HttpRequestException(e);
+		} finally {
+			try {
+				reader.close();
+			} catch (IOException e) {
+				if (exception == null)
+					exception = new HttpRequestException(e);
+			}
+		}
+		throw exception;
 	}
 
 	/**
@@ -1484,25 +1520,28 @@ public class HttpRequest {
 	 * @param input
 	 * @param output
 	 * @return this request
-	 * @throws HttpRequestException
+	 * @throws IOException
 	 */
 	protected HttpRequest copy(final InputStream input,
-			final OutputStream output) throws HttpRequestException {
+			final OutputStream output) throws IOException {
 		final byte[] buffer = new byte[bufferSize];
 		int read;
+		IOException exception = null;
 		try {
 			while ((read = input.read(buffer)) != -1)
 				output.write(buffer, 0, read);
+			return this;
 		} catch (IOException e) {
-			throw new HttpRequestException(e);
+			exception = e;
 		} finally {
 			try {
 				input.close();
 			} catch (IOException e) {
-				throw new HttpRequestException(e);
+				if (exception == null)
+					exception = e;
 			}
 		}
-		return this;
+		throw exception;
 	}
 
 	/**
@@ -1511,25 +1550,28 @@ public class HttpRequest {
 	 * @param input
 	 * @param output
 	 * @return this request
-	 * @throws HttpRequestException
+	 * @throws IOException
 	 */
 	protected HttpRequest copy(final Reader input, final Writer output)
-			throws HttpRequestException {
+			throws IOException {
 		final char[] buffer = new char[bufferSize];
 		int read;
+		IOException exception = null;
 		try {
 			while ((read = input.read(buffer)) != -1)
 				output.write(buffer, 0, read);
+			return this;
 		} catch (IOException e) {
-			throw new HttpRequestException(e);
+			exception = e;
 		} finally {
 			try {
 				input.close();
 			} catch (IOException e) {
-				throw new HttpRequestException(e);
+				if (exception == null)
+					exception = e;
 			}
 		}
-		return this;
+		throw exception;
 	}
 
 	/**
@@ -1800,16 +1842,20 @@ public class HttpRequest {
 			throw new HttpRequestException(e);
 		}
 		final Writer writer = new OutputStreamWriter(output, output.charset);
+		HttpRequestException exception = null;
 		try {
-			copy(input, writer);
+			return copy(input, writer);
+		} catch (IOException e) {
+			exception = new HttpRequestException(e);
 		} finally {
 			try {
 				writer.flush();
 			} catch (IOException e) {
-				throw new HttpRequestException(e);
+				if (exception == null)
+					exception = new HttpRequestException(e);
 			}
 		}
-		return this;
+		throw exception;
 	}
 
 	/**
