@@ -1051,7 +1051,8 @@ public class HttpRequest {
 	public HttpRequest receive(final File file) {
 		final OutputStream output;
 		try {
-			output = new BufferedOutputStream(new FileOutputStream(file));
+			output = new BufferedOutputStream(new FileOutputStream(file),
+					bufferSize);
 		} catch (FileNotFoundException e) {
 			throw new HttpRequestException(e);
 		}
