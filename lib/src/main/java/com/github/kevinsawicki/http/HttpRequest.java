@@ -1105,7 +1105,7 @@ public class HttpRequest {
 	 */
 	public HttpRequest receive(final Appendable appendable)
 			throws HttpRequestException {
-		final BufferedReader reader = new BufferedReader(reader());
+		final BufferedReader reader = new BufferedReader(reader(), bufferSize);
 		final CharBuffer buffer = CharBuffer.allocate(bufferSize);
 		HttpRequestException exception = null;
 		try {
@@ -1137,7 +1137,7 @@ public class HttpRequest {
 	 * @throws HttpRequestException
 	 */
 	public HttpRequest receive(final Writer writer) throws HttpRequestException {
-		final BufferedReader reader = new BufferedReader(reader());
+		final BufferedReader reader = new BufferedReader(reader(), bufferSize);
 		HttpRequestException exception = null;
 		try {
 			return copy(reader, writer);
