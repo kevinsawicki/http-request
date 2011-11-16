@@ -1214,7 +1214,7 @@ public class HttpRequestTest extends ServerTestCase {
 	 * @throws Exception
 	 */
 	@Test
-	public void sendErrorStream() throws Exception {
+	public void sendErrorReadStream() throws Exception {
 		String url = setUp(new RequestHandler() {
 
 			public void handle(Request request, HttpServletResponse response) {
@@ -1226,18 +1226,60 @@ public class HttpRequestTest extends ServerTestCase {
 				}
 			}
 		});
-		final IOException cause = new IOException();
+		final IOException readCause = new IOException();
+		final IOException closeCause = new IOException();
 		InputStream stream = new InputStream() {
 
 			public int read() throws IOException {
-				throw cause;
+				throw readCause;
+			}
+
+			public void close() throws IOException {
+				throw closeCause;
 			}
 		};
 		try {
 			HttpRequest.post(url).send(stream);
 			fail("Exception not thrown");
 		} catch (HttpRequestException e) {
-			assertEquals(cause, e.getCause());
+			assertEquals(readCause, e.getCause());
+		}
+	}
+
+	/**
+	 * Send a stream that throws an exception when read from
+	 *
+	 * @throws Exception
+	 */
+	@Test
+	public void sendErrorCloseStream() throws Exception {
+		String url = setUp(new RequestHandler() {
+
+			public void handle(Request request, HttpServletResponse response) {
+				response.setStatus(HttpServletResponse.SC_OK);
+				try {
+					response.getWriter().print("content");
+				} catch (IOException e) {
+					fail();
+				}
+			}
+		});
+		final IOException closeCause = new IOException();
+		InputStream stream = new InputStream() {
+
+			public int read() throws IOException {
+				return -1;
+			}
+
+			public void close() throws IOException {
+				throw closeCause;
+			}
+		};
+		try {
+			HttpRequest.post(url).send(stream);
+			fail("Exception not thrown");
+		} catch (HttpRequestException e) {
+			assertEquals(closeCause, e.getCause());
 		}
 	}
 }
