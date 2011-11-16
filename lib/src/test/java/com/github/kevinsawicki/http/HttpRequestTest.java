@@ -42,6 +42,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
 import java.io.Writer;
@@ -1130,7 +1131,7 @@ public class HttpRequestTest extends ServerTestCase {
 			}
 		});
 		assertTrue(HttpRequest.post(url).receive(body).ok());
-		assertEquals(body.toString(), "content");
+		assertEquals("content", body.toString());
 	}
 
 	/**
@@ -1153,7 +1154,36 @@ public class HttpRequestTest extends ServerTestCase {
 		});
 		StringWriter writer = new StringWriter();
 		assertTrue(HttpRequest.post(url).receive(writer).ok());
-		assertEquals(writer.toString(), "content");
+		assertEquals("content", writer.toString());
+	}
+
+	/**
+	 * Verify response in {@link File}
+	 *
+	 * @throws Exception
+	 */
+	@Test
+	public void receiveFile() throws Exception {
+		String url = setUp(new RequestHandler() {
+
+			public void handle(Request request, HttpServletResponse response) {
+				response.setStatus(HttpServletResponse.SC_OK);
+				try {
+					response.getWriter().print("content");
+				} catch (IOException e) {
+					fail();
+				}
+			}
+		});
+		File output = File.createTempFile("output", ".txt");
+		assertTrue(HttpRequest.post(url).receive(output).ok());
+		StringBuilder buffer = new StringBuilder();
+		BufferedReader reader = new BufferedReader(new FileReader(output));
+		int read;
+		while ((read = reader.read()) != -1)
+			buffer.append((char) read);
+		reader.close();
+		assertEquals("content", buffer.toString());
 	}
 
 	/**
@@ -1176,5 +1206,38 @@ public class HttpRequestTest extends ServerTestCase {
 	public void httpTrust() throws Exception {
 		assertNotNull(HttpRequest.get("http://localhost").trustAllCerts()
 				.trustAllHosts());
+	}
+
+	/**
+	 * Send a stream that throws an exception when read from
+	 *
+	 * @throws Exception
+	 */
+	@Test
+	public void sendErrorStream() throws Exception {
+		String url = setUp(new RequestHandler() {
+
+			public void handle(Request request, HttpServletResponse response) {
+				response.setStatus(HttpServletResponse.SC_OK);
+				try {
+					response.getWriter().print("content");
+				} catch (IOException e) {
+					fail();
+				}
+			}
+		});
+		final IOException cause = new IOException();
+		InputStream stream = new InputStream() {
+
+			public int read() throws IOException {
+				throw cause;
+			}
+		};
+		try {
+			HttpRequest.post(url).send(stream);
+			fail("Exception not thrown");
+		} catch (HttpRequestException e) {
+			assertEquals(cause, e.getCause());
+		}
 	}
 }
