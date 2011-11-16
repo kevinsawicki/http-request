@@ -32,6 +32,17 @@ exceptions are wrapped up in a `HttpRequestException` which extends `RuntimeExce
 You can access the underlying exception by catching `HttpRequestException` and calling
 `getCause()` which will always return the original `IOException`.
 
+## Usage
+
+The http-request library is available from [Maven Central](http://search.maven.org/#search%7Cga%7C1%7Ca%3A%22http-request%22%20g%3A%22com.github.kevinsawicki%22).
+
+```xml
+<dependency>
+  <groupId>com.github.kevinsawicki</groupId>
+  <artifactId>http-request</artifactId>
+  <version>0.1</version>
+</dependency> 
+```
 
 ## Examples
 
