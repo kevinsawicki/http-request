@@ -511,8 +511,6 @@ public class HttpRequest {
 			} catch (IOException e) {
 				thrown = true;
 				throw new HttpRequestException(e);
-			} catch (Exception e) {
-				throw new RuntimeException("Unexpected exception thrown", e);
 			} finally {
 				try {
 					closeable.close();
