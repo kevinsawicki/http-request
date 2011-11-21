@@ -40,7 +40,7 @@ The http-request library is available from [Maven Central](http://search.maven.o
 <dependency>
   <groupId>com.github.kevinsawicki</groupId>
   <artifactId>http-request</artifactId>
-  <version>0.1</version>
+  <version>0.2</version>
 </dependency> 
 ```
 
