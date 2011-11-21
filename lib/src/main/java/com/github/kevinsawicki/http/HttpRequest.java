@@ -50,8 +50,10 @@ import java.io.Writer;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
 import java.nio.charset.Charset;
+import java.nio.charset.CharsetEncoder;
 import java.security.AccessController;
 import java.security.GeneralSecurityException;
 import java.security.PrivilegedAction;
@@ -576,7 +578,7 @@ public class HttpRequest {
 	 */
 	public static class RequestOutputStream extends BufferedOutputStream {
 
-		private final Charset charset;
+		private final CharsetEncoder encoder;
 
 		/**
 		 * Create request output stream
@@ -590,7 +592,7 @@ public class HttpRequest {
 			super(stream, bufferSize);
 			if (charsetName == null)
 				charsetName = CHARSET_UTF8;
-			charset = Charset.forName(charsetName);
+			encoder = Charset.forName(charsetName).newEncoder();
 		}
 
 		/**
@@ -600,8 +602,9 @@ public class HttpRequest {
 		 * @return this stream
 		 * @throws IOException
 		 */
-		public RequestOutputStream write(String value) throws IOException {
-			super.write(value.getBytes(charset));
+		public RequestOutputStream write(final String value) throws IOException {
+			final ByteBuffer bytes = encoder.encode(CharBuffer.wrap(value));
+			super.write(bytes.array(), 0, bytes.limit());
 			return this;
 		}
 	}
@@ -1905,7 +1908,8 @@ public class HttpRequest {
 		} catch (IOException e) {
 			throw new HttpRequestException(e);
 		}
-		final Writer writer = new OutputStreamWriter(output, output.charset);
+		final Writer writer = new OutputStreamWriter(output,
+				output.encoder.charset());
 		return new FlushOperation<HttpRequest>(writer) {
 
 			protected HttpRequest run() throws IOException {
