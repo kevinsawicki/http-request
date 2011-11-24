@@ -51,6 +51,7 @@ import java.net.URL;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -1281,5 +1282,23 @@ public class HttpRequestTest extends ServerTestCase {
 		} catch (HttpRequestException e) {
 			assertEquals(closeCause, e.getCause());
 		}
+	}
+
+	/**
+	 * Make a GET request and get the code using an {@link AtomicInteger}
+	 *
+	 * @throws Exception
+	 */
+	@Test
+	public void getToOutputCode() throws Exception {
+		String url = setUp(new RequestHandler() {
+
+			public void handle(Request request, HttpServletResponse response) {
+				response.setStatus(HttpServletResponse.SC_OK);
+			}
+		});
+		AtomicInteger code = new AtomicInteger(0);
+		HttpRequest.get(url).code(code);
+		assertEquals(HttpServletResponse.SC_OK, code.get());
 	}
 }

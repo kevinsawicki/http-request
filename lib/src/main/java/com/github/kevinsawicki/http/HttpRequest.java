@@ -66,6 +66,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.Callable;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.HttpsURLConnection;
@@ -898,7 +899,7 @@ public class HttpRequest {
 	/**
 	 * Get the status code of the response
 	 *
-	 * @return this request
+	 * @return the response code
 	 * @throws HttpRequestException
 	 */
 	public int code() throws HttpRequestException {
@@ -908,6 +909,19 @@ public class HttpRequest {
 		} catch (IOException e) {
 			throw new HttpRequestException(e);
 		}
+	}
+
+	/**
+	 * Set the value of the given {@link AtomicInteger} to the status code of
+	 * the response
+	 *
+	 * @param output
+	 * @return this request
+	 * @throws HttpRequestException
+	 */
+	public HttpRequest code(AtomicInteger output) throws HttpRequestException {
+		output.set(code());
+		return this;
 	}
 
 	/**
