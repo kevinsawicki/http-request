@@ -475,12 +475,57 @@ public class HttpRequest {
 	}
 
 	/**
+	 * Operation that handles executing a callback once complete and handling
+	 * nested exceptions
+	 *
+	 * @param <V>
+	 */
+	protected static abstract class Operation<V> implements Callable<V> {
+
+		/**
+		 * Run operation
+		 *
+		 * @return result
+		 * @throws HttpRequestException
+		 * @throws IOException
+		 */
+		protected abstract V run() throws HttpRequestException, IOException;
+
+		/**
+		 * Operation complete callback
+		 *
+		 * @throws IOException
+		 */
+		protected abstract void done() throws IOException;
+
+		public V call() throws HttpRequestException {
+			boolean thrown = false;
+			try {
+				return run();
+			} catch (HttpRequestException e) {
+				thrown = true;
+				throw e;
+			} catch (IOException e) {
+				thrown = true;
+				throw new HttpRequestException(e);
+			} finally {
+				try {
+					done();
+				} catch (IOException e) {
+					if (!thrown)
+						throw new HttpRequestException(e);
+				}
+			}
+		}
+	}
+
+	/**
 	 * Class that ensures a {@link Closeable} gets closed with proper exception
 	 * handling.
 	 *
 	 * @param <V>
 	 */
-	protected static abstract class CloseOperation<V> implements Callable<V> {
+	protected static abstract class CloseOperation<V> extends Operation<V> {
 
 		private Closeable closeable;
 
@@ -493,33 +538,8 @@ public class HttpRequest {
 			this.closeable = closeable;
 		}
 
-		/**
-		 * Run operation
-		 *
-		 * @return result
-		 * @throws HttpRequestException
-		 * @throws IOException
-		 */
-		protected abstract V run() throws HttpRequestException, IOException;
-
-		public V call() throws HttpRequestException {
-			boolean thrown = false;
-			try {
-				return run();
-			} catch (HttpRequestException e) {
-				thrown = true;
-				throw e;
-			} catch (IOException e) {
-				thrown = true;
-				throw new HttpRequestException(e);
-			} finally {
-				try {
-					closeable.close();
-				} catch (IOException e) {
-					if (!thrown)
-						throw new HttpRequestException(e);
-				}
-			}
+		protected void done() throws IOException {
+			closeable.close();
 		}
 	}
 
@@ -529,7 +549,7 @@ public class HttpRequest {
 	 *
 	 * @param <V>
 	 */
-	protected static abstract class FlushOperation<V> implements Callable<V> {
+	protected static abstract class FlushOperation<V> extends Operation<V> {
 
 		private Flushable flushable;
 
@@ -542,33 +562,8 @@ public class HttpRequest {
 			this.flushable = flushable;
 		}
 
-		/**
-		 * Run operation
-		 *
-		 * @return result
-		 * @throws HttpRequestException
-		 * @throws IOException
-		 */
-		protected abstract V run() throws HttpRequestException, IOException;
-
-		public V call() throws HttpRequestException {
-			boolean thrown = false;
-			try {
-				return run();
-			} catch (HttpRequestException e) {
-				thrown = true;
-				throw e;
-			} catch (IOException e) {
-				thrown = true;
-				throw new HttpRequestException(e);
-			} finally {
-				try {
-					flushable.flush();
-				} catch (IOException e) {
-					if (!thrown)
-						throw new HttpRequestException(e);
-				}
-			}
+		protected void done() throws IOException {
+			flushable.flush();
 		}
 	}
 
