@@ -489,7 +489,7 @@ public class HttpRequest {
 		 *
 		 * @param closeable
 		 */
-		protected CloseOperation(Closeable closeable) {
+		protected CloseOperation(final Closeable closeable) {
 			this.closeable = closeable;
 		}
 
@@ -538,7 +538,7 @@ public class HttpRequest {
 		 *
 		 * @param flushable
 		 */
-		protected FlushOperation(Flushable flushable) {
+		protected FlushOperation(final Flushable flushable) {
 			this.flushable = flushable;
 		}
 
@@ -919,7 +919,8 @@ public class HttpRequest {
 	 * @return this request
 	 * @throws HttpRequestException
 	 */
-	public HttpRequest code(AtomicInteger output) throws HttpRequestException {
+	public HttpRequest code(final AtomicInteger output)
+			throws HttpRequestException {
 		output.set(code());
 		return this;
 	}
