@@ -814,11 +814,13 @@ public class HttpRequest {
 			separated.append(hosts[last]);
 			setProperty("http.nonProxyHosts", separated.toString());
 		} else
-			setProperty("http.nonProxyHosts", hosts[0]);
+			setProperty("http.nonProxyHosts", null);
 	}
 
 	/**
-	 * Set property to given value
+	 * Set property to given value.
+	 * <p>
+	 * Specifying a null value will cause the property to be cleared
 	 *
 	 * @param name
 	 * @param value
@@ -826,12 +828,22 @@ public class HttpRequest {
 	 */
 	private static final String setProperty(final String name,
 			final String value) {
-		return AccessController.doPrivileged(new PrivilegedAction<String>() {
+		if (value != null)
+			return AccessController
+					.doPrivileged(new PrivilegedAction<String>() {
 
-			public String run() {
-				return System.setProperty(name, value);
-			}
-		});
+						public String run() {
+							return System.setProperty(name, value);
+						}
+					});
+		else
+			return AccessController
+					.doPrivileged(new PrivilegedAction<String>() {
+
+						public String run() {
+							return System.clearProperty(name);
+						}
+					});
 	}
 
 	private final HttpURLConnection connection;
