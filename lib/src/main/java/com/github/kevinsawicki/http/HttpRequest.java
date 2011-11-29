@@ -79,8 +79,8 @@ import javax.net.ssl.X509TrustManager;
  * A fluid interface for making HTTP requests using an underlying
  * {@link HttpURLConnection} (or sub-class).
  * <p>
- * Each instance supports making a single request and cannot be reused across
- * requests.
+ * Each instance supports making a single request and cannot be reused for
+ * further requests.
  */
 public class HttpRequest {
 
@@ -776,7 +776,7 @@ public class HttpRequest {
 	 *
 	 * @param host
 	 */
-	public static void proxyHost(String host) {
+	public static void proxyHost(final String host) {
 		setProperty("http.proxyHost", host);
 		setProperty("https.proxyHost", host);
 	}
@@ -789,8 +789,8 @@ public class HttpRequest {
 	 *
 	 * @param port
 	 */
-	public static void proxyPort(int port) {
-		String portValue = Integer.toString(port);
+	public static void proxyPort(final int port) {
+		final String portValue = Integer.toString(port);
 		setProperty("http.proxyPort", portValue);
 		setProperty("https.proxyPort", portValue);
 	}
