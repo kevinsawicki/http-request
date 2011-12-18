@@ -14,6 +14,7 @@ from the [downloads page](https://github.com/kevinsawicki/http-request/downloads
   <artifactId>http-request</artifactId>
   <version>0.4</version>
 </dependency> 
+```
 
 ## FAQ
 
@@ -43,9 +44,6 @@ The `HttpRequest` class does not throw any checked exceptions, instead all low-l
 exceptions are wrapped up in a `HttpRequestException` which extends `RuntimeException`.
 You can access the underlying exception by catching `HttpRequestException` and calling
 `getCause()` which will always return the original `IOException`.
-
-
-```
 
 ## Examples
 
