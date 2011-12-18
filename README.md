@@ -16,6 +16,8 @@ from the [downloads page](https://github.com/kevinsawicki/http-request/downloads
 </dependency> 
 ```
 
+Javadocs are available [here](http://kevinsawicki.github.com/http-request/apidocs/index.html).
+
 ## FAQ
 
 ### Why was this written?
