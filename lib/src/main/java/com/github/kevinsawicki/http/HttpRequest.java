@@ -1060,6 +1060,9 @@ public class HttpRequest {
 
 	/**
 	 * Set the size used when buffering and copying between streams
+	 * <p>
+	 * This size all send and receive buffers created for both char and byte
+	 * arrays
 	 *
 	 * @param size
 	 * @return this request
