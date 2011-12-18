@@ -921,7 +921,7 @@ public class HttpRequest {
 
 	/**
 	 * Set whether or not to ignore exceptions that occur from calling
-	 * {@link OutputStream#close()}
+	 * {@link Closeable#close()}
 	 * <p>
 	 * The default value of this setting is <code>true</code>
 	 *
@@ -931,6 +931,16 @@ public class HttpRequest {
 	public HttpRequest ignoreCloseExceptions(final boolean ignore) {
 		ignoreCloseExceptions = ignore;
 		return this;
+	}
+
+	/**
+	 * Get whether or not exceptions thrown by {@link Closeable#close()} are
+	 * ignored
+	 *
+	 * @return true if ignoring, false if throwing
+	 */
+	public boolean ignoreCloseExceptions() {
+		return ignoreCloseExceptions;
 	}
 
 	/**
@@ -1072,6 +1082,15 @@ public class HttpRequest {
 			throw new IllegalArgumentException("Size must be greater than zero");
 		bufferSize = size;
 		return this;
+	}
+
+	/**
+	 * Get the configured buffer size
+	 *
+	 * @return buffer size
+	 */
+	public int bufferSize() {
+		return bufferSize;
 	}
 
 	/**
