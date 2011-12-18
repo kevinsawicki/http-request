@@ -3,6 +3,18 @@
 A simple convenience library for using a [HttpURLConnection](http://download.oracle.com/javase/6/docs/api/java/net/HttpURLConnection.html)
 to make requests and access the response. 
 
+## Usage
+
+The http-request library is available from [Maven Central](http://search.maven.org/#search%7Cga%7C1%7Ca%3A%22http-request%22%20g%3A%22com.github.kevinsawicki%22) and also
+from the [downloads page](https://github.com/kevinsawicki/http-request/downloads).
+
+```xml
+<dependency>
+  <groupId>com.github.kevinsawicki</groupId>
+  <artifactId>http-request</artifactId>
+  <version>0.4</version>
+</dependency> 
+
 ## FAQ
 
 ### Why was this written?
@@ -32,16 +44,7 @@ exceptions are wrapped up in a `HttpRequestException` which extends `RuntimeExce
 You can access the underlying exception by catching `HttpRequestException` and calling
 `getCause()` which will always return the original `IOException`.
 
-## Usage
 
-The http-request library is available from [Maven Central](http://search.maven.org/#search%7Cga%7C1%7Ca%3A%22http-request%22%20g%3A%22com.github.kevinsawicki%22).
-
-```xml
-<dependency>
-  <groupId>com.github.kevinsawicki</groupId>
-  <artifactId>http-request</artifactId>
-  <version>0.2</version>
-</dependency> 
 ```
 
 ## Examples
