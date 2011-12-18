@@ -1277,7 +1277,7 @@ public class HttpRequestTest extends ServerTestCase {
 			}
 		};
 		try {
-			HttpRequest.post(url).send(stream);
+			HttpRequest.post(url).ignoreCloseExceptions(false).send(stream);
 			fail("Exception not thrown");
 		} catch (HttpRequestException e) {
 			assertEquals(closeCause, e.getCause());

@@ -527,19 +527,33 @@ public class HttpRequest {
 	 */
 	protected static abstract class CloseOperation<V> extends Operation<V> {
 
-		private Closeable closeable;
+		private final Closeable closeable;
+
+		private final boolean ignoreCloseExceptions;
 
 		/**
 		 * Create closer for operation
 		 *
 		 * @param closeable
+		 * @param ignoreCloseExceptions
 		 */
-		protected CloseOperation(final Closeable closeable) {
+		protected CloseOperation(final Closeable closeable,
+				final boolean ignoreCloseExceptions) {
 			this.closeable = closeable;
+			this.ignoreCloseExceptions = ignoreCloseExceptions;
 		}
 
 		protected void done() throws IOException {
-			closeable.close();
+			if (closeable instanceof Flushable)
+				((Flushable) closeable).flush();
+			if (ignoreCloseExceptions)
+				try {
+					closeable.close();
+				} catch (IOException e) {
+					// Ignored
+				}
+			else
+				closeable.close();
 		}
 	}
 
@@ -551,7 +565,7 @@ public class HttpRequest {
 	 */
 	protected static abstract class FlushOperation<V> extends Operation<V> {
 
-		private Flushable flushable;
+		private final Flushable flushable;
 
 		/**
 		 * Create flush operation
@@ -854,6 +868,8 @@ public class HttpRequest {
 
 	private boolean form;
 
+	private boolean ignoreCloseExceptions = true;
+
 	private int bufferSize = 8192;
 
 	/**
@@ -901,6 +917,20 @@ public class HttpRequest {
 	 */
 	public HttpURLConnection getConnection() {
 		return connection;
+	}
+
+	/**
+	 * Set whether or not to ignore exceptions that occur from calling
+	 * {@link OutputStream#close()}
+	 * <p>
+	 * The default value of this setting is <code>true</code>
+	 *
+	 * @param ignore
+	 * @return this request
+	 */
+	public HttpRequest ignoreCloseExceptions(final boolean ignore) {
+		ignoreCloseExceptions = ignore;
+		return this;
 	}
 
 	/**
@@ -1190,7 +1220,7 @@ public class HttpRequest {
 		} catch (FileNotFoundException e) {
 			throw new HttpRequestException(e);
 		}
-		return new CloseOperation<HttpRequest>(output) {
+		return new CloseOperation<HttpRequest>(output, ignoreCloseExceptions) {
 
 			protected HttpRequest run() throws HttpRequestException,
 					IOException {
@@ -1225,7 +1255,7 @@ public class HttpRequest {
 	public HttpRequest receive(final Appendable appendable)
 			throws HttpRequestException {
 		final BufferedReader reader = new BufferedReader(reader(), bufferSize);
-		return new CloseOperation<HttpRequest>(reader) {
+		return new CloseOperation<HttpRequest>(reader, ignoreCloseExceptions) {
 
 			public HttpRequest run() throws IOException {
 				final CharBuffer buffer = CharBuffer.allocate(bufferSize);
@@ -1249,7 +1279,7 @@ public class HttpRequest {
 	 */
 	public HttpRequest receive(final Writer writer) throws HttpRequestException {
 		final BufferedReader reader = new BufferedReader(reader(), bufferSize);
-		return new CloseOperation<HttpRequest>(reader) {
+		return new CloseOperation<HttpRequest>(reader, ignoreCloseExceptions) {
 
 			public HttpRequest run() throws IOException {
 				return copy(reader, writer);
@@ -1638,7 +1668,7 @@ public class HttpRequest {
 	 */
 	protected HttpRequest copy(final InputStream input,
 			final OutputStream output) throws IOException {
-		return new CloseOperation<HttpRequest>(input) {
+		return new CloseOperation<HttpRequest>(input, ignoreCloseExceptions) {
 
 			public HttpRequest run() throws IOException {
 				final byte[] buffer = new byte[bufferSize];
@@ -1660,7 +1690,7 @@ public class HttpRequest {
 	 */
 	protected HttpRequest copy(final Reader input, final Writer output)
 			throws IOException {
-		return new CloseOperation<HttpRequest>(input) {
+		return new CloseOperation<HttpRequest>(input, ignoreCloseExceptions) {
 
 			public HttpRequest run() throws IOException {
 				final char[] buffer = new char[bufferSize];
@@ -1685,7 +1715,14 @@ public class HttpRequest {
 		if (multipart)
 			output.write("\r\n--" + BOUNDARY + "--\r\n");
 		output.flush();
-		output.close();
+		if (ignoreCloseExceptions)
+			try {
+				output.close();
+			} catch (IOException ignored) {
+				// Ignored
+			}
+		else
+			output.close();
 		output = null;
 		return this;
 	}
