@@ -112,6 +112,14 @@ public class HttpRequestTest extends ServerTestCase {
 		});
 		HttpRequest request = get(url);
 		assertNotNull(request.getConnection());
+		assertEquals(30000, request.readTimeout(30000).getConnection()
+				.getReadTimeout());
+		assertEquals(50000, request.connectTimeout(50000).getConnection()
+				.getConnectTimeout());
+		assertEquals(2500, request.bufferSize(2500).bufferSize());
+		assertFalse(request.ignoreCloseExceptions(false)
+				.ignoreCloseExceptions());
+		assertFalse(request.useCaches(false).getConnection().getUseCaches());
 		int code = request.code();
 		assertTrue(request.ok());
 		assertFalse(request.created());
@@ -125,6 +133,7 @@ public class HttpRequestTest extends ServerTestCase {
 		assertEquals("", request.body());
 		assertNotNull(request.toString());
 		assertFalse(request.toString().length() == 0);
+		assertEquals(request, request.disconnect());
 	}
 
 	/**
@@ -511,8 +520,9 @@ public class HttpRequestTest extends ServerTestCase {
 				response.setStatus(HttpServletResponse.SC_OK);
 			}
 		});
-		int code = post(url).send("hello".getBytes(HttpRequest.CHARSET_UTF8))
-				.code();
+		byte[] bytes = "hello".getBytes(HttpRequest.CHARSET_UTF8);
+		int code = post(url).contentLength(Integer.toString(bytes.length))
+				.send(bytes).code();
 		assertEquals(HttpURLConnection.HTTP_OK, code);
 		assertEquals("hello", body.get());
 	}
@@ -697,6 +707,29 @@ public class HttpRequestTest extends ServerTestCase {
 		assertTrue(request.ok());
 		BufferedReader reader = new BufferedReader(request.reader());
 		assertEquals("hello", reader.readLine());
+		reader.close();
+	}
+
+	/**
+	 * Make a GET and get response as a input stream reader
+	 *
+	 * @throws Exception
+	 */
+	@Test
+	public void getReaderWithCharset() throws Exception {
+		String url = setUp(new RequestHandler() {
+
+			public void handle(Request request, HttpServletResponse response) {
+				response.setStatus(HttpServletResponse.SC_OK);
+				write("hello");
+			}
+		});
+		HttpRequest request = get(url);
+		assertTrue(request.ok());
+		BufferedReader reader = new BufferedReader(
+				request.reader(HttpRequest.CHARSET_UTF8));
+		assertEquals("hello", reader.readLine());
+		reader.close();
 	}
 
 	/**
@@ -962,6 +995,25 @@ public class HttpRequestTest extends ServerTestCase {
 	}
 
 	/**
+	 * Verify setting number header
+	 *
+	 * @throws Exception
+	 */
+	@Test
+	public void numberHead() throws Exception {
+		final AtomicReference<String> h1 = new AtomicReference<String>();
+		String url = setUp(new RequestHandler() {
+
+			public void handle(Request request, HttpServletResponse response) {
+				response.setStatus(HttpServletResponse.SC_OK);
+				h1.set(request.getHeader("h1"));
+			}
+		});
+		assertTrue(HttpRequest.get(url).header("h1", 5).ok());
+		assertEquals("5", h1.get());
+	}
+
+	/**
 	 * Verify 'User-Agent' request header
 	 *
 	 * @throws Exception
@@ -1098,16 +1150,20 @@ public class HttpRequestTest extends ServerTestCase {
 			}
 		});
 		File file = File.createTempFile("body", ".txt");
+		File file2 = File.createTempFile("body", ".txt");
 		new FileWriter(file).append("content1").close();
+		new FileWriter(file2).append("content4").close();
 		HttpRequest request = HttpRequest.post(url);
 		request.part("description", "content2");
 		request.part("size", file.length());
 		request.part("body", file.getName(), file);
+		request.part("file", file2);
 		request.part("stream", new ByteArrayInputStream("content3".getBytes()));
 		assertTrue(request.ok());
 		assertTrue(body.toString().contains("content1\r\n"));
 		assertTrue(body.toString().contains("content2\r\n"));
 		assertTrue(body.toString().contains("content3\r\n"));
+		assertTrue(body.toString().contains("content4\r\n"));
 		assertTrue(body.toString().contains(
 				Long.toString(file.length()) + "\r\n"));
 	}
