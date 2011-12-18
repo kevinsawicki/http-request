@@ -1409,6 +1409,17 @@ public class HttpRequest {
 	}
 
 	/**
+	 * Set value of {@link HttpURLConnection#setUseCaches(boolean)}
+	 *
+	 * @param useCaches
+	 * @return this request
+	 */
+	public HttpRequest useCaches(final boolean useCaches) {
+		connection.setUseCaches(useCaches);
+		return this;
+	}
+
+	/**
 	 * Set the 'Accept-Encoding' header to given value
 	 *
 	 * @param value
