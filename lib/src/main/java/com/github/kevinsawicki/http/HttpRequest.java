@@ -1948,6 +1948,8 @@ public class HttpRequest {
 
 	/**
 	 * Write stream to request body
+	 * <p>
+	 * The given stream will be closed once sending completes
 	 *
 	 * @param input
 	 * @return this request
@@ -1965,7 +1967,9 @@ public class HttpRequest {
 	}
 
 	/**
-	 * Write stream to request body
+	 * Write reader to request body
+	 * <p>
+	 * The given reader will be closed once sending completes
 	 *
 	 * @param input
 	 * @return this request
