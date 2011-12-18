@@ -2017,7 +2017,7 @@ public class HttpRequest {
 	/**
 	 * Write the values in the map as form data to the request body
 	 * <p>
-	 * The pairs specified will be URL-encoded and sent with the
+	 * The pairs specified will be URL-encoded in UTF-8 and sent with the
 	 * 'application/x-www-form-urlencoded' content-type
 	 *
 	 * @param values
@@ -2031,7 +2031,7 @@ public class HttpRequest {
 	/**
 	 * Write the name/value pair as form data to the request body
 	 * <p>
-	 * The pair specified will be URL-encoded and sent with the
+	 * The pair specified will be URL-encoded in UTF-8 and sent with the
 	 * 'application/x-www-form-urlencoded' content-type
 	 *
 	 * @param name
