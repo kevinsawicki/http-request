@@ -1530,7 +1530,7 @@ public class HttpRequest {
 	 * @return this request
 	 */
 	public HttpRequest basic(final String name, final String password) {
-		return authorization("Basic " + Base64.encode(name + ":" + password));
+		return authorization("Basic " + Base64.encode(name + ':' + password));
 	}
 
 	/**
@@ -1573,7 +1573,7 @@ public class HttpRequest {
 	 */
 	public HttpRequest contentType(final String value, final String charset) {
 		if (charset != null) {
-			final String separator = "; " + PARAM_CHARSET + "=";
+			final String separator = "; " + PARAM_CHARSET + '=';
 			return header(HEADER_CONTENT_TYPE, value + separator + charset);
 		} else
 			return header(HEADER_CONTENT_TYPE, value);
