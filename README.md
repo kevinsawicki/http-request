@@ -5,14 +5,13 @@ to make requests and access the response.
 
 ## Usage
 
-The http-request library is available from [Maven Central](http://search.maven.org/#search%7Cga%7C1%7Ca%3A%22http-request%22%20g%3A%22com.github.kevinsawicki%22) and also
-from the [downloads page](https://github.com/kevinsawicki/http-request/downloads).
+The http-request library is available from [Maven Central](http://search.maven.org/#search%7Cga%7C1%7Ca%3A%22http-request%22%20g%3A%22com.github.kevinsawicki%22).
 
 ```xml
 <dependency>
   <groupId>com.github.kevinsawicki</groupId>
   <artifactId>http-request</artifactId>
-  <version>0.4</version>
+  <version>0.5</version>
 </dependency> 
 ```
 
