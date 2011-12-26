@@ -44,6 +44,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.io.PrintStream;
 import java.io.Reader;
 import java.io.UnsupportedEncodingException;
 import java.io.Writer;
@@ -1271,6 +1272,18 @@ public class HttpRequest {
 		} catch (IOException e) {
 			throw new HttpRequestException(e);
 		}
+	}
+
+	/**
+	 * Stream response to given print stream
+	 *
+	 * @param output
+	 * @return this request
+	 * @throws HttpRequestException
+	 */
+	public HttpRequest receive(final PrintStream output)
+			throws HttpRequestException {
+		return receive((OutputStream) output);
 	}
 
 	/**
