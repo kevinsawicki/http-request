@@ -2107,7 +2107,8 @@ public class HttpRequest {
 	 */
 	public HttpRequest form(final Map<?, ?> values, final String charset)
 			throws HttpRequestException {
-		if (!form) {
+		boolean first = !form;
+		if (first) {
 			contentType(CONTENT_TYPE_FORM, charset);
 			form = true;
 		}
@@ -2120,6 +2121,8 @@ public class HttpRequest {
 			openOutput();
 			@SuppressWarnings("rawtypes")
 			Entry entry = entries.next();
+			if (!first)
+				output.write('&');
 			output.write(URLEncoder.encode(entry.getKey().toString(), charset));
 			output.write('=');
 			Object value = entry.getValue();

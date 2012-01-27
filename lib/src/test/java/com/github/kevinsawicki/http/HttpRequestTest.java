@@ -49,7 +49,7 @@ import java.io.Writer;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Arrays;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
@@ -567,14 +567,14 @@ public class HttpRequestTest extends ServerTestCase {
 				response.setStatus(HttpServletResponse.SC_OK);
 			}
 		});
-		Map<String, String> data = new HashMap<String, String>();
+		Map<String, String> data = new LinkedHashMap<String, String>();
 		data.put("name", "user");
 		data.put("number", "100");
 		int code = post(url).form(data).form("zip", "12345").code();
 		assertEquals(HttpURLConnection.HTTP_OK, code);
 		assertTrue(body.get().contains("name=user"));
-		assertTrue(body.get().contains("number=100"));
-		assertTrue(body.get().contains("zip=12345"));
+		assertTrue(body.get().contains("&number=100"));
+		assertTrue(body.get().contains("&zip=12345"));
 	}
 
 	/**
