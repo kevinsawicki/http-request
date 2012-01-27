@@ -1755,7 +1755,6 @@ public class HttpRequest {
 			return this;
 		if (multipart)
 			output.write("\r\n--" + BOUNDARY + "--\r\n");
-		output.flush();
 		if (ignoreCloseExceptions)
 			try {
 				output.close();
