@@ -2180,7 +2180,7 @@ public class HttpRequest {
 	}
 
 	/**
-	 * Configured HTTPS connection to trust all hosts
+	 * Configure HTTPS connection to trust all hosts
 	 *
 	 * @return this request
 	 */
