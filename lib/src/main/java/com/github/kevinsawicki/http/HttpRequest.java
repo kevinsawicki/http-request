@@ -2146,6 +2146,8 @@ public class HttpRequest {
 
 	/**
 	 * Configure HTTPS connection to trust all certificates
+	 * <p>
+	 * This method does nothing if the current request is not a HTTPS request
 	 *
 	 * @return this request
 	 * @throws HttpRequestException
@@ -2180,7 +2182,11 @@ public class HttpRequest {
 	}
 
 	/**
-	 * Configure HTTPS connection to trust all hosts
+	 * Configure HTTPS connection to trust all hosts using a custom
+	 * {@link HostnameVerifier} that always returns <code>true</code> for each
+	 * host verified
+	 * <p>
+	 * This method does nothing if the current request is not a HTTPS request
 	 *
 	 * @return this request
 	 */
