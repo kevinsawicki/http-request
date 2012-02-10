@@ -1261,7 +1261,7 @@ public class HttpRequest {
 	 * @throws HttpRequestException
 	 */
 	public BufferedReader bufferedReader() throws HttpRequestException {
-		return new BufferedReader(reader(charset()), bufferSize);
+		return bufferedReader(charset());
 	}
 
 	/**
