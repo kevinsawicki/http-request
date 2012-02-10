@@ -1114,10 +1114,10 @@ public class HttpRequest {
 	}
 
 	/**
-	 * Get response as String in given charset.
+	 * Get response as {@link String} in given character set
 	 * <p>
-	 * This will fallback to using the platform's default character if the given
-	 * charset is null.
+	 * This will fall back to using the platform's default character if the
+	 * given charset is null
 	 *
 	 * @param charset
 	 * @return string
@@ -1141,7 +1141,8 @@ public class HttpRequest {
 	}
 
 	/**
-	 * Get response as String using character returned from {@link #charset()}
+	 * Get response as {@link String} using character set returned from
+	 * {@link #charset()}
 	 *
 	 * @return string
 	 * @throws HttpRequestException
@@ -1169,6 +1170,7 @@ public class HttpRequest {
 	/**
 	 * Get response in a buffered stream
 	 *
+	 * @see #bufferSize(int)
 	 * @return stream
 	 * @throws HttpRequestException
 	 */
