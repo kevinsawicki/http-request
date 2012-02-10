@@ -1204,8 +1204,8 @@ public class HttpRequest {
 	/**
 	 * Get reader to response body using given character set.
 	 * <p>
-	 * This will fallback to using the platform's default character if the given
-	 * charset is null.
+	 * This will fall back to using the platform's default character set if the
+	 * given charset is null
 	 *
 	 * @param charset
 	 * @return reader
@@ -1225,7 +1225,7 @@ public class HttpRequest {
 	}
 
 	/**
-	 * Get response to response body using the character set returned from
+	 * Get reader to response body using the character set returned from
 	 * {@link #charset()}
 	 *
 	 * @return reader
@@ -1233,6 +1233,33 @@ public class HttpRequest {
 	 */
 	public InputStreamReader reader() throws HttpRequestException {
 		return reader(charset());
+	}
+
+	/**
+	 * Get buffered reader to response body using the given character set r and
+	 * the configured buffer size
+	 *
+	 *
+	 * @see #bufferSize(int)
+	 * @param charset
+	 * @return reader
+	 * @throws HttpRequestException
+	 */
+	public BufferedReader bufferedReader(final String charset)
+			throws HttpRequestException {
+		return new BufferedReader(reader(charset), bufferSize);
+	}
+
+	/**
+	 * Get buffered reader to response body using the character set returned
+	 * from {@link #charset()} and the configured buffer size
+	 *
+	 * @see #bufferSize(int)
+	 * @return reader
+	 * @throws HttpRequestException
+	 */
+	public BufferedReader bufferedReader() throws HttpRequestException {
+		return new BufferedReader(reader(charset()), bufferSize);
 	}
 
 	/**
