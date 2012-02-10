@@ -711,6 +711,27 @@ public class HttpRequestTest extends ServerTestCase {
 	}
 
 	/**
+	 * Make a GET and get response as a buffered reader
+	 *
+	 * @throws Exception
+	 */
+	@Test
+	public void getBufferedReader() throws Exception {
+		String url = setUp(new RequestHandler() {
+
+			public void handle(Request request, HttpServletResponse response) {
+				response.setStatus(HttpServletResponse.SC_OK);
+				write("hello");
+			}
+		});
+		HttpRequest request = get(url);
+		assertTrue(request.ok());
+		BufferedReader reader = request.bufferedReader();
+		assertEquals("hello", reader.readLine());
+		reader.close();
+	}
+
+	/**
 	 * Make a GET and get response as a input stream reader
 	 *
 	 * @throws Exception
