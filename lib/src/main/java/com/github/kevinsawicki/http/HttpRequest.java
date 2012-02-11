@@ -1116,8 +1116,8 @@ public class HttpRequest {
 	/**
 	 * Get response as {@link String} in given character set
 	 * <p>
-	 * This will fall back to using the platform's default character if the
-	 * given charset is null
+	 * This will fall back to using the UTF-8 character set if the given charset
+	 * is null
 	 *
 	 * @param charset
 	 * @return string
@@ -1130,14 +1130,11 @@ public class HttpRequest {
 		} catch (IOException e) {
 			throw new HttpRequestException(e);
 		}
-		if (charset != null)
-			try {
-				return output.toString(charset);
-			} catch (UnsupportedEncodingException e) {
-				throw new HttpRequestException(e);
-			}
-		else
-			return output.toString();
+		try {
+			return output.toString(charset != null ? charset : CHARSET_UTF8);
+		} catch (UnsupportedEncodingException e) {
+			throw new HttpRequestException(e);
+		}
 	}
 
 	/**
@@ -1206,8 +1203,8 @@ public class HttpRequest {
 	/**
 	 * Get reader to response body using given character set.
 	 * <p>
-	 * This will fall back to using the platform's default character set if the
-	 * given charset is null
+	 * This will fall back to using the UTF-8 character set if the given charset
+	 * is null
 	 *
 	 * @param charset
 	 * @return reader
@@ -1215,15 +1212,12 @@ public class HttpRequest {
 	 */
 	public InputStreamReader reader(final String charset)
 			throws HttpRequestException {
-		final InputStream stream = stream();
-		if (charset != null)
-			try {
-				return new InputStreamReader(stream, charset);
-			} catch (UnsupportedEncodingException e) {
-				throw new HttpRequestException(e);
-			}
-		else
-			return new InputStreamReader(stream);
+		try {
+			return new InputStreamReader(stream(), charset != null ? charset
+					: CHARSET_UTF8);
+		} catch (UnsupportedEncodingException e) {
+			throw new HttpRequestException(e);
+		}
 	}
 
 	/**
