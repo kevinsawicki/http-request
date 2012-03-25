@@ -217,6 +217,8 @@ public class HttpRequest {
 
 	private static final String CONTENT_TYPE_FORM = "application/x-www-form-urlencoded";
 
+	private static final String CONTENT_TYPE_JSON = "application/json";
+
 	/**
 	 * <p>
 	 * Encodes and decodes to and from Base64 notation.
@@ -1720,6 +1722,15 @@ public class HttpRequest {
 	 */
 	public HttpRequest accept(final String value) {
 		return header(HEADER_ACCEPT, value);
+	}
+
+	/**
+	 * Set the 'Accept' header to 'application/json'
+	 *
+	 * @return this request
+	 */
+	public HttpRequest acceptJson() {
+		return accept(CONTENT_TYPE_JSON);
 	}
 
 	/**
