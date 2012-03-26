@@ -1073,6 +1073,26 @@ public class HttpRequestTest extends ServerTestCase {
 	}
 
 	/**
+	 * Verify 'Accept' request header when calling
+	 * {@link HttpRequest#acceptJson()}
+	 *
+	 * @throws Exception
+	 */
+	@Test
+	public void acceptJson() throws Exception {
+		final AtomicReference<String> header = new AtomicReference<String>();
+		String url = setUp(new RequestHandler() {
+
+			public void handle(Request request, HttpServletResponse response) {
+				response.setStatus(HttpServletResponse.SC_OK);
+				header.set(request.getHeader("Accept"));
+			}
+		});
+		assertTrue(HttpRequest.get(url).acceptJson().ok());
+		assertEquals("application/json", header.get());
+	}
+
+	/**
 	 * Verify 'If-None-Match' request header
 	 *
 	 * @throws Exception
