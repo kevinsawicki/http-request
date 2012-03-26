@@ -598,8 +598,8 @@ public class HttpRequest {
 		 * @param charsetName
 		 * @param bufferSize
 		 */
-		public RequestOutputStream(OutputStream stream, String charsetName,
-				int bufferSize) {
+		public RequestOutputStream(final OutputStream stream,
+				String charsetName, final int bufferSize) {
 			super(stream, bufferSize);
 			if (charsetName == null)
 				charsetName = CHARSET_UTF8;
@@ -627,7 +627,8 @@ public class HttpRequest {
 	 * @return request
 	 * @throws HttpRequestException
 	 */
-	public static HttpRequest get(CharSequence url) throws HttpRequestException {
+	public static HttpRequest get(final CharSequence url)
+			throws HttpRequestException {
 		return new HttpRequest(url, METHOD_GET);
 	}
 
@@ -638,7 +639,7 @@ public class HttpRequest {
 	 * @return request
 	 * @throws HttpRequestException
 	 */
-	public static HttpRequest get(URL url) throws HttpRequestException {
+	public static HttpRequest get(final URL url) throws HttpRequestException {
 		return new HttpRequest(url, METHOD_GET);
 	}
 
@@ -649,7 +650,7 @@ public class HttpRequest {
 	 * @return request
 	 * @throws HttpRequestException
 	 */
-	public static HttpRequest post(CharSequence url)
+	public static HttpRequest post(final CharSequence url)
 			throws HttpRequestException {
 		return new HttpRequest(url, METHOD_POST);
 	}
@@ -661,7 +662,7 @@ public class HttpRequest {
 	 * @return request
 	 * @throws HttpRequestException
 	 */
-	public static HttpRequest post(URL url) throws HttpRequestException {
+	public static HttpRequest post(final URL url) throws HttpRequestException {
 		return new HttpRequest(url, METHOD_POST);
 	}
 
@@ -672,7 +673,8 @@ public class HttpRequest {
 	 * @return request
 	 * @throws HttpRequestException
 	 */
-	public static HttpRequest put(CharSequence url) throws HttpRequestException {
+	public static HttpRequest put(final CharSequence url)
+			throws HttpRequestException {
 		return new HttpRequest(url, METHOD_PUT);
 	}
 
@@ -683,7 +685,7 @@ public class HttpRequest {
 	 * @return request
 	 * @throws HttpRequestException
 	 */
-	public static HttpRequest put(URL url) throws HttpRequestException {
+	public static HttpRequest put(final URL url) throws HttpRequestException {
 		return new HttpRequest(url, METHOD_PUT);
 	}
 
@@ -694,7 +696,7 @@ public class HttpRequest {
 	 * @return request
 	 * @throws HttpRequestException
 	 */
-	public static HttpRequest delete(CharSequence url)
+	public static HttpRequest delete(final CharSequence url)
 			throws HttpRequestException {
 		return new HttpRequest(url, METHOD_DELETE);
 	}
@@ -706,7 +708,7 @@ public class HttpRequest {
 	 * @return request
 	 * @throws HttpRequestException
 	 */
-	public static HttpRequest delete(URL url) throws HttpRequestException {
+	public static HttpRequest delete(final URL url) throws HttpRequestException {
 		return new HttpRequest(url, METHOD_DELETE);
 	}
 
@@ -717,7 +719,7 @@ public class HttpRequest {
 	 * @return request
 	 * @throws HttpRequestException
 	 */
-	public static HttpRequest head(CharSequence url)
+	public static HttpRequest head(final CharSequence url)
 			throws HttpRequestException {
 		return new HttpRequest(url, METHOD_HEAD);
 	}
@@ -729,7 +731,7 @@ public class HttpRequest {
 	 * @return request
 	 * @throws HttpRequestException
 	 */
-	public static HttpRequest head(URL url) throws HttpRequestException {
+	public static HttpRequest head(final URL url) throws HttpRequestException {
 		return new HttpRequest(url, METHOD_HEAD);
 	}
 
@@ -740,7 +742,7 @@ public class HttpRequest {
 	 * @return request
 	 * @throws HttpRequestException
 	 */
-	public static HttpRequest options(CharSequence url)
+	public static HttpRequest options(final CharSequence url)
 			throws HttpRequestException {
 		return new HttpRequest(url, METHOD_OPTIONS);
 	}
@@ -752,7 +754,8 @@ public class HttpRequest {
 	 * @return request
 	 * @throws HttpRequestException
 	 */
-	public static HttpRequest options(URL url) throws HttpRequestException {
+	public static HttpRequest options(final URL url)
+			throws HttpRequestException {
 		return new HttpRequest(url, METHOD_OPTIONS);
 	}
 
@@ -763,7 +766,7 @@ public class HttpRequest {
 	 * @return request
 	 * @throws HttpRequestException
 	 */
-	public static HttpRequest trace(CharSequence url)
+	public static HttpRequest trace(final CharSequence url)
 			throws HttpRequestException {
 		return new HttpRequest(url, METHOD_TRACE);
 	}
@@ -775,7 +778,7 @@ public class HttpRequest {
 	 * @return request
 	 * @throws HttpRequestException
 	 */
-	public static HttpRequest trace(URL url) throws HttpRequestException {
+	public static HttpRequest trace(final URL url) throws HttpRequestException {
 		return new HttpRequest(url, METHOD_TRACE);
 	}
 
@@ -786,7 +789,7 @@ public class HttpRequest {
 	 *
 	 * @param keepAlive
 	 */
-	public static void keepAlive(boolean keepAlive) {
+	public static void keepAlive(final boolean keepAlive) {
 		setProperty("http.keepAlive", Boolean.toString(keepAlive));
 	}
 
@@ -1987,7 +1990,7 @@ public class HttpRequest {
 	 * @return this request
 	 * @throws HttpRequestException
 	 */
-	public HttpRequest partHeader(String name, String value)
+	public HttpRequest partHeader(final String name, final String value)
 			throws HttpRequestException {
 		return send(name).send(": ").send(value).send("\r\n\r\n");
 	}
