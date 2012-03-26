@@ -2140,7 +2140,7 @@ public class HttpRequest {
 	 */
 	public HttpRequest form(final Map<?, ?> values, final String charset)
 			throws HttpRequestException {
-		boolean first = !form;
+		final boolean first = !form;
 		if (first) {
 			contentType(CONTENT_TYPE_FORM, charset);
 			form = true;
