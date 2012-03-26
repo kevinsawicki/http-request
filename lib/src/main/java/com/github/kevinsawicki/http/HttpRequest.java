@@ -1132,12 +1132,8 @@ public class HttpRequest {
 		final ByteArrayOutputStream output = byteStream();
 		try {
 			copy(buffer(), output);
-		} catch (IOException e) {
-			throw new HttpRequestException(e);
-		}
-		try {
 			return output.toString(charset != null ? charset : CHARSET_UTF8);
-		} catch (UnsupportedEncodingException e) {
+		} catch (IOException e) {
 			throw new HttpRequestException(e);
 		}
 	}
