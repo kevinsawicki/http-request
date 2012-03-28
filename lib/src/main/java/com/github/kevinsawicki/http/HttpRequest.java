@@ -1319,7 +1319,7 @@ public class HttpRequest {
 	 */
 	public HttpRequest receive(final Appendable appendable)
 			throws HttpRequestException {
-		final BufferedReader reader = new BufferedReader(reader(), bufferSize);
+		final BufferedReader reader = bufferedReader();
 		return new CloseOperation<HttpRequest>(reader, ignoreCloseExceptions) {
 
 			public HttpRequest run() throws IOException {
@@ -1343,7 +1343,7 @@ public class HttpRequest {
 	 * @throws HttpRequestException
 	 */
 	public HttpRequest receive(final Writer writer) throws HttpRequestException {
-		final BufferedReader reader = new BufferedReader(reader(), bufferSize);
+		final BufferedReader reader = bufferedReader();
 		return new CloseOperation<HttpRequest>(reader, ignoreCloseExceptions) {
 
 			public HttpRequest run() throws IOException {
