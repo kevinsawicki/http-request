@@ -2206,8 +2206,10 @@ public class HttpRequest {
 			context = SSLContext.getInstance("TLS");
 			context.init(null, trustAllCerts, new SecureRandom());
 		} catch (GeneralSecurityException e) {
-			throw new HttpRequestException(new IOException(
-					e.getLocalizedMessage()));
+			IOException ioException = new IOException(
+					"Security exception configuring SSL context");
+			ioException.initCause(e);
+			throw new HttpRequestException(ioException);
 		}
 		((HttpsURLConnection) connection).setSSLSocketFactory(context
 				.getSocketFactory());
