@@ -59,7 +59,6 @@ import java.security.AccessController;
 import java.security.GeneralSecurityException;
 import java.security.PrivilegedAction;
 import java.security.SecureRandom;
-import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.util.Collections;
 import java.util.Iterator;
@@ -2194,11 +2193,13 @@ public class HttpRequest {
 			}
 
 			public void checkClientTrusted(X509Certificate[] chain,
-					String authType) throws CertificateException {
+					String authType) {
+				// Intentionally left blank
 			}
 
 			public void checkServerTrusted(X509Certificate[] chain,
-					String authType) throws CertificateException {
+					String authType) {
+				// Intentionally left blank
 			}
 		} };
 		final SSLContext context;
