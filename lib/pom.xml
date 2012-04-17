@@ -110,9 +110,10 @@
 			<plugin>
 				<groupId>com.github.github</groupId>
 				<artifactId>site-maven-plugin</artifactId>
-				<version>0.4</version>
+				<version>0.5</version>
 				<configuration>
 					<message>Generated site for ${project.name} ${project.version}</message>
+					<noJekyll>true</noJekyll>
 				</configuration>
 				<executions>
 					<execution>
