@@ -49,6 +49,8 @@ import java.io.Reader;
 import java.io.UnsupportedEncodingException;
 import java.io.Writer;
 import java.net.HttpURLConnection;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.nio.ByteBuffer;
@@ -617,6 +619,48 @@ public class HttpRequest {
 			super.write(bytes.array(), 0, bytes.limit());
 			return this;
 		}
+	}
+
+	/**
+	 * Encode the given URL as an ASCII {@link String}
+	 * <p>
+	 * This method ensures the path and query segments of the URL are properly
+	 * encoded such as ' ' characters being encoded to '%20' or any UTF-8
+	 * characters that are non-ASCII. No encoding of URLs is done by default by
+	 * the {@link HttpRequest} constructors and so if URL encoding is needed
+	 * this method should be called before calling the {@link HttpRequest}
+	 * constructor.
+	 *
+	 * @param url
+	 * @return encoded URL
+	 * @throws HttpRequestException
+	 */
+	public static String encode(final CharSequence url)
+			throws HttpRequestException {
+		URL parsed;
+		try {
+			parsed = new URL(url.toString());
+		} catch (IOException e) {
+			throw new HttpRequestException(e);
+		}
+
+		String protocol = parsed.getProtocol();
+		String host = parsed.getHost();
+		int port = parsed.getPort();
+		if (port != -1)
+			host = host + ':' + Integer.toString(port);
+		String path = parsed.getPath();
+		String query = parsed.getQuery();
+
+		URI uri;
+		try {
+			uri = new URI(protocol, host, path, query, null);
+		} catch (URISyntaxException e) {
+			IOException io = new IOException("Parsing URI failed");
+			io.initCause(e);
+			throw new HttpRequestException(io);
+		}
+		return uri.toASCIIString();
 	}
 
 	/**
