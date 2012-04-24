@@ -69,6 +69,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.zip.GZIPInputStream;
 
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.HttpsURLConnection;
@@ -219,6 +220,8 @@ public class HttpRequest {
 	private static final String CONTENT_TYPE_FORM = "application/x-www-form-urlencoded";
 
 	private static final String CONTENT_TYPE_JSON = "application/json";
+
+	private static final String ENCODING_GZIP = "gzip";
 
 	/**
 	 * <p>
@@ -924,6 +927,8 @@ public class HttpRequest {
 
 	private boolean ignoreCloseExceptions = true;
 
+	private boolean uncompress = false;
+
 	private int bufferSize = 8192;
 
 	/**
@@ -1149,6 +1154,29 @@ public class HttpRequest {
 	}
 
 	/**
+	 * Set whether or not the response body should be automatically uncompressed
+	 * when read from.
+	 * <p>
+	 * This will only affect requests that have the 'Content-Encoding' response
+	 * header set to 'gzip'.
+	 * <p>
+	 * This causes all receive methods to use a {@link GZIPInputStream} when
+	 * applicable so that higher level streams and readers can read the data
+	 * uncompressed.
+	 * <p>
+	 * Setting this option does not cause any request headers to be set
+	 * automatically so {@link #acceptGzipEncoding()} should be used in
+	 * conjunction with this setting to tell the server to gzip the response.
+	 *
+	 * @param uncompress
+	 * @return this request
+	 */
+	public HttpRequest uncompress(final boolean uncompress) {
+		this.uncompress = uncompress;
+		return this;
+	}
+
+	/**
 	 * Create byte array output stream
 	 *
 	 * @return stream
@@ -1226,22 +1254,31 @@ public class HttpRequest {
 	 * @throws HttpRequestException
 	 */
 	public InputStream stream() throws HttpRequestException {
+		InputStream stream;
 		if (code() < HTTP_BAD_REQUEST)
 			try {
-				return connection.getInputStream();
+				stream = connection.getInputStream();
 			} catch (IOException e) {
 				throw new HttpRequestException(e);
 			}
 		else {
-			InputStream stream = connection.getErrorStream();
-			if (stream != null)
-				return stream;
+			stream = connection.getErrorStream();
+			if (stream == null)
+				try {
+					stream = connection.getInputStream();
+				} catch (IOException e) {
+					throw new HttpRequestException(e);
+				}
+		}
+
+		if (!uncompress || !ENCODING_GZIP.equals(contentEncoding()))
+			return stream;
+		else
 			try {
-				return connection.getInputStream();
+				return new GZIPInputStream(stream);
 			} catch (IOException e) {
 				throw new HttpRequestException(e);
 			}
-		}
 	}
 
 	/**
@@ -1565,6 +1602,16 @@ public class HttpRequest {
 	 */
 	public HttpRequest acceptEncoding(final String value) {
 		return header(HEADER_ACCEPT_ENCODING, value);
+	}
+
+	/**
+	 * Set the 'Accept-Encoding' header to 'gzip'
+	 *
+	 * @see #uncompress(boolean)
+	 * @return this request
+	 */
+	public HttpRequest acceptGzipEncoding() {
+		return acceptEncoding(ENCODING_GZIP);
 	}
 
 	/**

@@ -57,6 +57,7 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.zip.GZIPOutputStream;
 
 import javax.servlet.http.HttpServletResponse;
 
@@ -1487,5 +1488,44 @@ public class HttpRequestTest extends ServerTestCase {
 		AtomicInteger code = new AtomicInteger(0);
 		get(url).code(code);
 		assertEquals(HTTP_OK, code.get());
+	}
+
+	/**
+	 * Make a GET request that should be compressed
+	 *
+	 * @throws Exception
+	 */
+	@Test
+	public void getGzipped() throws Exception {
+		String url = setUp(new RequestHandler() {
+
+			public void handle(Request request, HttpServletResponse response) {
+				response.setStatus(HTTP_OK);
+				if (!"gzip".equals(request.getHeader("Accept-Encoding")))
+					return;
+
+				response.setHeader("Content-Encoding", "gzip");
+				GZIPOutputStream output;
+				try {
+					output = new GZIPOutputStream(response.getOutputStream());
+				} catch (IOException e) {
+					throw new RuntimeException(e);
+				}
+				try {
+					output.write("hello compressed".getBytes(CHARSET_UTF8));
+				} catch (IOException e) {
+					throw new RuntimeException(e);
+				} finally {
+					try {
+						output.close();
+					} catch (IOException ignored) {
+						// Ignored
+					}
+				}
+			}
+		});
+		HttpRequest request = get(url).acceptGzipEncoding().uncompress(true);
+		assertTrue(request.ok());
+		assertEquals("hello compressed", request.body(CHARSET_UTF8));
 	}
 }
