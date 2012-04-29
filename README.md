@@ -11,7 +11,7 @@ The http-request library is available from [Maven Central](http://search.maven.o
 <dependency>
   <groupId>com.github.kevinsawicki</groupId>
   <artifactId>http-request</artifactId>
-  <version>1.0</version>
+  <version>1.1</version>
 </dependency> 
 ```
 
@@ -134,6 +134,16 @@ String eTag = request.eTag();
 boolean unchanged = HttpRequest.get("http://google.com")
                                .ifNoneMatch(eTag)
                                .notModified();
+```
+
+### Using gzip compression
+
+```java
+HttpRequest request = HttpRequest.get("http://google.com");
+//Tell server to gzip response and automatically uncompress
+request.acceptGzipEncoding().uncompress(true);
+String uncompressed = request.body();
+System.out.println("Uncompressed response is: " + uncompressed);
 ```
 
 ## Contributors
