@@ -1478,27 +1478,26 @@ public class HttpRequest {
 	}
 
 	/**
-	 * Set header names to given values.
-	 * <p>
-	 * Each name should be followed by the corresponding value and the number of
-	 * arguments must be divisible by 2.
+	 * Set all headers found in given map where the keys are the header names
+	 * and the values are the header values
 	 *
 	 * @param headers
 	 * @return this request
 	 */
-	public HttpRequest headers(final String... headers) {
-		if (headers == null)
-			throw new IllegalArgumentException("Headers cannot be null");
-		final int length = headers.length;
-		if (length == 0)
-			throw new IllegalArgumentException("Headers cannot be empty");
-		if (length % 2 != 0)
-			throw new IllegalArgumentException(
-					"Headers length must be divisible by two");
-
-		for (int i = 0; i < length; i += 2)
-			header(headers[i], headers[i + 1]);
+	public HttpRequest headers(final Map<String, String> headers) {
+		for (Entry<String, String> header : headers.entrySet())
+			header(header);
 		return this;
+	}
+
+	/**
+	 * Set header to have given entry's key as the name and value as the value
+	 *
+	 * @param header
+	 * @return this request
+	 */
+	public HttpRequest header(final Entry<String, String> header) {
+		return header(header.getKey(), header.getValue());
 	}
 
 	/**

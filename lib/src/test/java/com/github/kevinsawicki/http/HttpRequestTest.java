@@ -1060,54 +1060,6 @@ public class HttpRequestTest extends ServerTestCase {
 	}
 
 	/**
-	 * Verify null headers
-	 *
-	 * @throws Exception
-	 */
-	@Test(expected = IllegalArgumentException.class)
-	public void nullHeaders() throws Exception {
-		String url = setUp(new RequestHandler() {
-
-			public void handle(Request request, HttpServletResponse response) {
-				response.setStatus(HTTP_OK);
-			}
-		});
-		get(url).headers((String[]) null);
-	}
-
-	/**
-	 * Verify empty headers
-	 *
-	 * @throws Exception
-	 */
-	@Test(expected = IllegalArgumentException.class)
-	public void emptyHeaders() throws Exception {
-		String url = setUp(new RequestHandler() {
-
-			public void handle(Request request, HttpServletResponse response) {
-				response.setStatus(HTTP_OK);
-			}
-		});
-		get(url).headers(new String[0]);
-	}
-
-	/**
-	 * Verify odd-number headers arguments
-	 *
-	 * @throws Exception
-	 */
-	@Test(expected = IllegalArgumentException.class)
-	public void oddHeaders() throws Exception {
-		String url = setUp(new RequestHandler() {
-
-			public void handle(Request request, HttpServletResponse response) {
-				response.setStatus(HTTP_OK);
-			}
-		});
-		get(url).headers("a", "b", "c");
-	}
-
-	/**
 	 * Verify headers
 	 *
 	 * @throws Exception
@@ -1124,7 +1076,10 @@ public class HttpRequestTest extends ServerTestCase {
 				h2.set(request.getHeader("h2"));
 			}
 		});
-		assertTrue(get(url).headers("h1", "v1", "h2", "v2").ok());
+		Map<String, String> headers = new HashMap<String, String>();
+		headers.put("h1", "v1");
+		headers.put("h2", "v2");
+		assertTrue(get(url).headers(headers).ok());
 		assertEquals("v1", h1.get());
 		assertEquals("v2", h2.get());
 	}
