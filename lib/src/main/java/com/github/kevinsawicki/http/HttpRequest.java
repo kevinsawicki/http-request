@@ -64,6 +64,7 @@ import java.security.SecureRandom;
 import java.security.cert.X509Certificate;
 import java.util.Collections;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -222,6 +223,8 @@ public class HttpRequest {
 	private static final String CONTENT_TYPE_JSON = "application/json";
 
 	private static final String ENCODING_GZIP = "gzip";
+
+	private static final String[] EMPTY_STRINGS = new String[0];
 
 	/**
 	 * <p>
@@ -1528,6 +1531,24 @@ public class HttpRequest {
 	 */
 	public int intHeader(final String name) {
 		return connection.getHeaderFieldInt(name, -1);
+	}
+
+	/**
+	 * Get all values of the given header from the response
+	 *
+	 * @param name
+	 * @return non-null but possibly empty array of {@link String} header values
+	 */
+	public String[] headers(final String name) {
+		final Map<String, List<String>> headers = connection.getHeaderFields();
+		if (headers == null || headers.isEmpty())
+			return EMPTY_STRINGS;
+
+		final List<String> values = headers.get(name);
+		if (values != null && !values.isEmpty())
+			return values.toArray(new String[values.size()]);
+		else
+			return EMPTY_STRINGS;
 	}
 
 	/**
