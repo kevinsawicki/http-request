@@ -1552,7 +1552,18 @@ public class HttpRequest {
 	}
 
 	/**
-	 * Get parameter value from header
+	 * Get parameter with given name from header value in response
+	 *
+	 * @param headerName
+	 * @param paramName
+	 * @return parameter value or null if missing
+	 */
+	public String parameter(final String headerName, final String paramName) {
+		return getParam(header(headerName), paramName);
+	}
+
+	/**
+	 * Get parameter value from header value
 	 *
 	 * @param value
 	 * @param paramName
@@ -1561,26 +1572,36 @@ public class HttpRequest {
 	protected String getParam(final String value, final String paramName) {
 		if (value == null || value.length() == 0)
 			return null;
-		int postSemi = value.indexOf(';') + 1;
-		if (postSemi == 0 || postSemi == value.length())
-			return null;
-		String[] params = value.substring(postSemi).split(";");
-		for (String param : params) {
-			String[] split = param.split("=");
-			if (split.length != 2)
-				continue;
-			if (!paramName.equals(split[0].trim()))
-				continue;
 
-			String paramValue = split[1].trim();
-			int length = paramValue.length();
-			if (length == 0)
-				continue;
-			if (length > 2 && '"' == paramValue.charAt(0)
-					&& '"' == paramValue.charAt(length - 1))
-				paramValue = paramValue.substring(1, length - 1);
-			return paramValue;
+		final int length = value.length();
+		int start = value.indexOf(';') + 1;
+		if (start == 0 || start == length)
+			return null;
+
+		int end = value.indexOf(';', start);
+		if (end == -1)
+			end = length;
+
+		while (start < end) {
+			int nameEnd = value.indexOf('=', start);
+			if (nameEnd != -1 && nameEnd < end
+					&& paramName.equals(value.substring(start, nameEnd).trim())) {
+				String paramValue = value.substring(nameEnd + 1, end).trim();
+				int valueLength = paramValue.length();
+				if (valueLength != 0)
+					if (valueLength > 2 && '"' == paramValue.charAt(0)
+							&& '"' == paramValue.charAt(valueLength - 1))
+						return paramValue.substring(1, valueLength - 1);
+					else
+						return paramValue;
+			}
+
+			start = end + 1;
+			end = value.indexOf(';', start);
+			if (end == -1)
+				end = length;
 		}
+
 		return null;
 	}
 
@@ -1590,7 +1611,7 @@ public class HttpRequest {
 	 * @return charset or null if none
 	 */
 	public String charset() {
-		return getParam(contentType(), PARAM_CHARSET);
+		return parameter(HEADER_CONTENT_TYPE, PARAM_CHARSET);
 	}
 
 	/**

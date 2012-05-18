@@ -35,6 +35,7 @@ import static java.net.HttpURLConnection.HTTP_OK;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -1547,5 +1548,159 @@ public class HttpRequestTest extends ServerTestCase {
 		String[] values = request.headers("a");
 		assertNotNull(values);
 		assertEquals(0, values.length);
+	}
+
+	/**
+	 * Get header parameter value
+	 *
+	 * @throws Exception
+	 */
+	@Test
+	public void getSingleParameter() throws Exception {
+		String url = setUp(new RequestHandler() {
+
+			public void handle(Request request, HttpServletResponse response) {
+				response.setStatus(HTTP_OK);
+				response.setHeader("a", "b;c=d");
+			}
+		});
+		HttpRequest request = get(url);
+		assertTrue(request.ok());
+		assertEquals("d", request.parameter("a", "c"));
+	}
+
+	/**
+	 * Get header parameter value
+	 *
+	 * @throws Exception
+	 */
+	@Test
+	public void getMultipleParameters() throws Exception {
+		String url = setUp(new RequestHandler() {
+
+			public void handle(Request request, HttpServletResponse response) {
+				response.setStatus(HTTP_OK);
+				response.setHeader("a", "b;c=d;e=f");
+			}
+		});
+		HttpRequest request = get(url);
+		assertTrue(request.ok());
+		assertEquals("d", request.parameter("a", "c"));
+		assertEquals("f", request.parameter("a", "e"));
+	}
+
+	/**
+	 * Get header parameter value
+	 *
+	 * @throws Exception
+	 */
+	@Test
+	public void getSingleParameterQuoted() throws Exception {
+		String url = setUp(new RequestHandler() {
+
+			public void handle(Request request, HttpServletResponse response) {
+				response.setStatus(HTTP_OK);
+				response.setHeader("a", "b;c=\"d\"");
+			}
+		});
+		HttpRequest request = get(url);
+		assertTrue(request.ok());
+		assertEquals("d", request.parameter("a", "c"));
+	}
+
+	/**
+	 * Get header parameter value
+	 *
+	 * @throws Exception
+	 */
+	@Test
+	public void getMultipleParametersQuoted() throws Exception {
+		String url = setUp(new RequestHandler() {
+
+			public void handle(Request request, HttpServletResponse response) {
+				response.setStatus(HTTP_OK);
+				response.setHeader("a", "b;c=\"d\";e=\"f\"");
+			}
+		});
+		HttpRequest request = get(url);
+		assertTrue(request.ok());
+		assertEquals("d", request.parameter("a", "c"));
+		assertEquals("f", request.parameter("a", "e"));
+	}
+
+	/**
+	 * Get header parameter value
+	 *
+	 * @throws Exception
+	 */
+	@Test
+	public void getMissingParameter() throws Exception {
+		String url = setUp(new RequestHandler() {
+
+			public void handle(Request request, HttpServletResponse response) {
+				response.setStatus(HTTP_OK);
+				response.setHeader("a", "b;c=d");
+			}
+		});
+		HttpRequest request = get(url);
+		assertTrue(request.ok());
+		assertNull(request.parameter("a", "e"));
+	}
+
+	/**
+	 * Get header parameter value
+	 *
+	 * @throws Exception
+	 */
+	@Test
+	public void getParameterFromMissingHeader() throws Exception {
+		String url = setUp(new RequestHandler() {
+
+			public void handle(Request request, HttpServletResponse response) {
+				response.setStatus(HTTP_OK);
+				response.setHeader("a", "b;c=d");
+			}
+		});
+		HttpRequest request = get(url);
+		assertTrue(request.ok());
+		assertNull(request.parameter("b", "c"));
+	}
+
+	/**
+	 * Get header parameter value
+	 *
+	 * @throws Exception
+	 */
+	@Test
+	public void getEmptyParameter() throws Exception {
+		String url = setUp(new RequestHandler() {
+
+			public void handle(Request request, HttpServletResponse response) {
+				response.setStatus(HTTP_OK);
+				response.setHeader("a", "b;c=");
+			}
+		});
+		HttpRequest request = get(url);
+		assertTrue(request.ok());
+		assertNull(request.parameter("a", "c"));
+	}
+
+	/**
+	 * Get header parameter value
+	 *
+	 * @throws Exception
+	 */
+	@Test
+	public void getEmptyParameters() throws Exception {
+		String url = setUp(new RequestHandler() {
+
+			public void handle(Request request, HttpServletResponse response) {
+				response.setStatus(HTTP_OK);
+				response.setHeader("a", "b;");
+			}
+		});
+		HttpRequest request = get(url);
+		assertTrue(request.ok());
+		assertNull(request.parameter("a", "c"));
 	}
 }
