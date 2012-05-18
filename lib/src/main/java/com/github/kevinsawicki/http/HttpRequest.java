@@ -1572,14 +1572,14 @@ public class HttpRequest {
 			if (!paramName.equals(split[0].trim()))
 				continue;
 
-			String charset = split[1].trim();
-			int length = charset.length();
+			String paramValue = split[1].trim();
+			int length = paramValue.length();
 			if (length == 0)
 				continue;
-			if (length > 2 && '"' == charset.charAt(0)
-					&& '"' == charset.charAt(length - 1))
-				charset = charset.substring(1, length - 1);
-			return charset;
+			if (length > 2 && '"' == paramValue.charAt(0)
+					&& '"' == paramValue.charAt(length - 1))
+				paramValue = paramValue.substring(1, length - 1);
+			return paramValue;
 		}
 		return null;
 	}
