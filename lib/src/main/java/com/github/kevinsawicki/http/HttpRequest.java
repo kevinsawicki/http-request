@@ -64,6 +64,7 @@ import java.security.SecureRandom;
 import java.security.cert.X509Certificate;
 import java.util.Collections;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -1560,6 +1561,64 @@ public class HttpRequest {
 	 */
 	public String parameter(final String headerName, final String paramName) {
 		return getParam(header(headerName), paramName);
+	}
+
+	/**
+	 * Get all parameters from header value in response
+	 * <p>
+	 * This will be all key=value pairs after the first ';' that are separated
+	 * by a ';'
+	 *
+	 * @param headerName
+	 * @return non-null but possibly empty map of parameter headers
+	 */
+	public Map<String, String> parameters(final String headerName) {
+		return getParams(header(headerName));
+	}
+
+	/**
+	 * Get parameter values from header value
+	 *
+	 * @param header
+	 * @return parameter value or null if none
+	 */
+	protected Map<String, String> getParams(final String header) {
+		if (header == null || header.length() == 0)
+			return Collections.emptyMap();
+
+		final int headerLength = header.length();
+		int start = header.indexOf(';') + 1;
+		if (start == 0 || start == headerLength)
+			return Collections.emptyMap();
+
+		int end = header.indexOf(';', start);
+		if (end == -1)
+			end = headerLength;
+
+		Map<String, String> params = new LinkedHashMap<String, String>();
+		while (start < end) {
+			int nameEnd = header.indexOf('=', start);
+			if (nameEnd != -1 && nameEnd < end) {
+				String name = header.substring(start, nameEnd).trim();
+				if (name.length() > 0) {
+					String value = header.substring(nameEnd + 1, end).trim();
+					int length = value.length();
+					if (length != 0)
+						if (length > 2 && '"' == value.charAt(0)
+								&& '"' == value.charAt(length - 1))
+							params.put(name, value.substring(1, length - 1));
+						else
+							params.put(name, value);
+				}
+			}
+
+			start = end + 1;
+			end = header.indexOf(';', start);
+			if (end == -1)
+				end = headerLength;
+		}
+
+		return params;
 	}
 
 	/**

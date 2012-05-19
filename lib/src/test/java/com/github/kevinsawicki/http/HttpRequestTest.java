@@ -1664,6 +1664,7 @@ public class HttpRequestTest extends ServerTestCase {
 		HttpRequest request = get(url);
 		assertTrue(request.ok());
 		assertNull(request.parameter("b", "c"));
+		assertTrue(request.parameters("b").isEmpty());
 	}
 
 	/**
@@ -1683,6 +1684,7 @@ public class HttpRequestTest extends ServerTestCase {
 		HttpRequest request = get(url);
 		assertTrue(request.ok());
 		assertNull(request.parameter("a", "c"));
+		assertTrue(request.parameters("a").isEmpty());
 	}
 
 	/**
@@ -1702,5 +1704,75 @@ public class HttpRequestTest extends ServerTestCase {
 		HttpRequest request = get(url);
 		assertTrue(request.ok());
 		assertNull(request.parameter("a", "c"));
+		assertTrue(request.parameters("a").isEmpty());
+	}
+
+	/**
+	 * Get header parameter values
+	 *
+	 * @throws Exception
+	 */
+	@Test
+	public void getParameters() throws Exception {
+		String url = setUp(new RequestHandler() {
+
+			public void handle(Request request, HttpServletResponse response) {
+				response.setStatus(HTTP_OK);
+				response.setHeader("a", "value;b=c;d=e");
+			}
+		});
+		HttpRequest request = get(url);
+		assertTrue(request.ok());
+		Map<String, String> params = request.parameters("a");
+		assertNotNull(params);
+		assertEquals(2, params.size());
+		assertEquals("c", params.get("b"));
+		assertEquals("e", params.get("d"));
+	}
+
+	/**
+	 * Get header parameter values
+	 *
+	 * @throws Exception
+	 */
+	@Test
+	public void getQuotedParameters() throws Exception {
+		String url = setUp(new RequestHandler() {
+
+			public void handle(Request request, HttpServletResponse response) {
+				response.setStatus(HTTP_OK);
+				response.setHeader("a", "value;b=\"c\";d=\"e\"");
+			}
+		});
+		HttpRequest request = get(url);
+		assertTrue(request.ok());
+		Map<String, String> params = request.parameters("a");
+		assertNotNull(params);
+		assertEquals(2, params.size());
+		assertEquals("c", params.get("b"));
+		assertEquals("e", params.get("d"));
+	}
+
+	/**
+	 * Get header parameter values
+	 *
+	 * @throws Exception
+	 */
+	@Test
+	public void getMixQuotedParameters() throws Exception {
+		String url = setUp(new RequestHandler() {
+
+			public void handle(Request request, HttpServletResponse response) {
+				response.setStatus(HTTP_OK);
+				response.setHeader("a", "value; b=c; d=\"e\"");
+			}
+		});
+		HttpRequest request = get(url);
+		assertTrue(request.ok());
+		Map<String, String> params = request.parameters("a");
+		assertNotNull(params);
+		assertEquals(2, params.size());
+		assertEquals("c", params.get("b"));
+		assertEquals("e", params.get("d"));
 	}
 }
