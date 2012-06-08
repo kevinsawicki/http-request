@@ -127,7 +127,7 @@ int response = HttpRequest.post("http://google.com").send(input).code();
 File latest = new File("/data/cache.json");
 HttpRequest request = HttpRequest.get("http://google.com");
 //Copy response to file
-request.body(latest);
+request.receive(latest);
 //Store eTag of response
 String eTag = request.eTag();
 //Later on check if changes exist
