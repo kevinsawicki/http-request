@@ -63,12 +63,10 @@ import java.security.PrivilegedAction;
 import java.security.SecureRandom;
 import java.security.cert.X509Certificate;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.zip.GZIPInputStream;
@@ -2375,7 +2373,23 @@ public class HttpRequest {
 	 */
 	public HttpRequest form(final Object name, final Object value,
 			final String charset) {
-		return form(Collections.singletonMap(name, value), charset);
+		final boolean first = !form;
+		if (first) {
+			contentType(CONTENT_TYPE_FORM, charset);
+			form = true;
+		}
+		try {
+			openOutput();
+			if (!first)
+				output.write('&');
+			output.write(URLEncoder.encode(name.toString(), charset));
+			output.write('=');
+			if (value != null)
+				output.write(URLEncoder.encode(value.toString(), charset));
+		} catch (IOException e) {
+			throw new HttpRequestException(e);
+		}
+		return this;
 	}
 
 	/**
@@ -2388,40 +2402,9 @@ public class HttpRequest {
 	 */
 	public HttpRequest form(final Map<?, ?> values, final String charset)
 			throws HttpRequestException {
-		final boolean first = !form;
-		if (first) {
-			contentType(CONTENT_TYPE_FORM, charset);
-			form = true;
-		}
-		if (values.isEmpty())
-			return this;
-		final Set<?> set = values.entrySet();
-		@SuppressWarnings({ "unchecked", "rawtypes" })
-		final Iterator<Entry> entries = (Iterator<Entry>) set.iterator();
-		try {
-			openOutput();
-			@SuppressWarnings("rawtypes")
-			Entry entry = entries.next();
-			if (!first)
-				output.write('&');
-			output.write(URLEncoder.encode(entry.getKey().toString(), charset));
-			output.write('=');
-			Object value = entry.getValue();
-			if (value != null)
-				output.write(URLEncoder.encode(value.toString(), charset));
-			while (entries.hasNext()) {
-				entry = entries.next();
-				output.write('&');
-				output.write(URLEncoder.encode(entry.getKey().toString(),
-						charset));
-				output.write('=');
-				value = entry.getValue();
-				if (value != null)
-					output.write(URLEncoder.encode(value.toString(), charset));
-			}
-		} catch (IOException e) {
-			throw new HttpRequestException(e);
-		}
+		if (!values.isEmpty())
+			for (Entry<?, ?> entry : values.entrySet())
+				form(entry, charset);
 		return this;
 	}
 
