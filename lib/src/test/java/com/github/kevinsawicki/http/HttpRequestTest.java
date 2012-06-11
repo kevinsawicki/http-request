@@ -56,6 +56,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
@@ -1840,5 +1841,31 @@ public class HttpRequestTest extends ServerTestCase {
 			}
 		});
 		assertEquals(4321, get(url).intHeader("malformed", 4321));
+	}
+
+	/**
+	 * Verify sending form data as a sequence of {@link Entry} objects
+	 *
+	 * @throws Exception
+	 */
+	@Test
+	public void postFormAsEntries() throws Exception {
+		final AtomicReference<String> body = new AtomicReference<String>();
+		String url = setUp(new RequestHandler() {
+
+			public void handle(Request request, HttpServletResponse response) {
+				body.set(new String(read()));
+				response.setStatus(HTTP_OK);
+			}
+		});
+		Map<String, String> data = new LinkedHashMap<String, String>();
+		data.put("name", "user");
+		data.put("number", "100");
+		HttpRequest request = post(url);
+		for (Entry<String, String> entry : data.entrySet())
+			request.form(entry);
+		int code = request.code();
+		assertEquals(HTTP_OK, code);
+		assertTrue(body.get().equals("name=user&number=100"));
 	}
 }

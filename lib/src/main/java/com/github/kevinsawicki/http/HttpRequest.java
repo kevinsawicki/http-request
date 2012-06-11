@@ -2316,6 +2316,37 @@ public class HttpRequest {
 	}
 
 	/**
+	 * Write the key and value in the entry as form data to the request body
+	 * <p>
+	 * The pair specified will be URL-encoded in UTF-8 and sent with the
+	 * 'application/x-www-form-urlencoded' content-type
+	 *
+	 * @param entry
+	 * @return this request
+	 * @throws HttpRequestException
+	 */
+	public HttpRequest form(final Entry<?, ?> entry)
+			throws HttpRequestException {
+		return form(entry, CHARSET_UTF8);
+	}
+
+	/**
+	 * Write the key and value in the entry as form data to the request body
+	 * <p>
+	 * The pair specified will be URL-encoded and sent with the
+	 * 'application/x-www-form-urlencoded' content-type
+	 *
+	 * @param entry
+	 * @param charset
+	 * @return this request
+	 * @throws HttpRequestException
+	 */
+	public HttpRequest form(final Entry<?, ?> entry, final String charset)
+			throws HttpRequestException {
+		return form(entry.getKey(), entry.getValue(), charset);
+	}
+
+	/**
 	 * Write the name/value pair as form data to the request body
 	 * <p>
 	 * The pair specified will be URL-encoded in UTF-8 and sent with the
