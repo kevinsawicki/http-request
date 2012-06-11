@@ -1515,23 +1515,50 @@ public class HttpRequest {
 	}
 
 	/**
-	 * Get a date header from the response
+	 * Get a date header from the response falling back to returning -1 if the
+	 * header is missing or parsing fails
 	 *
 	 * @param name
 	 * @return date, -1 on failures
 	 */
 	public long dateHeader(final String name) {
-		return connection.getHeaderFieldDate(name, -1L);
+		return dateHeader(name, -1L);
 	}
 
 	/**
-	 * Get an integer header from the response
+	 * Get a date header from the response falling back to returning the given
+	 * default value if the header is missing or parsing fails
 	 *
 	 * @param name
-	 * @return integer, -1 on failures
+	 * @param defaultValue
+	 * @return date, -1 on failures
+	 */
+	public long dateHeader(final String name, final long defaultValue) {
+		return connection.getHeaderFieldDate(name, defaultValue);
+	}
+
+	/**
+	 * Get an integer header from the response falling back to returning -1 if
+	 * the header is missing or parsing fails
+	 *
+	 * @param name
+	 * @return header value as an integer, -1 when missing or parsing fails
 	 */
 	public int intHeader(final String name) {
-		return connection.getHeaderFieldInt(name, -1);
+		return intHeader(name, -1);
+	}
+
+	/**
+	 * Get an integer header value from the response falling back to the given
+	 * default value if the header is missing or if parsing fails
+	 *
+	 * @param name
+	 * @param defaultValue
+	 * @return header value as an integer, default value when missing or parsing
+	 *         fails
+	 */
+	public int intHeader(final String name, final int defaultValue) {
+		return connection.getHeaderFieldInt(name, defaultValue);
 	}
 
 	/**

@@ -1775,4 +1775,70 @@ public class HttpRequestTest extends ServerTestCase {
 		assertEquals("c", params.get("b"));
 		assertEquals("e", params.get("d"));
 	}
+
+	/**
+	 * Verify getting date header with default value
+	 *
+	 * @throws Exception
+	 */
+	@Test
+	public void missingDateHeader() throws Exception {
+		String url = setUp(new RequestHandler() {
+
+			public void handle(Request request, HttpServletResponse response) {
+				response.setStatus(HTTP_OK);
+			}
+		});
+		assertEquals(1234L, get(url).dateHeader("missing", 1234L));
+	}
+
+	/**
+	 * Verify getting date header with default value
+	 *
+	 * @throws Exception
+	 */
+	@Test
+	public void malformedDateHeader() throws Exception {
+		String url = setUp(new RequestHandler() {
+
+			public void handle(Request request, HttpServletResponse response) {
+				response.setStatus(HTTP_OK);
+				response.setHeader("malformed", "not a date");
+			}
+		});
+		assertEquals(1234L, get(url).dateHeader("malformed", 1234L));
+	}
+
+	/**
+	 * Verify getting int header with default value
+	 *
+	 * @throws Exception
+	 */
+	@Test
+	public void missingIntHeader() throws Exception {
+		String url = setUp(new RequestHandler() {
+
+			public void handle(Request request, HttpServletResponse response) {
+				response.setStatus(HTTP_OK);
+			}
+		});
+		assertEquals(4321, get(url).intHeader("missing", 4321));
+	}
+
+	/**
+	 * Verify getting int header with default value
+	 *
+	 * @throws Exception
+	 */
+	@Test
+	public void malformedIntHeader() throws Exception {
+		String url = setUp(new RequestHandler() {
+
+			public void handle(Request request, HttpServletResponse response) {
+				response.setStatus(HTTP_OK);
+				response.setHeader("malformed", "not an integer");
+			}
+		});
+		assertEquals(4321, get(url).intHeader("malformed", 4321));
+	}
 }
