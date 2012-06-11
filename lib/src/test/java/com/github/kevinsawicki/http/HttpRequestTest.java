@@ -669,9 +669,7 @@ public class HttpRequestTest extends ServerTestCase {
 		data.put("number", "100");
 		int code = post(url).form(data).form("zip", "12345").code();
 		assertEquals(HTTP_OK, code);
-		assertTrue(body.get().contains("name=user"));
-		assertTrue(body.get().contains("&number=100"));
-		assertTrue(body.get().contains("&zip=12345"));
+		assertEquals("name=user&number=100&zip=12345", body.get());
 	}
 
 	/**
@@ -1866,6 +1864,6 @@ public class HttpRequestTest extends ServerTestCase {
 			request.form(entry);
 		int code = request.code();
 		assertEquals(HTTP_OK, code);
-		assertTrue(body.get().equals("name=user&number=100"));
+		assertEquals("name=user&number=100", body.get());
 	}
 }
