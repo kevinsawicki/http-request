@@ -11,7 +11,7 @@ The http-request library is available from [Maven Central](http://search.maven.o
 <dependency>
   <groupId>com.github.kevinsawicki</groupId>
   <artifactId>http-request</artifactId>
-  <version>1.1</version>
+  <version>2.0</version>
 </dependency> 
 ```
 
