@@ -478,6 +478,7 @@ public class HttpRequest {
 		 *
 		 * @return {@link IOException} cause
 		 */
+		@Override
 		public IOException getCause() {
 			return (IOException) super.getCause();
 		}
@@ -552,6 +553,7 @@ public class HttpRequest {
 			this.ignoreCloseExceptions = ignoreCloseExceptions;
 		}
 
+		@Override
 		protected void done() throws IOException {
 			if (closeable instanceof Flushable)
 				((Flushable) closeable).flush();
@@ -585,6 +587,7 @@ public class HttpRequest {
 			this.flushable = flushable;
 		}
 
+		@Override
 		protected void done() throws IOException {
 			flushable.flush();
 		}
@@ -968,6 +971,7 @@ public class HttpRequest {
 		}
 	}
 
+	@Override
 	public String toString() {
 		return connection.getRequestMethod() + " " + connection.getURL();
 	}
