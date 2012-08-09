@@ -31,6 +31,7 @@ import static java.net.HttpURLConnection.HTTP_OK;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.Closeable;
@@ -2301,6 +2302,20 @@ public class HttpRequest {
 			throw new HttpRequestException(e);
 		}
 		return this;
+	}
+
+	/**
+	 * Create writer to request output stream
+	 *
+	 * @return writer
+	 */
+	public OutputStreamWriter writer() {
+		try {
+			openOutput();
+			return new OutputStreamWriter(output, output.encoder.charset());
+		} catch (IOException e) {
+			throw new HttpRequestException(e);
+		}
 	}
 
 	/**
