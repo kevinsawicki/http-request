@@ -611,6 +611,7 @@ public class HttpRequest {
 		public RequestOutputStream(final OutputStream stream,
 				String charsetName, final int bufferSize) {
 			super(stream, bufferSize);
+
 			if (charsetName == null)
 				charsetName = CHARSET_UTF8;
 			encoder = Charset.forName(charsetName).newEncoder();
@@ -625,7 +626,9 @@ public class HttpRequest {
 		 */
 		public RequestOutputStream write(final String value) throws IOException {
 			final ByteBuffer bytes = encoder.encode(CharBuffer.wrap(value));
+
 			super.write(bytes.array(), 0, bytes.limit());
+
 			return this;
 		}
 	}
