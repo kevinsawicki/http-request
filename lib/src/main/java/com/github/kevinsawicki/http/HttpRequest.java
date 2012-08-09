@@ -2291,7 +2291,7 @@ public class HttpRequest {
 	}
 
 	/**
-	 * Write string to request body
+	 * Write char sequence to request body
 	 * <p>
 	 * The charset configured via {@link #contentType(String)} will be used and
 	 * UTF-8 will be used if it is unset.
@@ -2300,10 +2300,11 @@ public class HttpRequest {
 	 * @return this request
 	 * @throws HttpRequestException
 	 */
-	public HttpRequest send(final String value) throws HttpRequestException {
+	public HttpRequest send(final CharSequence value)
+			throws HttpRequestException {
 		try {
 			openOutput();
-			output.write(value);
+			output.write(value.toString());
 		} catch (IOException e) {
 			throw new HttpRequestException(e);
 		}
