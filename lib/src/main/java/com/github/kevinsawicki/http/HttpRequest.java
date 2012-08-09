@@ -225,6 +225,13 @@ public class HttpRequest {
 
 	private static final String[] EMPTY_STRINGS = new String[0];
 
+	private static String getValidCharset(final String charset) {
+		if (charset != null)
+			return charset;
+		else
+			return CHARSET_UTF8;
+	}
+
 	/**
 	 * <p>
 	 * Encodes and decodes to and from Base64 notation.
@@ -604,16 +611,14 @@ public class HttpRequest {
 		 * Create request output stream
 		 *
 		 * @param stream
-		 * @param charsetName
+		 * @param charset
 		 * @param bufferSize
 		 */
 		public RequestOutputStream(final OutputStream stream,
-				String charsetName, final int bufferSize) {
+				final String charset, final int bufferSize) {
 			super(stream, bufferSize);
 
-			if (charsetName == null)
-				charsetName = CHARSET_UTF8;
-			encoder = Charset.forName(charsetName).newEncoder();
+			encoder = Charset.forName(getValidCharset(charset)).newEncoder();
 		}
 
 		/**
@@ -1212,7 +1217,7 @@ public class HttpRequest {
 		final ByteArrayOutputStream output = byteStream();
 		try {
 			copy(buffer(), output);
-			return output.toString(charset != null ? charset : CHARSET_UTF8);
+			return output.toString(getValidCharset(charset));
 		} catch (IOException e) {
 			throw new HttpRequestException(e);
 		}
@@ -1303,8 +1308,7 @@ public class HttpRequest {
 	public InputStreamReader reader(final String charset)
 			throws HttpRequestException {
 		try {
-			return new InputStreamReader(stream(), charset != null ? charset
-					: CHARSET_UTF8);
+			return new InputStreamReader(stream(), getValidCharset(charset));
 		} catch (UnsupportedEncodingException e) {
 			throw new HttpRequestException(e);
 		}
