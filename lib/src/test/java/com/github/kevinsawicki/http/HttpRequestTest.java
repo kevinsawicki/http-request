@@ -43,11 +43,13 @@ import com.github.kevinsawicki.http.HttpRequest.HttpRequestException;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.PrintStream;
 import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
 import java.io.Writer;
@@ -1361,6 +1363,31 @@ public class HttpRequestTest extends ServerTestCase {
 		StringWriter writer = new StringWriter();
 		assertTrue(post(url).receive(writer).ok());
 		assertEquals("content", writer.toString());
+	}
+
+	/**
+	 * Verify response via a {@link PrintStream}
+	 *
+	 * @throws Exception
+	 */
+	@Test
+	public void receivePrintStream() throws Exception {
+		String url = setUp(new RequestHandler() {
+
+			public void handle(Request request, HttpServletResponse response) {
+				response.setStatus(HTTP_OK);
+				try {
+					response.getWriter().print("content");
+				} catch (IOException e) {
+					fail();
+				}
+			}
+		});
+		ByteArrayOutputStream output = new ByteArrayOutputStream();
+		PrintStream stream = new PrintStream(output, true, CHARSET_UTF8);
+		assertTrue(post(url).receive(stream).ok());
+		stream.close();
+		assertEquals("content", output.toString(CHARSET_UTF8));
 	}
 
 	/**
