@@ -1368,6 +1368,7 @@ public class HttpRequest {
 		}
 		return new CloseOperation<HttpRequest>(output, ignoreCloseExceptions) {
 
+			@Override
 			protected HttpRequest run() throws HttpRequestException,
 					IOException {
 				return receive(output);
@@ -1415,6 +1416,7 @@ public class HttpRequest {
 		final BufferedReader reader = bufferedReader();
 		return new CloseOperation<HttpRequest>(reader, ignoreCloseExceptions) {
 
+			@Override
 			public HttpRequest run() throws IOException {
 				final CharBuffer buffer = CharBuffer.allocate(bufferSize);
 				int read;
@@ -1439,6 +1441,7 @@ public class HttpRequest {
 		final BufferedReader reader = bufferedReader();
 		return new CloseOperation<HttpRequest>(reader, ignoreCloseExceptions) {
 
+			@Override
 			public HttpRequest run() throws IOException {
 				return copy(reader, writer);
 			}
@@ -1970,6 +1973,7 @@ public class HttpRequest {
 			final OutputStream output) throws IOException {
 		return new CloseOperation<HttpRequest>(input, ignoreCloseExceptions) {
 
+			@Override
 			public HttpRequest run() throws IOException {
 				final byte[] buffer = new byte[bufferSize];
 				int read;
@@ -1992,6 +1996,7 @@ public class HttpRequest {
 			throws IOException {
 		return new CloseOperation<HttpRequest>(input, ignoreCloseExceptions) {
 
+			@Override
 			public HttpRequest run() throws IOException {
 				final char[] buffer = new char[bufferSize];
 				int read;
@@ -2284,6 +2289,7 @@ public class HttpRequest {
 				output.encoder.charset());
 		return new FlushOperation<HttpRequest>(writer) {
 
+			@Override
 			protected HttpRequest run() throws IOException {
 				return copy(input, writer);
 			}
