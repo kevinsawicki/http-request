@@ -981,7 +981,7 @@ public class HttpRequest {
 
 	@Override
 	public String toString() {
-		return connection.getRequestMethod() + " " + connection.getURL();
+		return connection.getRequestMethod() + ' ' + connection.getURL();
 	}
 
 	/**
