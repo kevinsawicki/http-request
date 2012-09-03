@@ -2392,7 +2392,8 @@ public class HttpRequest {
 	 * @return this request
 	 * @throws HttpRequestException
 	 */
-	public HttpRequest form(final Object name, final Object value) {
+	public HttpRequest form(final Object name, final Object value)
+			throws HttpRequestException {
 		return form(name, value, CHARSET_UTF8);
 	}
 
@@ -2409,7 +2410,7 @@ public class HttpRequest {
 	 * @throws HttpRequestException
 	 */
 	public HttpRequest form(final Object name, final Object value,
-			final String charset) {
+			final String charset) throws HttpRequestException {
 		final boolean first = !form;
 		if (first) {
 			contentType(CONTENT_TYPE_FORM, charset);
