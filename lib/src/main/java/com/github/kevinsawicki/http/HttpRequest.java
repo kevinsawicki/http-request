@@ -1360,8 +1360,9 @@ public class HttpRequest {
 	 *
 	 * @param file
 	 * @return this request
+	 * @throws HttpRequestException
 	 */
-	public HttpRequest receive(final File file) {
+	public HttpRequest receive(final File file) throws HttpRequestException {
 		final OutputStream output;
 		try {
 			output = new BufferedOutputStream(new FileOutputStream(file),
