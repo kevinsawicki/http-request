@@ -852,7 +852,7 @@ public class HttpRequest {
 	}
 
 	/**
-	 * Set the 'http.proxyHost' & 'https.proxyHost' properties to the given
+	 * Set the 'http.proxyHost' & 'https.proxyHost' properties to the given host
 	 * value.
 	 * <p>
 	 * This setting will apply to requests.
@@ -865,8 +865,8 @@ public class HttpRequest {
 	}
 
 	/**
-	 * Set the 'http.proxyPort' & 'https.proxyPort' properties to the given
-	 * value.
+	 * Set the 'http.proxyPort' & 'https.proxyPort' properties to the given port
+	 * number.
 	 * <p>
 	 * This setting will apply to requests.
 	 *
@@ -879,8 +879,8 @@ public class HttpRequest {
 	}
 
 	/**
-	 * Set the 'http.nonProxyHosts' properties to the given value. Hosts will be
-	 * separated by a '|' character.
+	 * Set the 'http.nonProxyHosts' properties to the given host values. Hosts
+	 * will be separated by a '|' character.
 	 * <p>
 	 * This setting will apply to requests.
 	 *
