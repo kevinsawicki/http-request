@@ -2325,8 +2325,9 @@ public class HttpRequest {
 	 * Create writer to request output stream
 	 *
 	 * @return writer
+	 * @throws HttpRequestException
 	 */
-	public OutputStreamWriter writer() {
+	public OutputStreamWriter writer() throws HttpRequestException {
 		try {
 			openOutput();
 			return new OutputStreamWriter(output, output.encoder.charset());
