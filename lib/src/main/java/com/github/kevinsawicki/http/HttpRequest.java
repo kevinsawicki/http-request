@@ -470,7 +470,6 @@ public class HttpRequest {
 	 */
 	public static class HttpRequestException extends RuntimeException {
 
-		/** serialVersionUID */
 		private static final long serialVersionUID = -1170466989781746231L;
 
 		/**
