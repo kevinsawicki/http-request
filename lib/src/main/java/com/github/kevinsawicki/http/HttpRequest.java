@@ -794,7 +794,7 @@ public class HttpRequest {
 	}
 
 	/**
-	 * Start a 'OPTIONS' request to the given URL
+	 * Start an 'OPTIONS' request to the given URL
 	 *
 	 * @param url
 	 * @return request
@@ -806,7 +806,7 @@ public class HttpRequest {
 	}
 
 	/**
-	 * Start a 'OPTIONS' request to the given URL
+	 * Start an 'OPTIONS' request to the given URL
 	 *
 	 * @param url
 	 * @return request
