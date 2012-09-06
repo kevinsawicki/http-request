@@ -150,3 +150,4 @@ System.out.println("Uncompressed response is: " + uncompressed);
 
 * [Kevin Sawicki](https://github.com/kevinsawicki) :: [contributions](https://github.com/kevinsawicki/http-request/commits?author=kevinsawicki)
 * [Eddie Ringle](https://github.com/eddieringle) :: [contributions](https://github.com/kevinsawicki/http-request/commits?author=eddieringle)
+* [Sean Jensen-Grey](https://github.com/seanjensengrey) :: [contributions](https://github.com/kevinsawicki/http-request/commits?author=seanjensengrey)
