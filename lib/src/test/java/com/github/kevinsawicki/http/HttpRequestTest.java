@@ -57,6 +57,7 @@ import java.net.URL;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -1101,7 +1102,7 @@ public class HttpRequestTest extends ServerTestCase {
 	}
 
 	/**
-	 * Verify headers
+	 * Verify setting headers
 	 *
 	 * @throws Exception
 	 */
@@ -1125,7 +1126,31 @@ public class HttpRequestTest extends ServerTestCase {
 		assertEquals("v2", h2.get());
 	}
 
-	/**
+    /**
+     * Verify getting all headers
+     *
+     * @throws Exception
+     */
+    @Test
+    public void getAllHeaders() throws Exception {
+        String url = setUp(new RequestHandler() {
+
+            public void handle(Request request, HttpServletResponse response) {
+                response.setStatus(HTTP_OK);
+                response.setHeader("a","a");
+                response.setHeader("b","b");
+                response.addHeader("a", "another");
+
+            }
+        });
+        Map<String,List<String>> headers = get(url).headers();
+        assertEquals(headers.size(),5);
+        assertEquals(headers.get("a").size(),2);
+        assertTrue(headers.get("b").get(0).equals("b"));
+    }
+
+
+    /**
 	 * Verify setting number header
 	 *
 	 * @throws Exception
