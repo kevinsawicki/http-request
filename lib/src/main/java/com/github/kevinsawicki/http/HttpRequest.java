@@ -1531,6 +1531,15 @@ public class HttpRequest {
 	}
 
 	/**
+	 * Get all response headers
+	 *
+	 * @return response headers
+	 */
+	public Map<String, List<String>> headers() {
+		return connection.getHeaderFields();
+	}
+
+	/**
 	 * Get a date header from the response falling back to returning -1 if the
 	 * header is missing or parsing fails
 	 *
