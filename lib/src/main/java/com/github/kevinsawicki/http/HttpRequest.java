@@ -1531,9 +1531,9 @@ public class HttpRequest {
 	}
 
 	/**
-	 * Get all response headers
+	 * Get all the response headers
 	 *
-	 * @return response headers
+	 * @return map of response header names to their value(s)
 	 */
 	public Map<String, List<String>> headers() {
 		return connection.getHeaderFields();
