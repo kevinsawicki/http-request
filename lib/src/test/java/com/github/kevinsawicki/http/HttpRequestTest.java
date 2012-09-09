@@ -21,6 +21,37 @@
  */
 package com.github.kevinsawicki.http;
 
+import com.github.kevinsawicki.http.HttpRequest.HttpRequestException;
+import org.eclipse.jetty.server.Request;
+import org.eclipse.jetty.util.B64Code;
+import org.junit.Test;
+
+import javax.servlet.http.HttpServletResponse;
+import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.PrintStream;
+import java.io.StringWriter;
+import java.io.UnsupportedEncodingException;
+import java.io.Writer;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.atomic.AtomicReference;
+import java.util.zip.GZIPOutputStream;
+
 import static com.github.kevinsawicki.http.HttpRequest.CHARSET_UTF8;
 import static com.github.kevinsawicki.http.HttpRequest.delete;
 import static com.github.kevinsawicki.http.HttpRequest.encode;
@@ -38,38 +69,6 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
-
-import com.github.kevinsawicki.http.HttpRequest.HttpRequestException;
-
-import java.io.BufferedReader;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.PrintStream;
-import java.io.StringWriter;
-import java.io.UnsupportedEncodingException;
-import java.io.Writer;
-import java.net.URL;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicLong;
-import java.util.concurrent.atomic.AtomicReference;
-import java.util.zip.GZIPOutputStream;
-
-import javax.servlet.http.HttpServletResponse;
-
-import org.eclipse.jetty.server.Request;
-import org.eclipse.jetty.util.B64Code;
-import org.junit.Test;
 
 /**
  * Unit tests of {@link HttpRequest}
@@ -207,11 +206,11 @@ public class HttpRequestTest extends ServerTestCase {
 		final AtomicReference<String> path = new AtomicReference<String>();
 		String url = setUp(new RequestHandler() {
 
-			public void handle(Request request, HttpServletResponse response) {
-				path.set(request.getPathInfo());
-				response.setStatus(HTTP_OK);
-			}
-		});
+            public void handle(Request request, HttpServletResponse response) {
+                path.set(request.getPathInfo());
+                response.setStatus(HTTP_OK);
+            }
+        });
 		HttpRequest request = get(encode(url + unencoded));
 		assertTrue(request.ok());
 		assertEquals(unencoded, path.get());
@@ -638,12 +637,12 @@ public class HttpRequestTest extends ServerTestCase {
 		final AtomicReference<Integer> length = new AtomicReference<Integer>();
 		String url = setUp(new RequestHandler() {
 
-			public void handle(Request request, HttpServletResponse response) {
-				body.set(new String(read()));
-				length.set(request.getContentLength());
-				response.setStatus(HTTP_OK);
-			}
-		});
+            public void handle(Request request, HttpServletResponse response) {
+                body.set(new String(read()));
+                length.set(request.getContentLength());
+                response.setStatus(HTTP_OK);
+            }
+        });
 		String data = "hello";
 		int sent = data.getBytes().length;
 		int code = post(url).contentLength(sent).send(data).code();
@@ -1178,11 +1177,11 @@ public class HttpRequestTest extends ServerTestCase {
 		final AtomicReference<String> header = new AtomicReference<String>();
 		String url = setUp(new RequestHandler() {
 
-			public void handle(Request request, HttpServletResponse response) {
-				response.setStatus(HTTP_OK);
-				header.set(request.getHeader("User-Agent"));
-			}
-		});
+            public void handle(Request request, HttpServletResponse response) {
+                response.setStatus(HTTP_OK);
+                header.set(request.getHeader("User-Agent"));
+            }
+        });
 		assertTrue(get(url).userAgent("browser 1.0").ok());
 		assertEquals("browser 1.0", header.get());
 	}
@@ -1981,4 +1980,27 @@ public class HttpRequestTest extends ServerTestCase {
 		assertEquals(HTTP_OK, code);
 		assertEquals("name=", body.get());
 	}
+
+    /**
+     * Verify RequestParams.Builder builds proper query String
+     */
+    @Test
+    public void createRequestParams() {
+        RequestParams.Builder builder = new RequestParams.Builder();
+        RequestParams params = builder.param("key", "value").build();
+        assertEquals(params.toString(), "key=value");
+    }
+
+    /**
+     * Verify HttpRequest created with RequestParams create proper URL
+     */
+    @Test
+    public void createRequestWithRequestParams() throws MalformedURLException {
+        RequestParams.Builder builder = new RequestParams.Builder();
+        builder.param("key", "value").param("key2", "value2");
+        HttpRequest request = new HttpRequest("http://www.test.com",
+                                              builder.build(), "GET");
+
+        assertEquals("http://www.test.com?key2=value2&key=value", request.getConnection().getURL().toString());
+    }
 }
