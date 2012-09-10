@@ -636,6 +636,40 @@ public class HttpRequest {
 		}
 	}
 
+    /**
+     * Helper class for building up parameters to be included with a URL.
+     * {see @HttpRequest}
+     */
+    public static class RequestParams {
+
+       private StringBuilder result;
+       private boolean encode;
+
+        /**
+         *
+         * @param params a map of parameters to be included in the url
+         * @param encode true if the params need to be encoded, false otherwise
+         */
+        public RequestParams(Map<String, String> params, boolean encode) {
+
+            result = new StringBuilder();
+            this.encode = encode;
+            for(Map.Entry<String, String> entry : params.entrySet()) {
+                if(result.length() > 0)
+                    result.append("&");
+
+                result.append(entry.getKey());
+                result.append("=");
+                result.append(entry.getValue());
+            }
+        }
+
+        public String getParamString() {
+            return encode? encode(result.toString()): result.toString();
+        }
+
+    }
+
 	/**
 	 * Encode the given URL as an ASCII {@link String}
 	 * <p>
@@ -977,6 +1011,17 @@ public class HttpRequest {
 			throw new HttpRequestException(e);
 		}
 	}
+
+    /**
+     * Create HTTP connection wrapper
+     *
+     * @param url
+     * @param params a RequestParams object containing the params to be included in the URL
+     * @param method
+     */
+    public HttpRequest(final String url, RequestParams params, final String method) {
+        this(url + "?" + params.getParamString(), method);
+    }
 
 	@Override
 	public String toString() {
