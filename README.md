@@ -146,6 +146,16 @@ String uncompressed = request.body();
 System.out.println("Uncompressed response is: " + uncompressed);
 ```
 
+### Ignoring security when using HTTPS
+
+```java
+HttpRequest request = HttpRequest.get("https://google.com");
+//Accept all certificates
+request.trustAllCerts();
+//Accept all hostnames
+request.trustAllHosts();
+```
+
 ## Contributors
 
 * [Kevin Sawicki](https://github.com/kevinsawicki) :: [contributions](https://github.com/kevinsawicki/http-request/commits?author=kevinsawicki)
