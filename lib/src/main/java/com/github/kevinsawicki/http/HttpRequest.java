@@ -703,8 +703,9 @@ public class HttpRequest {
         return HttpRequest.get(buildUrlWithQueryParameters(baseUrl, params, encode));
     }
 
-    private static String buildUrlWithQueryParameters(final String url, Map<String, String> params, boolean encode) {
+    private static String buildUrlWithQueryParameters(String url, Map<String, String> params, boolean encode) {
         StringBuilder result = new StringBuilder();
+        if(!url.endsWith("/"))url+="/";
         for(Map.Entry<String, String> entry : params.entrySet()) {
             if(result.length() > 0)
                 result.append("&");
