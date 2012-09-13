@@ -636,7 +636,7 @@ public class HttpRequest {
 		}
 	}
 
-	/**
+    /**
 	 * Encode the given URL as an ASCII {@link String}
 	 * <p>
 	 * This method ensures the path and query segments of the URL are properly
@@ -690,6 +690,33 @@ public class HttpRequest {
 		return new HttpRequest(url, METHOD_GET);
 	}
 
+    /**
+     * Start a 'GET' request to the given URL along with the request params
+     *
+     * @param baseUrl
+     * @param params The query parameters to include as part of the baseUrl
+     * @param encode True if the params need to be encoded, otherwise false
+     * @return
+     */
+
+    public static HttpRequest get(final String baseUrl, Map<String, String> params, boolean encode) {
+        return HttpRequest.get(buildUrlWithQueryParameters(baseUrl, params, encode));
+    }
+
+    private static String buildUrlWithQueryParameters(String url, Map<String, String> params, boolean encode) {
+        StringBuilder result = new StringBuilder();
+        if(!url.endsWith("/"))url+="/";
+        for(Map.Entry<String, String> entry : params.entrySet()) {
+            if(result.length() > 0)
+                result.append("&");
+            result.append(entry.getKey());
+            result.append("=");
+            result.append(entry.getValue());
+        }
+        return encode? encode(url + "?" + result.toString()): url + "?" + result.toString();
+    }
+
+
 	/**
 	 * Start a 'GET' request to the given URL
 	 *
@@ -724,6 +751,18 @@ public class HttpRequest {
 		return new HttpRequest(url, METHOD_POST);
 	}
 
+    /**
+     * Start a 'POST' request to the given URL along with the request params
+     *
+     * @param baseUrl
+     * @param params The query parameters to include as part of the baseUrl
+     * @param encode True if the params need to be encoded, otherwise false
+     * @return
+     */
+    public static HttpRequest post(final String baseUrl, Map<String, String> params, boolean encode) {
+        return HttpRequest.post(buildUrlWithQueryParameters(baseUrl, params, encode));
+    }
+
 	/**
 	 * Start a 'PUT' request to the given URL
 	 *
@@ -747,6 +786,18 @@ public class HttpRequest {
 		return new HttpRequest(url, METHOD_PUT);
 	}
 
+    /**
+     * Start a 'PUT' request to the given URL along with the request params
+     *
+     * @param baseUrl
+     * @param params The query parameters to include as part of the baseUrl
+     * @param encode True if the params need to be encoded, otherwise false
+     * @return
+     */
+    public static HttpRequest put(final String baseUrl, Map<String, String> params, boolean encode) {
+        return HttpRequest.put(buildUrlWithQueryParameters(baseUrl, params, encode));
+    }
+
 	/**
 	 * Start a 'DELETE' request to the given URL
 	 *
@@ -769,6 +820,18 @@ public class HttpRequest {
 	public static HttpRequest delete(final URL url) throws HttpRequestException {
 		return new HttpRequest(url, METHOD_DELETE);
 	}
+
+    /**
+     * Start a 'DELETE' request to the given URL along with the request params
+     *
+     * @param baseUrl
+     * @param params The query parameters to include as part of the baseUrl
+     * @param encode True if the params need to be encoded, otherwise false
+     * @return
+     */
+    public static HttpRequest delete(final String baseUrl, Map<String, String> params, boolean encode) {
+        return HttpRequest.delete(buildUrlWithQueryParameters(baseUrl, params, encode));
+    }
 
 	/**
 	 * Start a 'HEAD' request to the given URL
