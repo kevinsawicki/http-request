@@ -1593,9 +1593,9 @@ public class HttpRequest {
 	}
 
 	/**
-	 * Get all response headers
+	 * Get all the response headers
 	 *
-	 * @return response headers
+	 * @return map of response header names to their value(s)
 	 */
 	public Map<String, List<String>> headers() {
 		return connection.getHeaderFields();
@@ -1655,7 +1655,7 @@ public class HttpRequest {
 	 * @return non-null but possibly empty array of {@link String} header values
 	 */
 	public String[] headers(final String name) {
-		final Map<String, List<String>> headers = connection.getHeaderFields();
+		final Map<String, List<String>> headers = headers();
 		if (headers == null || headers.isEmpty())
 			return EMPTY_STRINGS;
 
