@@ -1981,4 +1981,116 @@ public class HttpRequestTest extends ServerTestCase {
 		assertEquals(HTTP_OK, code);
 		assertEquals("name=", body.get());
 	}
+
+	/**
+	 * Verify POST with query parameters
+	 *
+	 * @throws Exception
+	 */
+	@Test
+	public void postWithQueryParams() throws Exception {
+		Map<String, String> params = new LinkedHashMap<String, String>();
+		params.put("name", "user");
+		params.put("number", "100");
+		final AtomicReference<String> method = new AtomicReference<String>();
+		String url = setUp(new RequestHandler() {
+
+			public void handle(Request request, HttpServletResponse response) {
+				method.set(request.getMethod());
+				response.setStatus(HTTP_OK);
+			}
+		});
+		HttpRequest request = post(url, params, false);
+		assertTrue(request.ok());
+		assertFalse(request.created());
+		assertFalse(request.badRequest());
+		assertFalse(request.serverError());
+		assertFalse(request.notFound());
+		assertEquals("POST", method.get());
+		assertEquals("OK", request.message());
+	}
+
+	/**
+	 * Verify GET with query parameters
+	 *
+	 * @throws Exception
+	 */
+	@Test
+	public void getWithQueryParams() throws Exception {
+		Map<String, String> params = new LinkedHashMap<String, String>();
+		params.put("name", "user");
+		params.put("number", "100");
+		final AtomicReference<String> method = new AtomicReference<String>();
+		String url = setUp(new RequestHandler() {
+
+			public void handle(Request request, HttpServletResponse response) {
+				method.set(request.getMethod());
+				response.setStatus(HTTP_OK);
+			}
+		});
+		HttpRequest request = get(url, params, false);
+		assertTrue(request.ok());
+		assertFalse(request.created());
+		assertFalse(request.badRequest());
+		assertFalse(request.serverError());
+		assertFalse(request.notFound());
+		assertEquals("GET", method.get());
+		assertEquals("OK", request.message());
+	}
+
+	/**
+	 * Verify DELETE with query parameters
+	 *
+	 * @throws Exception
+	 */
+	@Test
+	public void deleteWithQueryParams() throws Exception {
+		Map<String, String> params = new LinkedHashMap<String, String>();
+		params.put("name", "user");
+		params.put("number", "100");
+		final AtomicReference<String> method = new AtomicReference<String>();
+		String url = setUp(new RequestHandler() {
+
+			public void handle(Request request, HttpServletResponse response) {
+				method.set(request.getMethod());
+				response.setStatus(HTTP_OK);
+			}
+		});
+		HttpRequest request = delete(url, params, false);
+		assertTrue(request.ok());
+		assertFalse(request.created());
+		assertFalse(request.badRequest());
+		assertFalse(request.serverError());
+		assertFalse(request.notFound());
+		assertEquals("DELETE", method.get());
+		assertEquals("OK", request.message());
+	}
+
+	/**
+	 * Verify PUT with query parameters
+	 *
+	 * @throws Exception
+	 */
+	@Test
+	public void putWithQueryParams() throws Exception {
+		Map<String, String> params = new LinkedHashMap<String, String>();
+		params.put("name", "user");
+		params.put("number", "100");
+		final AtomicReference<String> method = new AtomicReference<String>();
+		String url = setUp(new RequestHandler() {
+
+			public void handle(Request request, HttpServletResponse response) {
+				method.set(request.getMethod());
+				response.setStatus(HTTP_OK);
+			}
+		});
+		HttpRequest request = put(url, params, false);
+		assertTrue(request.ok());
+		assertFalse(request.created());
+		assertFalse(request.badRequest());
+		assertFalse(request.serverError());
+		assertFalse(request.notFound());
+		assertEquals("PUT", method.get());
+		assertEquals("OK", request.message());
+	}
 }
