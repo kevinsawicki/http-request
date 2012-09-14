@@ -2611,16 +2611,14 @@ public class HttpRequest {
    * @return this request
    */
   public HttpRequest trustAllHosts() {
-    if (!(connection instanceof HttpsURLConnection))
-      return this;
+    if (connection instanceof HttpsURLConnection)
+      ((HttpsURLConnection) connection)
+          .setHostnameVerifier(new HostnameVerifier() {
 
-    ((HttpsURLConnection) connection)
-        .setHostnameVerifier(new HostnameVerifier() {
-
-          public boolean verify(String hostname, SSLSession session) {
-            return true;
-          }
-        });
+            public boolean verify(String hostname, SSLSession session) {
+              return true;
+            }
+          });
     return this;
   }
 }
