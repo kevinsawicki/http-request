@@ -2274,4 +2274,18 @@ public class HttpRequestTest extends ServerTestCase {
 				HttpRequest.append("http://test.com/1",
 						Collections.<String, String> emptyMap()));
 	}
+
+	/**
+	 * Append params with null values
+	 *
+	 * @throws Exception
+	 */
+	@Test
+	public void appendWithNullValues() throws Exception {
+		Map<String, Object> params = new LinkedHashMap<String, Object>();
+		params.put("a", null);
+		params.put("b", null);
+		assertEquals("http://test.com/1?a=&b=",
+				HttpRequest.append("http://test.com/1", params));
+	}
 }
