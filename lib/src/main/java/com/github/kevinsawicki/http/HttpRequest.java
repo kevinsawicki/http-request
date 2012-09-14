@@ -2572,6 +2572,7 @@ public class HttpRequest {
   public HttpRequest trustAllCerts() throws HttpRequestException {
     if (!(connection instanceof HttpsURLConnection))
       return this;
+
     final TrustManager[] trustAllCerts = new TrustManager[] { new X509TrustManager() {
       public X509Certificate[] getAcceptedIssuers() {
         return new X509Certificate[0];
@@ -2612,6 +2613,7 @@ public class HttpRequest {
   public HttpRequest trustAllHosts() {
     if (!(connection instanceof HttpsURLConnection))
       return this;
+
     ((HttpsURLConnection) connection)
         .setHostnameVerifier(new HostnameVerifier() {
 
