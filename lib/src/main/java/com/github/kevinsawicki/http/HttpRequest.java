@@ -76,6 +76,7 @@ import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSession;
+import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 
@@ -226,11 +227,59 @@ public class HttpRequest {
 
   private static final String[] EMPTY_STRINGS = new String[0];
 
+  private static SSLSocketFactory TRUSTED_FACTORY;
+
+  private static HostnameVerifier TRUSTED_VERIFIER;
+
   private static String getValidCharset(final String charset) {
     if (charset != null)
       return charset;
     else
       return CHARSET_UTF8;
+  }
+
+  private static SSLSocketFactory getTrustedFactory()
+      throws HttpRequestException {
+    if (TRUSTED_FACTORY == null) {
+      final TrustManager[] trustAllCerts = new TrustManager[] { new X509TrustManager() {
+
+        public X509Certificate[] getAcceptedIssuers() {
+          return new X509Certificate[0];
+        }
+
+        public void checkClientTrusted(X509Certificate[] chain, String authType) {
+          // Intentionally left blank
+        }
+
+        public void checkServerTrusted(X509Certificate[] chain, String authType) {
+          // Intentionally left blank
+        }
+      } };
+      try {
+        SSLContext context = SSLContext.getInstance("TLS");
+        context.init(null, trustAllCerts, new SecureRandom());
+        TRUSTED_FACTORY = context.getSocketFactory();
+      } catch (GeneralSecurityException e) {
+        IOException ioException = new IOException(
+            "Security exception configuring SSL context");
+        ioException.initCause(e);
+        throw new HttpRequestException(ioException);
+      }
+    }
+
+    return TRUSTED_FACTORY;
+  }
+
+  private static HostnameVerifier getTrustedVerifier() {
+    if (TRUSTED_VERIFIER == null)
+      TRUSTED_VERIFIER = new HostnameVerifier() {
+
+        public boolean verify(String hostname, SSLSession session) {
+          return true;
+        }
+      };
+
+    return TRUSTED_VERIFIER;
   }
 
   /**
@@ -2570,34 +2619,9 @@ public class HttpRequest {
    * @throws HttpRequestException
    */
   public HttpRequest trustAllCerts() throws HttpRequestException {
-    if (!(connection instanceof HttpsURLConnection))
-      return this;
-
-    final TrustManager[] trustAllCerts = new TrustManager[] { new X509TrustManager() {
-      public X509Certificate[] getAcceptedIssuers() {
-        return new X509Certificate[0];
-      }
-
-      public void checkClientTrusted(X509Certificate[] chain, String authType) {
-        // Intentionally left blank
-      }
-
-      public void checkServerTrusted(X509Certificate[] chain, String authType) {
-        // Intentionally left blank
-      }
-    } };
-    final SSLContext context;
-    try {
-      context = SSLContext.getInstance("TLS");
-      context.init(null, trustAllCerts, new SecureRandom());
-    } catch (GeneralSecurityException e) {
-      IOException ioException = new IOException(
-          "Security exception configuring SSL context");
-      ioException.initCause(e);
-      throw new HttpRequestException(ioException);
-    }
-    ((HttpsURLConnection) connection).setSSLSocketFactory(context
-        .getSocketFactory());
+    if (connection instanceof HttpsURLConnection)
+      ((HttpsURLConnection) connection)
+          .setSSLSocketFactory(getTrustedFactory());
     return this;
   }
 
@@ -2613,12 +2637,7 @@ public class HttpRequest {
   public HttpRequest trustAllHosts() {
     if (connection instanceof HttpsURLConnection)
       ((HttpsURLConnection) connection)
-          .setHostnameVerifier(new HostnameVerifier() {
-
-            public boolean verify(String hostname, SSLSession session) {
-              return true;
-            }
-          });
+          .setHostnameVerifier(getTrustedVerifier());
     return this;
   }
 }
