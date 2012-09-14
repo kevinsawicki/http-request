@@ -55,6 +55,7 @@ import java.io.UnsupportedEncodingException;
 import java.io.Writer;
 import java.net.URL;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -2204,5 +2205,73 @@ public class HttpRequestTest extends ServerTestCase {
 		assertEquals("PUT", method.get());
 		assertEquals("us er", outputParams.get("name"));
 		assertEquals("100", outputParams.get("number"));
+	}
+
+	/**
+	 * Append with base URL with no path
+	 *
+	 * @throws Exception
+	 */
+	@Test
+	public void appendWithNoPath() throws Exception {
+		assertEquals(
+				"http://test.com/?a=b",
+				HttpRequest.append("http://test.com",
+						Collections.singletonMap("a", "b")));
+	}
+
+	/**
+	 * Append with base URL with path
+	 *
+	 * @throws Exception
+	 */
+	@Test
+	public void appendWithPath() throws Exception {
+		assertEquals(
+				"http://test.com/segment1?a=b",
+				HttpRequest.append("http://test.com/segment1",
+						Collections.singletonMap("a", "b")));
+		assertEquals(
+				"http://test.com/?a=b",
+				HttpRequest.append("http://test.com/",
+						Collections.singletonMap("a", "b")));
+	}
+
+	/**
+	 * Append multiple params
+	 *
+	 * @throws Exception
+	 */
+	@Test
+	public void appendMultipleParams() throws Exception {
+		Map<String, Object> params = new LinkedHashMap<String, Object>();
+		params.put("a", "b");
+		params.put("c", "d");
+		assertEquals("http://test.com/1?a=b&c=d",
+				HttpRequest.append("http://test.com/1", params));
+	}
+
+	/**
+	 * Append null params
+	 *
+	 * @throws Exception
+	 */
+	@Test
+	public void appendNullParams() throws Exception {
+		assertEquals("http://test.com/1",
+				HttpRequest.append("http://test.com/1", null));
+	}
+
+	/**
+	 * Append empty params
+	 *
+	 * @throws Exception
+	 */
+	@Test
+	public void appendEmptyParams() throws Exception {
+		assertEquals(
+				"http://test.com/1",
+				HttpRequest.append("http://test.com/1",
+						Collections.<String, String> emptyMap()));
 	}
 }
