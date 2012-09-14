@@ -679,6 +679,30 @@ public class HttpRequest {
 	}
 
 	/**
+	 * Append given parameters to base URL
+	 *
+	 * @param url
+	 * @param params
+	 * @param encode
+	 * @return URL with query params
+	 */
+	public static String append(String url, final Map<String, String> params,
+			boolean encode) {
+		StringBuilder result = new StringBuilder();
+		if (!url.endsWith("/"))
+			url += "/";
+		for (Map.Entry<String, String> entry : params.entrySet()) {
+			if (result.length() > 0)
+				result.append("&");
+			result.append(entry.getKey());
+			result.append("=");
+			result.append(entry.getValue());
+		}
+		return encode ? encode(url + "?" + result.toString()) : url + "?"
+				+ result.toString();
+	}
+
+	/**
 	 * Start a 'GET' request to the given URL
 	 *
 	 * @param url
@@ -698,29 +722,12 @@ public class HttpRequest {
 	 *            The query parameters to include as part of the baseUrl
 	 * @param encode
 	 *            True if the params need to be encoded, otherwise false
-	 * @return
+	 * @return request
 	 */
 
 	public static HttpRequest get(final String baseUrl,
 			Map<String, String> params, boolean encode) {
-		return HttpRequest.get(buildUrlWithQueryParameters(baseUrl, params,
-				encode));
-	}
-
-	private static String buildUrlWithQueryParameters(String url,
-			Map<String, String> params, boolean encode) {
-		StringBuilder result = new StringBuilder();
-		if (!url.endsWith("/"))
-			url += "/";
-		for (Map.Entry<String, String> entry : params.entrySet()) {
-			if (result.length() > 0)
-				result.append("&");
-			result.append(entry.getKey());
-			result.append("=");
-			result.append(entry.getValue());
-		}
-		return encode ? encode(url + "?" + result.toString()) : url + "?"
-				+ result.toString();
+		return HttpRequest.get(append(baseUrl, params, encode));
 	}
 
 	/**
@@ -765,12 +772,11 @@ public class HttpRequest {
 	 *            The query parameters to include as part of the baseUrl
 	 * @param encode
 	 *            True if the params need to be encoded, otherwise false
-	 * @return
+	 * @return request
 	 */
 	public static HttpRequest post(final String baseUrl,
 			Map<String, String> params, boolean encode) {
-		return HttpRequest.post(buildUrlWithQueryParameters(baseUrl, params,
-				encode));
+		return HttpRequest.post(append(baseUrl, params, encode));
 	}
 
 	/**
@@ -804,12 +810,11 @@ public class HttpRequest {
 	 *            The query parameters to include as part of the baseUrl
 	 * @param encode
 	 *            True if the params need to be encoded, otherwise false
-	 * @return
+	 * @return request
 	 */
 	public static HttpRequest put(final String baseUrl,
 			Map<String, String> params, boolean encode) {
-		return HttpRequest.put(buildUrlWithQueryParameters(baseUrl, params,
-				encode));
+		return HttpRequest.put(append(baseUrl, params, encode));
 	}
 
 	/**
@@ -843,12 +848,11 @@ public class HttpRequest {
 	 *            The query parameters to include as part of the baseUrl
 	 * @param encode
 	 *            True if the params need to be encoded, otherwise false
-	 * @return
+	 * @return request
 	 */
 	public static HttpRequest delete(final String baseUrl,
 			Map<String, String> params, boolean encode) {
-		return HttpRequest.delete(buildUrlWithQueryParameters(baseUrl, params,
-				encode));
+		return HttpRequest.delete(append(baseUrl, params, encode));
 	}
 
 	/**
