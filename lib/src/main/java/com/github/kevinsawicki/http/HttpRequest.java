@@ -789,7 +789,7 @@ public class HttpRequest {
    * @param params
    *          The query parameters to include as part of the baseUrl
    * @param encode
-   *          True if the params need to be encoded, otherwise false
+   *          true to encode the full URL
    * @return request
    */
 
@@ -840,7 +840,7 @@ public class HttpRequest {
    * @param params
    *          The query parameters to include as part of the baseUrl
    * @param encode
-   *          True if the params need to be encoded, otherwise false
+   *          true to encode the full URL
    * @return request
    */
   public static HttpRequest post(final String baseUrl, Map<?, ?> params,
@@ -879,7 +879,7 @@ public class HttpRequest {
    * @param params
    *          The query parameters to include as part of the baseUrl
    * @param encode
-   *          True if the params need to be encoded, otherwise false
+   *          true to encode the full URL
    * @return request
    */
   public static HttpRequest put(final String baseUrl, Map<?, ?> params,
@@ -918,7 +918,7 @@ public class HttpRequest {
    * @param params
    *          The query parameters to include as part of the baseUrl
    * @param encode
-   *          True if the params need to be encoded, otherwise false
+   *          true to encode the full URL
    * @return request
    */
   public static HttpRequest delete(final String baseUrl, Map<?, ?> params,
