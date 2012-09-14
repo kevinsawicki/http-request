@@ -63,6 +63,7 @@ import java.security.PrivilegedAction;
 import java.security.SecureRandom;
 import java.security.cert.X509Certificate;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -686,6 +687,7 @@ public class HttpRequest {
 	 * @param encode
 	 * @return URL with query params
 	 */
+	@SuppressWarnings("unchecked")
 	public static String append(String url, final Map<String, ?> params,
 			boolean encode) {
 		if (params == null || params.isEmpty())
@@ -695,12 +697,22 @@ public class HttpRequest {
 		if (!url.endsWith("/"))
 			url += "/";
 
-		for (Entry<String, ?> entry : params.entrySet()) {
-			if (result.length() > 0)
-				result.append("&");
+		Entry<String, ?> entry;
+		Object value;
+		Iterator<?> iterator = params.entrySet().iterator();
+		entry = (Entry<String, ?>) iterator.next();
+		result.append(entry.getKey());
+		result.append('=');
+		value = entry.getValue();
+		if (value != null)
+			result.append(value);
+
+		while (iterator.hasNext()) {
+			result.append('&');
+			entry = (Entry<String, ?>) iterator.next();
 			result.append(entry.getKey());
-			result.append("=");
-			Object value = entry.getValue();
+			result.append('=');
+			value = entry.getValue();
 			if (value != null)
 				result.append(value);
 		}
