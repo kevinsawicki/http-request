@@ -42,111 +42,110 @@ import org.junit.After;
  */
 public class ServerTestCase {
 
-	/**
-	 * Simplified handler
-	 */
-	protected static abstract class RequestHandler extends AbstractHandler {
+  /**
+   * Simplified handler
+   */
+  protected static abstract class RequestHandler extends AbstractHandler {
 
-		private Request request;
+    private Request request;
 
-		private HttpServletResponse response;
+    private HttpServletResponse response;
 
-		/**
-		 * Handle request
-		 *
-		 * @param request
-		 * @param response
-		 */
-		public abstract void handle(Request request,
-				HttpServletResponse response);
+    /**
+     * Handle request
+     *
+     * @param request
+     * @param response
+     */
+    public abstract void handle(Request request, HttpServletResponse response);
 
-		/**
-		 * Read content
-		 *
-		 * @return content
-		 */
-		protected byte[] read() {
-			ByteArrayOutputStream content = new ByteArrayOutputStream();
-			final byte[] buffer = new byte[8196];
-			int read;
-			try {
-				InputStream input = request.getInputStream();
-				while ((read = input.read(buffer)) != -1)
-					content.write(buffer, 0, read);
-			} catch (IOException e) {
-				throw new RuntimeException(e);
-			}
-			return content.toByteArray();
-		}
+    /**
+     * Read content
+     *
+     * @return content
+     */
+    protected byte[] read() {
+      ByteArrayOutputStream content = new ByteArrayOutputStream();
+      final byte[] buffer = new byte[8196];
+      int read;
+      try {
+        InputStream input = request.getInputStream();
+        while ((read = input.read(buffer)) != -1)
+          content.write(buffer, 0, read);
+      } catch (IOException e) {
+        throw new RuntimeException(e);
+      }
+      return content.toByteArray();
+    }
 
-		/**
-		 * Write value
-		 *
-		 * @param value
-		 */
-		protected void write(String value) {
-			try {
-				response.getWriter().print(value);
-			} catch (IOException e) {
-				throw new RuntimeException(e);
-			}
-		}
+    /**
+     * Write value
+     *
+     * @param value
+     */
+    protected void write(String value) {
+      try {
+        response.getWriter().print(value);
+      } catch (IOException e) {
+        throw new RuntimeException(e);
+      }
+    }
 
-		/**
-		 * Write line
-		 *
-		 * @param value
-		 */
-		protected void writeln(String value) {
-			try {
-				response.getWriter().println(value);
-			} catch (IOException e) {
-				throw new RuntimeException(e);
-			}
-		}
+    /**
+     * Write line
+     *
+     * @param value
+     */
+    protected void writeln(String value) {
+      try {
+        response.getWriter().println(value);
+      } catch (IOException e) {
+        throw new RuntimeException(e);
+      }
+    }
 
-		public void handle(String target, Request baseRequest,
-				HttpServletRequest request, HttpServletResponse response)
-				throws IOException, ServletException {
-			this.request = (Request) request;
-			this.response = response;
-			this.request.setHandled(true);
-			handle(this.request, response);
-		}
+    public void handle(String target, Request baseRequest,
+        HttpServletRequest request, HttpServletResponse response)
+        throws IOException, ServletException {
+      this.request = (Request) request;
+      this.response = response;
+      this.request.setHandled(true);
+      handle(this.request, response);
+    }
 
-	}
+  }
 
-	/**
-	 * Server
-	 */
-	protected Server server;
+  /**
+   * Server
+   */
+  protected Server server;
 
-	/**
-	 * Set up server with handler
-	 *
-	 * @param handler
-	 * @return port
-	 * @throws Exception
-	 */
-	public String setUp(final Handler handler) throws Exception {
-		server = new Server();
-		if (handler != null)
-			server.setHandler(handler);
-		Connector connector = new SelectChannelConnector();
-		connector.setPort(0);
-		server.setConnectors(new Connector[] { connector });
-		server.start();
-		return "http://localhost:" + connector.getLocalPort();
-	}
+  /**
+   * Set up server with handler
+   *
+   * @param handler
+   * @return port
+   * @throws Exception
+   */
+  public String setUp(final Handler handler) throws Exception {
+    server = new Server();
+    if (handler != null)
+      server.setHandler(handler);
+    Connector connector = new SelectChannelConnector();
+    connector.setPort(0);
+    server.setConnectors(new Connector[] { connector });
+    server.start();
+    return "http://localhost:" + connector.getLocalPort();
+  }
 
-	/**
-	 * Tear down server if created
-	 *
-	 * @throws Exception
-	 */
-	@After
-	public void tearDown() throws Exception {
-		if (server != null)
-			server.stop();
-	}
+  /**
+   * Tear down server if created
+   *
+   * @throws Exception
+   */
+  @After
+  public void tearDown() throws Exception {
+    if (server != null)
+      server.stop();
+  }
 }
