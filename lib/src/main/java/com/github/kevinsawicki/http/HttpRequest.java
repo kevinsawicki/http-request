@@ -680,7 +680,10 @@ public class HttpRequest {
 	}
 
 	/**
-	 * Append given query parameters to base URL
+	 * Append given map as query parameters to the base URL
+	 * <p>
+	 * Each map entry's key will be a parameter name and the value's
+	 * {@link Object#toString()} will be the parameter value.
 	 *
 	 * @param url
 	 * @param params
