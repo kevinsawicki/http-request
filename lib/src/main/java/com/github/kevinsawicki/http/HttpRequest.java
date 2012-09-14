@@ -688,10 +688,13 @@ public class HttpRequest {
 	 */
 	public static String append(String url, final Map<String, String> params,
 			boolean encode) {
+		if (params == null || params.isEmpty())
+			return url;
+
 		StringBuilder result = new StringBuilder();
 		if (!url.endsWith("/"))
 			url += "/";
-		for (Map.Entry<String, String> entry : params.entrySet()) {
+		for (Entry<String, String> entry : params.entrySet()) {
 			if (result.length() > 0)
 				result.append("&");
 			result.append(entry.getKey());
