@@ -686,7 +686,7 @@ public class HttpRequest {
 	 * @param encode
 	 * @return URL with query params
 	 */
-	public static String append(String url, final Map<String, String> params,
+	public static String append(String url, final Map<String, ?> params,
 			boolean encode) {
 		if (params == null || params.isEmpty())
 			return url;
@@ -694,13 +694,17 @@ public class HttpRequest {
 		StringBuilder result = new StringBuilder();
 		if (!url.endsWith("/"))
 			url += "/";
-		for (Entry<String, String> entry : params.entrySet()) {
+
+		for (Entry<String, ?> entry : params.entrySet()) {
 			if (result.length() > 0)
 				result.append("&");
 			result.append(entry.getKey());
 			result.append("=");
-			result.append(entry.getValue());
+			Object value = entry.getValue();
+			if (value != null)
+				result.append(value);
 		}
+
 		return encode ? encode(url + "?" + result.toString()) : url + "?"
 				+ result.toString();
 	}
