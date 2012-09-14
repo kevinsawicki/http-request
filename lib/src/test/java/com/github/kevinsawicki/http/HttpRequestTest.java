@@ -66,6 +66,7 @@ import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.zip.GZIPOutputStream;
 
+import javax.net.ssl.HttpsURLConnection;
 import javax.servlet.http.HttpServletResponse;
 
 import org.eclipse.jetty.server.Request;
@@ -1460,6 +1461,19 @@ public class HttpRequestTest extends ServerTestCase {
   @Test
   public void httpTrust() throws Exception {
     assertNotNull(get("http://localhost").trustAllCerts().trustAllHosts());
+  }
+
+  /**
+   * Verify hostname verifier is set and accepts all
+   */
+  @Test
+  public void verifierAccepts() {
+    HttpRequest request = get("https://localhost");
+    HttpsURLConnection connection = (HttpsURLConnection) request
+        .getConnection();
+    request.trustAllHosts();
+    assertNotNull(connection.getHostnameVerifier());
+    assertTrue(connection.getHostnameVerifier().verify(null, null));
   }
 
   /**
