@@ -680,20 +680,27 @@ public class HttpRequest {
 	}
 
 	/**
-	 * Append given parameters to base URL
+	 * Append given query parameters to base URL
 	 *
 	 * @param url
 	 * @param params
-	 * @return URL with query params
+	 * @return URL with appended query params
 	 */
 	@SuppressWarnings("unchecked")
-	public static String append(String url, final Map<String, ?> params) {
+	public static String append(final String url, final Map<String, ?> params) {
 		if (params == null || params.isEmpty())
 			return url;
 
-		StringBuilder result = new StringBuilder();
-		if (!url.endsWith("/"))
-			url += "/";
+		final StringBuilder result = new StringBuilder(url);
+
+		// Add trailing slash if the base URL doesn't have any path segments.
+		// The following test is checking for the last slash not being part of
+		// the protocol to host separator '://'.
+		int firstColon = url.indexOf(':');
+		int lastSlash = url.lastIndexOf('/');
+		if (firstColon + 2 == lastSlash)
+			result.append('/');
+		result.append('?');
 
 		Entry<String, ?> entry;
 		Object value;
@@ -715,7 +722,7 @@ public class HttpRequest {
 				result.append(value);
 		}
 
-		return url + '?' + result.toString();
+		return result.toString();
 	}
 
 	/**
