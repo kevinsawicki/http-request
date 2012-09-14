@@ -732,8 +732,7 @@ public class HttpRequest {
    * @param params
    * @return URL with appended query params
    */
-  @SuppressWarnings("unchecked")
-  public static String append(final String url, final Map<String, ?> params) {
+  public static String append(final String url, final Map<?, ?> params) {
     if (params == null || params.isEmpty())
       return url;
 
@@ -748,11 +747,11 @@ public class HttpRequest {
       result.append('/');
     result.append('?');
 
-    Entry<String, ?> entry;
+    Entry<?, ?> entry;
     Object value;
     Iterator<?> iterator = params.entrySet().iterator();
-    entry = (Entry<String, ?>) iterator.next();
-    result.append(entry.getKey());
+    entry = (Entry<?, ?>) iterator.next();
+    result.append(entry.getKey().toString());
     result.append('=');
     value = entry.getValue();
     if (value != null)
@@ -760,8 +759,8 @@ public class HttpRequest {
 
     while (iterator.hasNext()) {
       result.append('&');
-      entry = (Entry<String, ?>) iterator.next();
-      result.append(entry.getKey());
+      entry = (Entry<?, ?>) iterator.next();
+      result.append(entry.getKey().toString());
       result.append('=');
       value = entry.getValue();
       if (value != null)
@@ -794,8 +793,8 @@ public class HttpRequest {
    * @return request
    */
 
-  public static HttpRequest get(final String baseUrl,
-      Map<String, String> params, boolean encode) {
+  public static HttpRequest get(final String baseUrl, Map<?, ?> params,
+      boolean encode) {
     String url = append(baseUrl, params);
     if (encode)
       url = encode(url);
@@ -846,8 +845,8 @@ public class HttpRequest {
    *          True if the params need to be encoded, otherwise false
    * @return request
    */
-  public static HttpRequest post(final String baseUrl,
-      Map<String, String> params, boolean encode) {
+  public static HttpRequest post(final String baseUrl, Map<?, ?> params,
+      boolean encode) {
     String url = append(baseUrl, params);
     if (encode)
       url = encode(url);
@@ -887,8 +886,8 @@ public class HttpRequest {
    *          True if the params need to be encoded, otherwise false
    * @return request
    */
-  public static HttpRequest put(final String baseUrl,
-      Map<String, String> params, boolean encode) {
+  public static HttpRequest put(final String baseUrl, Map<?, ?> params,
+      boolean encode) {
     String url = append(baseUrl, params);
     if (encode)
       url = encode(url);
@@ -928,8 +927,8 @@ public class HttpRequest {
    *          True if the params need to be encoded, otherwise false
    * @return request
    */
-  public static HttpRequest delete(final String baseUrl,
-      Map<String, String> params, boolean encode) {
+  public static HttpRequest delete(final String baseUrl, Map<?, ?> params,
+      boolean encode) {
     String url = append(baseUrl, params);
     if (encode)
       url = encode(url);
