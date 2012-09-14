@@ -684,12 +684,10 @@ public class HttpRequest {
 	 *
 	 * @param url
 	 * @param params
-	 * @param encode
 	 * @return URL with query params
 	 */
 	@SuppressWarnings("unchecked")
-	public static String append(String url, final Map<String, ?> params,
-			boolean encode) {
+	public static String append(String url, final Map<String, ?> params) {
 		if (params == null || params.isEmpty())
 			return url;
 
@@ -717,8 +715,7 @@ public class HttpRequest {
 				result.append(value);
 		}
 
-		return encode ? encode(url + "?" + result.toString()) : url + "?"
-				+ result.toString();
+		return url + '?' + result.toString();
 	}
 
 	/**
@@ -734,7 +731,7 @@ public class HttpRequest {
 	}
 
 	/**
-	 * Start a 'GET' request to the given URL along with the request params
+	 * Start a 'GET' request to the given URL along with the query params
 	 *
 	 * @param baseUrl
 	 * @param params
@@ -746,7 +743,10 @@ public class HttpRequest {
 
 	public static HttpRequest get(final String baseUrl,
 			Map<String, String> params, boolean encode) {
-		return HttpRequest.get(append(baseUrl, params, encode));
+		String url = append(baseUrl, params);
+		if (encode)
+			url = encode(url);
+		return HttpRequest.get(url);
 	}
 
 	/**
@@ -784,7 +784,7 @@ public class HttpRequest {
 	}
 
 	/**
-	 * Start a 'POST' request to the given URL along with the request params
+	 * Start a 'POST' request to the given URL along with the query params
 	 *
 	 * @param baseUrl
 	 * @param params
@@ -795,7 +795,10 @@ public class HttpRequest {
 	 */
 	public static HttpRequest post(final String baseUrl,
 			Map<String, String> params, boolean encode) {
-		return HttpRequest.post(append(baseUrl, params, encode));
+		String url = append(baseUrl, params);
+		if (encode)
+			url = encode(url);
+		return HttpRequest.post(url);
 	}
 
 	/**
@@ -822,7 +825,7 @@ public class HttpRequest {
 	}
 
 	/**
-	 * Start a 'PUT' request to the given URL along with the request params
+	 * Start a 'PUT' request to the given URL along with the query params
 	 *
 	 * @param baseUrl
 	 * @param params
@@ -833,7 +836,10 @@ public class HttpRequest {
 	 */
 	public static HttpRequest put(final String baseUrl,
 			Map<String, String> params, boolean encode) {
-		return HttpRequest.put(append(baseUrl, params, encode));
+		String url = append(baseUrl, params);
+		if (encode)
+			url = encode(url);
+		return HttpRequest.put(url);
 	}
 
 	/**
@@ -860,7 +866,7 @@ public class HttpRequest {
 	}
 
 	/**
-	 * Start a 'DELETE' request to the given URL along with the request params
+	 * Start a 'DELETE' request to the given URL along with the query params
 	 *
 	 * @param baseUrl
 	 * @param params
@@ -871,7 +877,10 @@ public class HttpRequest {
 	 */
 	public static HttpRequest delete(final String baseUrl,
 			Map<String, String> params, boolean encode) {
-		return HttpRequest.delete(append(baseUrl, params, encode));
+		String url = append(baseUrl, params);
+		if (encode)
+			url = encode(url);
+		return HttpRequest.delete(url);
 	}
 
 	/**
