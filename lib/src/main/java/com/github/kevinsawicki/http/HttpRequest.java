@@ -828,6 +828,17 @@ public class HttpRequest {
   }
 
   /**
+   * Start a 'GET' request to the given URL
+   *
+   * @param url
+   * @return request
+   * @throws HttpRequestException
+   */
+  public static HttpRequest get(final URL url) throws HttpRequestException {
+    return new HttpRequest(url, METHOD_GET);
+  }
+
+  /**
    * Start a 'GET' request to the given URL along with the query params
    *
    * @param baseUrl
@@ -866,17 +877,6 @@ public class HttpRequest {
       final String... params) {
     String url = append(baseUrl, params);
     return get(encode ? encode(url) : url);
-  }
-
-  /**
-   * Start a 'GET' request to the given URL
-   *
-   * @param url
-   * @return request
-   * @throws HttpRequestException
-   */
-  public static HttpRequest get(final URL url) throws HttpRequestException {
-    return new HttpRequest(url, METHOD_GET);
   }
 
   /**
