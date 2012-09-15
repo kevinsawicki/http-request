@@ -709,17 +709,15 @@ public class HttpRequest {
       throw new HttpRequestException(e);
     }
 
-    String protocol = parsed.getProtocol();
     String host = parsed.getHost();
     int port = parsed.getPort();
     if (port != -1)
       host = host + ':' + Integer.toString(port);
-    String path = parsed.getPath();
-    String query = parsed.getQuery();
 
     URI uri;
     try {
-      uri = new URI(protocol, host, path, query, null);
+      uri = new URI(parsed.getProtocol(), host, parsed.getPath(),
+          parsed.getQuery(), null);
     } catch (URISyntaxException e) {
       IOException io = new IOException("Parsing URI failed");
       io.initCause(e);
