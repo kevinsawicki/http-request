@@ -2280,6 +2280,62 @@ public class HttpRequestTest extends ServerTestCase {
   }
 
   /**
+   * Verify HEAD with query parameters
+   *
+   * @throws Exception
+   */
+  @Test
+  public void headWithQueryParams() throws Exception {
+    Map<String, String> inputParams = new HashMap<String, String>();
+    inputParams.put("name", "user");
+    inputParams.put("number", "100");
+    final Map<String, String> outputParams = new HashMap<String, String>();
+    final AtomicReference<String> method = new AtomicReference<String>();
+    String url = setUp(new RequestHandler() {
+
+      public void handle(Request request, HttpServletResponse response) {
+        method.set(request.getMethod());
+        outputParams.put("name", request.getParameter("name"));
+        outputParams.put("number", request.getParameter("number"));
+        response.setStatus(HTTP_OK);
+      }
+    });
+    HttpRequest request = head(url, inputParams, false);
+    assertTrue(request.ok());
+    assertEquals("HEAD", method.get());
+    assertEquals("user", outputParams.get("name"));
+    assertEquals("100", outputParams.get("number"));
+  }
+
+  /**
+   * Verify HEAD with escaped query parameters
+   *
+   * @throws Exception
+   */
+  @Test
+  public void headWithEscapedQueryParams() throws Exception {
+    Map<String, String> inputParams = new HashMap<String, String>();
+    inputParams.put("name", "us er");
+    inputParams.put("number", "100");
+    final Map<String, String> outputParams = new HashMap<String, String>();
+    final AtomicReference<String> method = new AtomicReference<String>();
+    String url = setUp(new RequestHandler() {
+
+      public void handle(Request request, HttpServletResponse response) {
+        method.set(request.getMethod());
+        outputParams.put("name", request.getParameter("name"));
+        outputParams.put("number", request.getParameter("number"));
+        response.setStatus(HTTP_OK);
+      }
+    });
+    HttpRequest request = head(url, inputParams, true);
+    assertTrue(request.ok());
+    assertEquals("HEAD", method.get());
+    assertEquals("us er", outputParams.get("name"));
+    assertEquals("100", outputParams.get("number"));
+  }
+
+  /**
    * Append with base URL with no path
    *
    * @throws Exception
