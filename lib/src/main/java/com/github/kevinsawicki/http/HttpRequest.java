@@ -841,7 +841,6 @@ public class HttpRequest {
    *
    * @return request
    */
-
   public static HttpRequest get(final String baseUrl, final Map<?, ?> params,
       final boolean encode) {
     String url = append(baseUrl, params);
@@ -863,7 +862,6 @@ public class HttpRequest {
    *
    * @return request
    */
-
   public static HttpRequest get(final String baseUrl, final boolean encode,
       final String... params) {
     String url = append(baseUrl, params);
@@ -909,7 +907,7 @@ public class HttpRequest {
    *
    * @param baseUrl
    * @param params
-   *          The query parameters to include as part of the baseUrl
+   *          the query parameters to include as part of the baseUrl
    * @param encode
    *          true to encode the full URL
    *
@@ -973,7 +971,7 @@ public class HttpRequest {
    *
    * @param baseUrl
    * @param params
-   *          The query parameters to include as part of the baseUrl
+   *          the query parameters to include as part of the baseUrl
    * @param encode
    *          true to encode the full URL
    * @return request
@@ -1086,6 +1084,47 @@ public class HttpRequest {
    */
   public static HttpRequest head(final URL url) throws HttpRequestException {
     return new HttpRequest(url, METHOD_HEAD);
+  }
+
+  /**
+   * Start a 'HEAD' request to the given URL along with the query params
+   *
+   * @param baseUrl
+   * @param params
+   *          The query parameters to include as part of the baseUrl
+   * @param encode
+   *          true to encode the full URL
+   *
+   * @see #append(String, Map)
+   * @see #encode(CharSequence)
+   *
+   * @return request
+   */
+  public static HttpRequest head(final String baseUrl, final Map<?, ?> params,
+      final boolean encode) {
+    String url = append(baseUrl, params);
+    return HttpRequest.head(encode ? encode(url) : url);
+  }
+
+  /**
+   * Start a 'GET' request to the given URL along with the query params
+   *
+   * @param baseUrl
+   * @param encode
+   *          true to encode the full URL
+   * @param params
+   *          the name/value query parameter pairs to include as part of the
+   *          baseUrl
+   *
+   * @see #append(String, String...)
+   * @see #encode(CharSequence)
+   *
+   * @return request
+   */
+  public static HttpRequest head(final String baseUrl, final boolean encode,
+      final String... params) {
+    String url = append(baseUrl, params);
+    return HttpRequest.head(encode ? encode(url) : url);
   }
 
   /**
