@@ -844,7 +844,7 @@ public class HttpRequest {
   public static HttpRequest get(final String baseUrl, final Map<?, ?> params,
       final boolean encode) {
     String url = append(baseUrl, params);
-    return HttpRequest.get(encode ? encode(url) : url);
+    return get(encode ? encode(url) : url);
   }
 
   /**
@@ -865,7 +865,7 @@ public class HttpRequest {
   public static HttpRequest get(final String baseUrl, final boolean encode,
       final String... params) {
     String url = append(baseUrl, params);
-    return HttpRequest.get(encode ? encode(url) : url);
+    return get(encode ? encode(url) : url);
   }
 
   /**
@@ -919,7 +919,7 @@ public class HttpRequest {
   public static HttpRequest post(final String baseUrl, final Map<?, ?> params,
       final boolean encode) {
     String url = append(baseUrl, params);
-    return HttpRequest.post(encode ? encode(url) : url);
+    return post(encode ? encode(url) : url);
   }
 
   /**
@@ -940,7 +940,7 @@ public class HttpRequest {
   public static HttpRequest post(final String baseUrl, final boolean encode,
       final String... params) {
     String url = append(baseUrl, params);
-    return HttpRequest.post(encode ? encode(url) : url);
+    return post(encode ? encode(url) : url);
   }
 
   /**
@@ -979,7 +979,7 @@ public class HttpRequest {
   public static HttpRequest put(final String baseUrl, final Map<?, ?> params,
       final boolean encode) {
     String url = append(baseUrl, params);
-    return HttpRequest.put(encode ? encode(url) : url);
+    return put(encode ? encode(url) : url);
   }
 
   /**
@@ -1000,7 +1000,7 @@ public class HttpRequest {
   public static HttpRequest put(final String baseUrl, final boolean encode,
       final String... params) {
     String url = append(baseUrl, params);
-    return HttpRequest.put(encode ? encode(url) : url);
+    return put(encode ? encode(url) : url);
   }
 
   /**
@@ -1039,7 +1039,7 @@ public class HttpRequest {
   public static HttpRequest delete(final String baseUrl,
       final Map<?, ?> params, final boolean encode) {
     String url = append(baseUrl, params);
-    return HttpRequest.delete(encode ? encode(url) : url);
+    return delete(encode ? encode(url) : url);
   }
 
   /**
@@ -1060,7 +1060,7 @@ public class HttpRequest {
   public static HttpRequest delete(final String baseUrl, final boolean encode,
       final String... params) {
     String url = append(baseUrl, params);
-    return HttpRequest.delete(encode ? encode(url) : url);
+    return delete(encode ? encode(url) : url);
   }
 
   /**
@@ -1103,7 +1103,7 @@ public class HttpRequest {
   public static HttpRequest head(final String baseUrl, final Map<?, ?> params,
       final boolean encode) {
     String url = append(baseUrl, params);
-    return HttpRequest.head(encode ? encode(url) : url);
+    return head(encode ? encode(url) : url);
   }
 
   /**
@@ -1124,7 +1124,7 @@ public class HttpRequest {
   public static HttpRequest head(final String baseUrl, final boolean encode,
       final String... params) {
     String url = append(baseUrl, params);
-    return HttpRequest.head(encode ? encode(url) : url);
+    return head(encode ? encode(url) : url);
   }
 
   /**
