@@ -282,6 +282,12 @@ public class HttpRequest {
     return TRUSTED_VERIFIER;
   }
 
+  private static boolean pathMissing(final String url) {
+    // The following test is checking for the last slash not being part of
+    // the protocol to host separator: '://'.
+    return url.indexOf(':') + 2 == url.lastIndexOf('/');
+  }
+
   /**
    * <p>
    * Encodes and decodes to and from Base64 notation.
@@ -739,11 +745,7 @@ public class HttpRequest {
     final StringBuilder result = new StringBuilder(url);
 
     // Add trailing slash if the base URL doesn't have any path segments.
-    // The following test is checking for the last slash not being part of
-    // the protocol to host separator '://'.
-    int firstColon = url.indexOf(':');
-    int lastSlash = url.lastIndexOf('/');
-    if (firstColon + 2 == lastSlash)
+    if (pathMissing(url))
       result.append('/');
     result.append('?');
 
@@ -763,6 +765,51 @@ public class HttpRequest {
       result.append(entry.getKey().toString());
       result.append('=');
       value = entry.getValue();
+      if (value != null)
+        result.append(value);
+    }
+
+    return result.toString();
+  }
+
+  /**
+   * Append given name/value pairs as query parameters to the base URL
+   * <p>
+   * The params argument is interpreted as a sequence of name/value pairs so the
+   * given number of params must be divisible by 2.
+   *
+   * @param url
+   * @param params
+   *          name/value pairs
+   * @return URL with appended query params
+   */
+  public static String append(final String url, final String... params) {
+    if (params == null || params.length == 0)
+      return url;
+
+    if (params.length % 2 != 0)
+      throw new IllegalArgumentException(
+          "Must specify an even number of parameter names/values");
+
+    final StringBuilder result = new StringBuilder(url);
+
+    // Add trailing slash if the base URL doesn't have any path segments.
+    if (pathMissing(url))
+      result.append('/');
+    result.append('?');
+
+    Object value;
+    result.append(params[0]);
+    result.append('=');
+    value = params[1];
+    if (value != null)
+      result.append(value);
+
+    for (int i = 2; i < params.length; i += 2) {
+      result.append('&');
+      result.append(params[i]);
+      result.append('=');
+      value = params[i + 1];
       if (value != null)
         result.append(value);
     }

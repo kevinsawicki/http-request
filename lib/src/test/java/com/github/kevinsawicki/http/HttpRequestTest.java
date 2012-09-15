@@ -2285,11 +2285,20 @@ public class HttpRequestTest extends ServerTestCase {
    * @throws Exception
    */
   @Test
-  public void appendWithNoPath() throws Exception {
-    assertEquals(
-        "http://test.com/?a=b",
-        HttpRequest.append("http://test.com",
-            Collections.singletonMap("a", "b")));
+  public void appendWithNoPath1() throws Exception {
+    assertEquals("http://test.com/?a=b",
+        HttpRequest.append("http://test.com", "a", "b"));
+  }
+
+  /**
+   * Append with base URL with no path
+   *
+   * @throws Exception
+   */
+  @Test
+  public void appendWithNoPath2() throws Exception {
+    assertEquals("http://test.com/?a=b",
+        HttpRequest.append("http://test.com", "a", "b"));
   }
 
   /**
@@ -2298,7 +2307,7 @@ public class HttpRequestTest extends ServerTestCase {
    * @throws Exception
    */
   @Test
-  public void appendWithPath() throws Exception {
+  public void appendWithPath1() throws Exception {
     assertEquals(
         "http://test.com/segment1?a=b",
         HttpRequest.append("http://test.com/segment1",
@@ -2310,12 +2319,25 @@ public class HttpRequestTest extends ServerTestCase {
   }
 
   /**
+   * Append with base URL with path
+   *
+   * @throws Exception
+   */
+  @Test
+  public void appendWithPath2() throws Exception {
+    assertEquals("http://test.com/segment1?a=b",
+        HttpRequest.append("http://test.com/segment1", "a", "b"));
+    assertEquals("http://test.com/?a=b",
+        HttpRequest.append("http://test.com/", "a", "b"));
+  }
+
+  /**
    * Append multiple params
    *
    * @throws Exception
    */
   @Test
-  public void appendMultipleParams() throws Exception {
+  public void appendMultipleParams1() throws Exception {
     Map<String, Object> params = new LinkedHashMap<String, Object>();
     params.put("a", "b");
     params.put("c", "d");
@@ -2324,14 +2346,36 @@ public class HttpRequestTest extends ServerTestCase {
   }
 
   /**
+   * Append multiple params
+   *
+   * @throws Exception
+   */
+  @Test
+  public void appendMultipleParams2() throws Exception {
+    assertEquals("http://test.com/1?a=b&c=d",
+        HttpRequest.append("http://test.com/1", "a", "b", "c", "d"));
+  }
+
+  /**
    * Append null params
    *
    * @throws Exception
    */
   @Test
-  public void appendNullParams() throws Exception {
+  public void appendNullParams1() throws Exception {
     assertEquals("http://test.com/1",
-        HttpRequest.append("http://test.com/1", null));
+        HttpRequest.append("http://test.com/1", (Map<?, ?>) null));
+  }
+
+  /**
+   * Append null params
+   *
+   * @throws Exception
+   */
+  @Test
+  public void appendNullParams2() throws Exception {
+    assertEquals("http://test.com/1",
+        HttpRequest.append("http://test.com/1", (String[]) null));
   }
 
   /**
@@ -2340,11 +2384,22 @@ public class HttpRequestTest extends ServerTestCase {
    * @throws Exception
    */
   @Test
-  public void appendEmptyParams() throws Exception {
+  public void appendEmptyParams1() throws Exception {
     assertEquals(
         "http://test.com/1",
         HttpRequest.append("http://test.com/1",
             Collections.<String, String> emptyMap()));
+  }
+
+  /**
+   * Append empty params
+   *
+   * @throws Exception
+   */
+  @Test
+  public void appendEmptyParams2() throws Exception {
+    assertEquals("http://test.com/1",
+        HttpRequest.append("http://test.com/1", new String[0]));
   }
 
   /**
@@ -2353,11 +2408,22 @@ public class HttpRequestTest extends ServerTestCase {
    * @throws Exception
    */
   @Test
-  public void appendWithNullValues() throws Exception {
+  public void appendWithNullValues1() throws Exception {
     Map<String, Object> params = new LinkedHashMap<String, Object>();
     params.put("a", null);
     params.put("b", null);
     assertEquals("http://test.com/1?a=&b=",
         HttpRequest.append("http://test.com/1", params));
+  }
+
+  /**
+   * Append params with null values
+   *
+   * @throws Exception
+   */
+  @Test
+  public void appendWithNullValues2() throws Exception {
+    assertEquals("http://test.com/1?a=&b=",
+        HttpRequest.append("http://test.com/1", "a", null, "b", null));
   }
 }
