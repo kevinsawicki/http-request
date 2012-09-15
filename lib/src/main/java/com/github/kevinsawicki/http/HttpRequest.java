@@ -748,16 +748,17 @@ public class HttpRequest {
    * @param params
    * @return URL with appended query params
    */
-  public static String append(final String url, final Map<?, ?> params) {
+  public static String append(final CharSequence url, final Map<?, ?> params) {
+    final String baseUrl = url.toString();
     if (params == null || params.isEmpty())
-      return url;
+      return baseUrl;
 
-    final StringBuilder result = new StringBuilder(url);
+    final StringBuilder result = new StringBuilder(baseUrl);
 
     // Add trailing slash if the base URL doesn't have any path segments.
-    if (pathMissing(url))
+    if (pathMissing(baseUrl))
       result.append('/');
-    addParamPrefix(url, result);
+    addParamPrefix(baseUrl, result);
 
     Entry<?, ?> entry;
     Object value;
@@ -793,20 +794,21 @@ public class HttpRequest {
    *          name/value pairs
    * @return URL with appended query params
    */
-  public static String append(final String url, final String... params) {
+  public static String append(final CharSequence url, final String... params) {
+    final String baseUrl = url.toString();
     if (params == null || params.length == 0)
-      return url;
+      return baseUrl;
 
     if (params.length % 2 != 0)
       throw new IllegalArgumentException(
           "Must specify an even number of parameter names/values");
 
-    final StringBuilder result = new StringBuilder(url);
+    final StringBuilder result = new StringBuilder(baseUrl);
 
     // Add trailing slash if the base URL doesn't have any path segments.
-    if (pathMissing(url))
+    if (pathMissing(baseUrl))
       result.append('/');
-    addParamPrefix(url, result);
+    addParamPrefix(baseUrl, result);
 
     Object value;
     result.append(params[0]);
@@ -859,13 +861,13 @@ public class HttpRequest {
    * @param encode
    *          true to encode the full URL
    *
-   * @see #append(String, Map)
+   * @see #append(CharSequence, Map)
    * @see #encode(CharSequence)
    *
    * @return request
    */
-  public static HttpRequest get(final String baseUrl, final Map<?, ?> params,
-      final boolean encode) {
+  public static HttpRequest get(final CharSequence baseUrl,
+      final Map<?, ?> params, final boolean encode) {
     String url = append(baseUrl, params);
     return get(encode ? encode(url) : url);
   }
@@ -880,13 +882,13 @@ public class HttpRequest {
    *          the name/value query parameter pairs to include as part of the
    *          baseUrl
    *
-   * @see #append(String, String...)
+   * @see #append(CharSequence, String...)
    * @see #encode(CharSequence)
    *
    * @return request
    */
-  public static HttpRequest get(final String baseUrl, final boolean encode,
-      final String... params) {
+  public static HttpRequest get(final CharSequence baseUrl,
+      final boolean encode, final String... params) {
     String url = append(baseUrl, params);
     return get(encode ? encode(url) : url);
   }
@@ -923,13 +925,13 @@ public class HttpRequest {
    * @param encode
    *          true to encode the full URL
    *
-   * @see #append(String, Map)
+   * @see #append(CharSequence, Map)
    * @see #encode(CharSequence)
    *
    * @return request
    */
-  public static HttpRequest post(final String baseUrl, final Map<?, ?> params,
-      final boolean encode) {
+  public static HttpRequest post(final CharSequence baseUrl,
+      final Map<?, ?> params, final boolean encode) {
     String url = append(baseUrl, params);
     return post(encode ? encode(url) : url);
   }
@@ -944,13 +946,13 @@ public class HttpRequest {
    *          the name/value query parameter pairs to include as part of the
    *          baseUrl
    *
-   * @see #append(String, String...)
+   * @see #append(CharSequence, String...)
    * @see #encode(CharSequence)
    *
    * @return request
    */
-  public static HttpRequest post(final String baseUrl, final boolean encode,
-      final String... params) {
+  public static HttpRequest post(final CharSequence baseUrl,
+      final boolean encode, final String... params) {
     String url = append(baseUrl, params);
     return post(encode ? encode(url) : url);
   }
@@ -986,10 +988,14 @@ public class HttpRequest {
    *          the query parameters to include as part of the baseUrl
    * @param encode
    *          true to encode the full URL
+   *
+   * @see #append(CharSequence, Map)
+   * @see #encode(CharSequence)
+   *
    * @return request
    */
-  public static HttpRequest put(final String baseUrl, final Map<?, ?> params,
-      final boolean encode) {
+  public static HttpRequest put(final CharSequence baseUrl,
+      final Map<?, ?> params, final boolean encode) {
     String url = append(baseUrl, params);
     return put(encode ? encode(url) : url);
   }
@@ -1004,13 +1010,13 @@ public class HttpRequest {
    *          the name/value query parameter pairs to include as part of the
    *          baseUrl
    *
-   * @see #append(String, String...)
+   * @see #append(CharSequence, String...)
    * @see #encode(CharSequence)
    *
    * @return request
    */
-  public static HttpRequest put(final String baseUrl, final boolean encode,
-      final String... params) {
+  public static HttpRequest put(final CharSequence baseUrl,
+      final boolean encode, final String... params) {
     String url = append(baseUrl, params);
     return put(encode ? encode(url) : url);
   }
@@ -1046,9 +1052,13 @@ public class HttpRequest {
    *          The query parameters to include as part of the baseUrl
    * @param encode
    *          true to encode the full URL
+   *
+   * @see #append(CharSequence, Map)
+   * @see #encode(CharSequence)
+   *
    * @return request
    */
-  public static HttpRequest delete(final String baseUrl,
+  public static HttpRequest delete(final CharSequence baseUrl,
       final Map<?, ?> params, final boolean encode) {
     String url = append(baseUrl, params);
     return delete(encode ? encode(url) : url);
@@ -1064,13 +1074,13 @@ public class HttpRequest {
    *          the name/value query parameter pairs to include as part of the
    *          baseUrl
    *
-   * @see #append(String, String...)
+   * @see #append(CharSequence, String...)
    * @see #encode(CharSequence)
    *
    * @return request
    */
-  public static HttpRequest delete(final String baseUrl, final boolean encode,
-      final String... params) {
+  public static HttpRequest delete(final CharSequence baseUrl,
+      final boolean encode, final String... params) {
     String url = append(baseUrl, params);
     return delete(encode ? encode(url) : url);
   }
@@ -1107,13 +1117,13 @@ public class HttpRequest {
    * @param encode
    *          true to encode the full URL
    *
-   * @see #append(String, Map)
+   * @see #append(CharSequence, Map)
    * @see #encode(CharSequence)
    *
    * @return request
    */
-  public static HttpRequest head(final String baseUrl, final Map<?, ?> params,
-      final boolean encode) {
+  public static HttpRequest head(final CharSequence baseUrl,
+      final Map<?, ?> params, final boolean encode) {
     String url = append(baseUrl, params);
     return head(encode ? encode(url) : url);
   }
@@ -1128,13 +1138,13 @@ public class HttpRequest {
    *          the name/value query parameter pairs to include as part of the
    *          baseUrl
    *
-   * @see #append(String, String...)
+   * @see #append(CharSequence, String...)
    * @see #encode(CharSequence)
    *
    * @return request
    */
-  public static HttpRequest head(final String baseUrl, final boolean encode,
-      final String... params) {
+  public static HttpRequest head(final CharSequence baseUrl,
+      final boolean encode, final String... params) {
     String url = append(baseUrl, params);
     return head(encode ? encode(url) : url);
   }
