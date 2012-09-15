@@ -288,6 +288,18 @@ public class HttpRequest {
     return url.indexOf(':') + 2 == url.lastIndexOf('/');
   }
 
+  private static StringBuilder addParamPrefix(final String baseUrl,
+      final StringBuilder result) {
+    // Add '?' if missing and add '&' if params already exist in base url
+    final int queryStart = baseUrl.indexOf('?');
+    final int lastChar = result.length() - 1;
+    if (queryStart == -1)
+      result.append('?');
+    else if (queryStart < lastChar && baseUrl.charAt(lastChar) != '&')
+      result.append('&');
+    return result;
+  }
+
   /**
    * <p>
    * Encodes and decodes to and from Base64 notation.
@@ -745,7 +757,7 @@ public class HttpRequest {
     // Add trailing slash if the base URL doesn't have any path segments.
     if (pathMissing(url))
       result.append('/');
-    result.append('?');
+    addParamPrefix(url, result);
 
     Entry<?, ?> entry;
     Object value;
@@ -794,7 +806,7 @@ public class HttpRequest {
     // Add trailing slash if the base URL doesn't have any path segments.
     if (pathMissing(url))
       result.append('/');
-    result.append('?');
+    addParamPrefix(url, result);
 
     Object value;
     result.append(params[0]);

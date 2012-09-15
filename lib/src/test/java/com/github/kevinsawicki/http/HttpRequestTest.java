@@ -2490,4 +2490,51 @@ public class HttpRequestTest extends ServerTestCase {
   public void appendOddNumberOfParams() {
     HttpRequest.append("http://test.com", "1");
   }
+
+  /**
+   * Append with base URL already containing a '?'
+   */
+  @Test
+  public void appendWithExistingQueryStart1() {
+    assertEquals(
+        "http://test.com/1?a=b",
+        HttpRequest.append("http://test.com/1?",
+            Collections.singletonMap("a", "b")));
+  }
+
+  /**
+   * Append with base URL already containing a '?'
+   */
+  @Test
+  public void appendWithExistingQueryStart2() {
+    assertEquals("http://test.com/1?a=b",
+        HttpRequest.append("http://test.com/1?", "a", "b"));
+  }
+
+  /**
+   * Append with base URL already containing a '?'
+   */
+  @Test
+  public void appendWithExistingParams1() {
+    assertEquals(
+        "http://test.com/1?a=b&c=d",
+        HttpRequest.append("http://test.com/1?a=b",
+            Collections.singletonMap("c", "d")));
+    assertEquals(
+        "http://test.com/1?a=b&c=d",
+        HttpRequest.append("http://test.com/1?a=b&",
+            Collections.singletonMap("c", "d")));
+
+  }
+
+  /**
+   * Append with base URL already containing a '?'
+   */
+  @Test
+  public void appendWithExistingParams2() {
+    assertEquals("http://test.com/1?a=b&c=d",
+        HttpRequest.append("http://test.com/1?a=b", "c", "d"));
+    assertEquals("http://test.com/1?a=b&c=d",
+        HttpRequest.append("http://test.com/1?a=b&", "c", "d"));
+  }
 }
