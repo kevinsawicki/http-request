@@ -2426,4 +2426,12 @@ public class HttpRequestTest extends ServerTestCase {
     assertEquals("http://test.com/1?a=&b=",
         HttpRequest.append("http://test.com/1", "a", null, "b", null));
   }
+
+  /**
+   * Try to append with wrong number of arguments
+   */
+  @Test(expected = IllegalArgumentException.class)
+  public void appendOddNumberOfParams() {
+    HttpRequest.append("http://test.com", "1");
+  }
 }
