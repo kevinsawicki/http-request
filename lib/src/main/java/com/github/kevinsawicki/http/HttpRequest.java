@@ -1853,8 +1853,9 @@ public class HttpRequest {
    * @return this request
    */
   public HttpRequest headers(final Map<String, String> headers) {
-    for (Entry<String, String> header : headers.entrySet())
-      header(header);
+    if (!headers.isEmpty())
+      for (Entry<String, String> header : headers.entrySet())
+        header(header);
     return this;
   }
 
