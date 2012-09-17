@@ -2033,7 +2033,7 @@ public class HttpRequestTest extends ServerTestCase {
    * @throws Exception
    */
   @Test
-  public void postWithQueryParams() throws Exception {
+  public void postWithQueryParams1() throws Exception {
     Map<String, String> inputParams = new HashMap<String, String>();
     inputParams.put("name", "user");
     inputParams.put("number", "100");
@@ -2049,6 +2049,31 @@ public class HttpRequestTest extends ServerTestCase {
       }
     });
     HttpRequest request = post(url, inputParams, false);
+    assertTrue(request.ok());
+    assertEquals("POST", method.get());
+    assertEquals("user", outputParams.get("name"));
+    assertEquals("100", outputParams.get("number"));
+  }
+
+  /**
+   * Verify POST with query parameters
+   *
+   * @throws Exception
+   */
+  @Test
+  public void postWithQueryParams2() throws Exception {
+    final Map<String, String> outputParams = new HashMap<String, String>();
+    final AtomicReference<String> method = new AtomicReference<String>();
+    String url = setUp(new RequestHandler() {
+
+      public void handle(Request request, HttpServletResponse response) {
+        method.set(request.getMethod());
+        outputParams.put("name", request.getParameter("name"));
+        outputParams.put("number", request.getParameter("number"));
+        response.setStatus(HTTP_OK);
+      }
+    });
+    HttpRequest request = post(url, false, "name", "user", "number", "100");
     assertTrue(request.ok());
     assertEquals("POST", method.get());
     assertEquals("user", outputParams.get("name"));
@@ -2117,7 +2142,7 @@ public class HttpRequestTest extends ServerTestCase {
    * @throws Exception
    */
   @Test
-  public void getWithQueryParams() throws Exception {
+  public void getWithQueryParams1() throws Exception {
     Map<String, String> inputParams = new HashMap<String, String>();
     inputParams.put("name", "user");
     inputParams.put("number", "100");
@@ -2140,12 +2165,37 @@ public class HttpRequestTest extends ServerTestCase {
   }
 
   /**
+   * Verify GET with query parameters
+   *
+   * @throws Exception
+   */
+  @Test
+  public void getWithQueryParams2() throws Exception {
+    final Map<String, String> outputParams = new HashMap<String, String>();
+    final AtomicReference<String> method = new AtomicReference<String>();
+    String url = setUp(new RequestHandler() {
+
+      public void handle(Request request, HttpServletResponse response) {
+        method.set(request.getMethod());
+        outputParams.put("name", request.getParameter("name"));
+        outputParams.put("number", request.getParameter("number"));
+        response.setStatus(HTTP_OK);
+      }
+    });
+    HttpRequest request = get(url, false, "name", "user", "number", "100");
+    assertTrue(request.ok());
+    assertEquals("GET", method.get());
+    assertEquals("user", outputParams.get("name"));
+    assertEquals("100", outputParams.get("number"));
+  }
+
+  /**
    * Verify GET with escaped query parameters
    *
    * @throws Exception
    */
   @Test
-  public void getWithEscapedQueryParams() throws Exception {
+  public void getWithEscapedQueryParams1() throws Exception {
     Map<String, String> inputParams = new HashMap<String, String>();
     inputParams.put("name", "us er");
     inputParams.put("number", "100");
@@ -2168,12 +2218,37 @@ public class HttpRequestTest extends ServerTestCase {
   }
 
   /**
+   * Verify GET with escaped query parameters
+   *
+   * @throws Exception
+   */
+  @Test
+  public void getWithEscapedQueryParams2() throws Exception {
+    final Map<String, String> outputParams = new HashMap<String, String>();
+    final AtomicReference<String> method = new AtomicReference<String>();
+    String url = setUp(new RequestHandler() {
+
+      public void handle(Request request, HttpServletResponse response) {
+        method.set(request.getMethod());
+        outputParams.put("name", request.getParameter("name"));
+        outputParams.put("number", request.getParameter("number"));
+        response.setStatus(HTTP_OK);
+      }
+    });
+    HttpRequest request = get(url, true, "name", "us er", "number", "100");
+    assertTrue(request.ok());
+    assertEquals("GET", method.get());
+    assertEquals("us er", outputParams.get("name"));
+    assertEquals("100", outputParams.get("number"));
+  }
+
+  /**
    * Verify DELETE with query parameters
    *
    * @throws Exception
    */
   @Test
-  public void deleteWithQueryParams() throws Exception {
+  public void deleteWithQueryParams1() throws Exception {
     Map<String, String> inputParams = new HashMap<String, String>();
     inputParams.put("name", "user");
     inputParams.put("number", "100");
@@ -2196,12 +2271,37 @@ public class HttpRequestTest extends ServerTestCase {
   }
 
   /**
+   * Verify DELETE with query parameters
+   *
+   * @throws Exception
+   */
+  @Test
+  public void deleteWithQueryParams2() throws Exception {
+    final Map<String, String> outputParams = new HashMap<String, String>();
+    final AtomicReference<String> method = new AtomicReference<String>();
+    String url = setUp(new RequestHandler() {
+
+      public void handle(Request request, HttpServletResponse response) {
+        method.set(request.getMethod());
+        outputParams.put("name", request.getParameter("name"));
+        outputParams.put("number", request.getParameter("number"));
+        response.setStatus(HTTP_OK);
+      }
+    });
+    HttpRequest request = delete(url, false, "name", "user", "number", "100");
+    assertTrue(request.ok());
+    assertEquals("DELETE", method.get());
+    assertEquals("user", outputParams.get("name"));
+    assertEquals("100", outputParams.get("number"));
+  }
+
+  /**
    * Verify DELETE with escaped query parameters
    *
    * @throws Exception
    */
   @Test
-  public void deleteWithEscapedQueryParams() throws Exception {
+  public void deleteWithEscapedQueryParams1() throws Exception {
     Map<String, String> inputParams = new HashMap<String, String>();
     inputParams.put("name", "us er");
     inputParams.put("number", "100");
@@ -2224,12 +2324,37 @@ public class HttpRequestTest extends ServerTestCase {
   }
 
   /**
+   * Verify DELETE with escaped query parameters
+   *
+   * @throws Exception
+   */
+  @Test
+  public void deleteWithEscapedQueryParams2() throws Exception {
+    final Map<String, String> outputParams = new HashMap<String, String>();
+    final AtomicReference<String> method = new AtomicReference<String>();
+    String url = setUp(new RequestHandler() {
+
+      public void handle(Request request, HttpServletResponse response) {
+        method.set(request.getMethod());
+        outputParams.put("name", request.getParameter("name"));
+        outputParams.put("number", request.getParameter("number"));
+        response.setStatus(HTTP_OK);
+      }
+    });
+    HttpRequest request = delete(url, true, "name", "us er", "number", "100");
+    assertTrue(request.ok());
+    assertEquals("DELETE", method.get());
+    assertEquals("us er", outputParams.get("name"));
+    assertEquals("100", outputParams.get("number"));
+  }
+
+  /**
    * Verify PUT with query parameters
    *
    * @throws Exception
    */
   @Test
-  public void putWithQueryParams() throws Exception {
+  public void putWithQueryParams1() throws Exception {
     Map<String, String> inputParams = new HashMap<String, String>();
     inputParams.put("name", "user");
     inputParams.put("number", "100");
@@ -2252,12 +2377,37 @@ public class HttpRequestTest extends ServerTestCase {
   }
 
   /**
+   * Verify PUT with query parameters
+   *
+   * @throws Exception
+   */
+  @Test
+  public void putWithQueryParams2() throws Exception {
+    final Map<String, String> outputParams = new HashMap<String, String>();
+    final AtomicReference<String> method = new AtomicReference<String>();
+    String url = setUp(new RequestHandler() {
+
+      public void handle(Request request, HttpServletResponse response) {
+        method.set(request.getMethod());
+        outputParams.put("name", request.getParameter("name"));
+        outputParams.put("number", request.getParameter("number"));
+        response.setStatus(HTTP_OK);
+      }
+    });
+    HttpRequest request = put(url, false, "name", "user", "number", "100");
+    assertTrue(request.ok());
+    assertEquals("PUT", method.get());
+    assertEquals("user", outputParams.get("name"));
+    assertEquals("100", outputParams.get("number"));
+  }
+
+  /**
    * Verify PUT with escaped query parameters
    *
    * @throws Exception
    */
   @Test
-  public void putWithEscapedQueryParams() throws Exception {
+  public void putWithEscapedQueryParams1() throws Exception {
     Map<String, String> inputParams = new HashMap<String, String>();
     inputParams.put("name", "us er");
     inputParams.put("number", "100");
@@ -2280,12 +2430,37 @@ public class HttpRequestTest extends ServerTestCase {
   }
 
   /**
+   * Verify PUT with escaped query parameters
+   *
+   * @throws Exception
+   */
+  @Test
+  public void putWithEscapedQueryParams2() throws Exception {
+    final Map<String, String> outputParams = new HashMap<String, String>();
+    final AtomicReference<String> method = new AtomicReference<String>();
+    String url = setUp(new RequestHandler() {
+
+      public void handle(Request request, HttpServletResponse response) {
+        method.set(request.getMethod());
+        outputParams.put("name", request.getParameter("name"));
+        outputParams.put("number", request.getParameter("number"));
+        response.setStatus(HTTP_OK);
+      }
+    });
+    HttpRequest request = put(url, true, "name", "us er", "number", "100");
+    assertTrue(request.ok());
+    assertEquals("PUT", method.get());
+    assertEquals("us er", outputParams.get("name"));
+    assertEquals("100", outputParams.get("number"));
+  }
+
+  /**
    * Verify HEAD with query parameters
    *
    * @throws Exception
    */
   @Test
-  public void headWithQueryParams() throws Exception {
+  public void headWithQueryParams1() throws Exception {
     Map<String, String> inputParams = new HashMap<String, String>();
     inputParams.put("name", "user");
     inputParams.put("number", "100");
@@ -2308,12 +2483,37 @@ public class HttpRequestTest extends ServerTestCase {
   }
 
   /**
+   * Verify HEAD with query parameters
+   *
+   * @throws Exception
+   */
+  @Test
+  public void headWithQueryParams2() throws Exception {
+    final Map<String, String> outputParams = new HashMap<String, String>();
+    final AtomicReference<String> method = new AtomicReference<String>();
+    String url = setUp(new RequestHandler() {
+
+      public void handle(Request request, HttpServletResponse response) {
+        method.set(request.getMethod());
+        outputParams.put("name", request.getParameter("name"));
+        outputParams.put("number", request.getParameter("number"));
+        response.setStatus(HTTP_OK);
+      }
+    });
+    HttpRequest request = head(url, false, "name", "user", "number", "100");
+    assertTrue(request.ok());
+    assertEquals("HEAD", method.get());
+    assertEquals("user", outputParams.get("name"));
+    assertEquals("100", outputParams.get("number"));
+  }
+
+  /**
    * Verify HEAD with escaped query parameters
    *
    * @throws Exception
    */
   @Test
-  public void headWithEscapedQueryParams() throws Exception {
+  public void headWithEscapedQueryParams1() throws Exception {
     Map<String, String> inputParams = new HashMap<String, String>();
     inputParams.put("name", "us er");
     inputParams.put("number", "100");
@@ -2329,6 +2529,31 @@ public class HttpRequestTest extends ServerTestCase {
       }
     });
     HttpRequest request = head(url, inputParams, true);
+    assertTrue(request.ok());
+    assertEquals("HEAD", method.get());
+    assertEquals("us er", outputParams.get("name"));
+    assertEquals("100", outputParams.get("number"));
+  }
+
+  /**
+   * Verify HEAD with escaped query parameters
+   *
+   * @throws Exception
+   */
+  @Test
+  public void headWithEscapedQueryParams2() throws Exception {
+    final Map<String, String> outputParams = new HashMap<String, String>();
+    final AtomicReference<String> method = new AtomicReference<String>();
+    String url = setUp(new RequestHandler() {
+
+      public void handle(Request request, HttpServletResponse response) {
+        method.set(request.getMethod());
+        outputParams.put("name", request.getParameter("name"));
+        outputParams.put("number", request.getParameter("number"));
+        response.setStatus(HTTP_OK);
+      }
+    });
+    HttpRequest request = head(url, true, "name", "us er", "number", "100");
     assertTrue(request.ok());
     assertEquals("HEAD", method.get());
     assertEquals("us er", outputParams.get("name"));
