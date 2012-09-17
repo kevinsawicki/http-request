@@ -2033,7 +2033,7 @@ public class HttpRequestTest extends ServerTestCase {
    * @throws Exception
    */
   @Test
-  public void postWithQueryParams1() throws Exception {
+  public void postWithMappedQueryParams() throws Exception {
     Map<String, String> inputParams = new HashMap<String, String>();
     inputParams.put("name", "user");
     inputParams.put("number", "100");
@@ -2061,7 +2061,7 @@ public class HttpRequestTest extends ServerTestCase {
    * @throws Exception
    */
   @Test
-  public void postWithQueryParams2() throws Exception {
+  public void postWithVaragsQueryParams() throws Exception {
     final Map<String, String> outputParams = new HashMap<String, String>();
     final AtomicReference<String> method = new AtomicReference<String>();
     String url = setUp(new RequestHandler() {
@@ -2086,7 +2086,7 @@ public class HttpRequestTest extends ServerTestCase {
    * @throws Exception
    */
   @Test
-  public void postWithEscapedQueryParams() throws Exception {
+  public void postWithEscapedMappedQueryParams() throws Exception {
     Map<String, String> inputParams = new HashMap<String, String>();
     inputParams.put("name", "us er");
     inputParams.put("number", "100");
@@ -2142,7 +2142,7 @@ public class HttpRequestTest extends ServerTestCase {
    * @throws Exception
    */
   @Test
-  public void getWithQueryParams1() throws Exception {
+  public void getWithMappedQueryParams() throws Exception {
     Map<String, String> inputParams = new HashMap<String, String>();
     inputParams.put("name", "user");
     inputParams.put("number", "100");
@@ -2170,7 +2170,7 @@ public class HttpRequestTest extends ServerTestCase {
    * @throws Exception
    */
   @Test
-  public void getWithQueryParams2() throws Exception {
+  public void getWithVarargsQueryParams() throws Exception {
     final Map<String, String> outputParams = new HashMap<String, String>();
     final AtomicReference<String> method = new AtomicReference<String>();
     String url = setUp(new RequestHandler() {
@@ -2195,7 +2195,7 @@ public class HttpRequestTest extends ServerTestCase {
    * @throws Exception
    */
   @Test
-  public void getWithEscapedQueryParams1() throws Exception {
+  public void getWithEscapedMappedQueryParams() throws Exception {
     Map<String, String> inputParams = new HashMap<String, String>();
     inputParams.put("name", "us er");
     inputParams.put("number", "100");
@@ -2223,7 +2223,7 @@ public class HttpRequestTest extends ServerTestCase {
    * @throws Exception
    */
   @Test
-  public void getWithEscapedQueryParams2() throws Exception {
+  public void getWithEscapedVarargsQueryParams() throws Exception {
     final Map<String, String> outputParams = new HashMap<String, String>();
     final AtomicReference<String> method = new AtomicReference<String>();
     String url = setUp(new RequestHandler() {
@@ -2248,7 +2248,7 @@ public class HttpRequestTest extends ServerTestCase {
    * @throws Exception
    */
   @Test
-  public void deleteWithQueryParams1() throws Exception {
+  public void deleteWithMappedQueryParams() throws Exception {
     Map<String, String> inputParams = new HashMap<String, String>();
     inputParams.put("name", "user");
     inputParams.put("number", "100");
@@ -2276,7 +2276,7 @@ public class HttpRequestTest extends ServerTestCase {
    * @throws Exception
    */
   @Test
-  public void deleteWithQueryParams2() throws Exception {
+  public void deleteWithVarargsQueryParams() throws Exception {
     final Map<String, String> outputParams = new HashMap<String, String>();
     final AtomicReference<String> method = new AtomicReference<String>();
     String url = setUp(new RequestHandler() {
@@ -2301,7 +2301,7 @@ public class HttpRequestTest extends ServerTestCase {
    * @throws Exception
    */
   @Test
-  public void deleteWithEscapedQueryParams1() throws Exception {
+  public void deleteWithEscapedMappedQueryParams() throws Exception {
     Map<String, String> inputParams = new HashMap<String, String>();
     inputParams.put("name", "us er");
     inputParams.put("number", "100");
@@ -2329,7 +2329,7 @@ public class HttpRequestTest extends ServerTestCase {
    * @throws Exception
    */
   @Test
-  public void deleteWithEscapedQueryParams2() throws Exception {
+  public void deleteWithEscapedVarargsQueryParams() throws Exception {
     final Map<String, String> outputParams = new HashMap<String, String>();
     final AtomicReference<String> method = new AtomicReference<String>();
     String url = setUp(new RequestHandler() {
@@ -2354,7 +2354,7 @@ public class HttpRequestTest extends ServerTestCase {
    * @throws Exception
    */
   @Test
-  public void putWithQueryParams1() throws Exception {
+  public void putWithMappedQueryParams() throws Exception {
     Map<String, String> inputParams = new HashMap<String, String>();
     inputParams.put("name", "user");
     inputParams.put("number", "100");
@@ -2382,7 +2382,7 @@ public class HttpRequestTest extends ServerTestCase {
    * @throws Exception
    */
   @Test
-  public void putWithQueryParams2() throws Exception {
+  public void putWithVarargsQueryParams() throws Exception {
     final Map<String, String> outputParams = new HashMap<String, String>();
     final AtomicReference<String> method = new AtomicReference<String>();
     String url = setUp(new RequestHandler() {
@@ -2407,7 +2407,7 @@ public class HttpRequestTest extends ServerTestCase {
    * @throws Exception
    */
   @Test
-  public void putWithEscapedQueryParams1() throws Exception {
+  public void putWithEscapedMappedQueryParams() throws Exception {
     Map<String, String> inputParams = new HashMap<String, String>();
     inputParams.put("name", "us er");
     inputParams.put("number", "100");
@@ -2435,7 +2435,7 @@ public class HttpRequestTest extends ServerTestCase {
    * @throws Exception
    */
   @Test
-  public void putWithEscapedQueryParams2() throws Exception {
+  public void putWithEscapedVarargsQueryParams() throws Exception {
     final Map<String, String> outputParams = new HashMap<String, String>();
     final AtomicReference<String> method = new AtomicReference<String>();
     String url = setUp(new RequestHandler() {
@@ -2460,7 +2460,7 @@ public class HttpRequestTest extends ServerTestCase {
    * @throws Exception
    */
   @Test
-  public void headWithQueryParams1() throws Exception {
+  public void headWithMappedQueryParams() throws Exception {
     Map<String, String> inputParams = new HashMap<String, String>();
     inputParams.put("name", "user");
     inputParams.put("number", "100");
@@ -2488,7 +2488,7 @@ public class HttpRequestTest extends ServerTestCase {
    * @throws Exception
    */
   @Test
-  public void headWithQueryParams2() throws Exception {
+  public void headWithVaragsQueryParams() throws Exception {
     final Map<String, String> outputParams = new HashMap<String, String>();
     final AtomicReference<String> method = new AtomicReference<String>();
     String url = setUp(new RequestHandler() {
@@ -2513,7 +2513,7 @@ public class HttpRequestTest extends ServerTestCase {
    * @throws Exception
    */
   @Test
-  public void headWithEscapedQueryParams1() throws Exception {
+  public void headWithEscapedMappedQueryParams() throws Exception {
     Map<String, String> inputParams = new HashMap<String, String>();
     inputParams.put("name", "us er");
     inputParams.put("number", "100");
@@ -2541,7 +2541,7 @@ public class HttpRequestTest extends ServerTestCase {
    * @throws Exception
    */
   @Test
-  public void headWithEscapedQueryParams2() throws Exception {
+  public void headWithEscapedVarargsQueryParams() throws Exception {
     final Map<String, String> outputParams = new HashMap<String, String>();
     final AtomicReference<String> method = new AtomicReference<String>();
     String url = setUp(new RequestHandler() {
@@ -2566,9 +2566,11 @@ public class HttpRequestTest extends ServerTestCase {
    * @throws Exception
    */
   @Test
-  public void appendWithNoPath1() throws Exception {
-    assertEquals("http://test.com/?a=b",
-        HttpRequest.append("http://test.com", "a", "b"));
+  public void appendMappedQueryParamsWithNoPath() throws Exception {
+    assertEquals(
+        "http://test.com/?a=b",
+        HttpRequest.append("http://test.com",
+            Collections.singletonMap("a", "b")));
   }
 
   /**
@@ -2577,7 +2579,7 @@ public class HttpRequestTest extends ServerTestCase {
    * @throws Exception
    */
   @Test
-  public void appendWithNoPath2() throws Exception {
+  public void appendVarargsQueryParmasWithNoPath() throws Exception {
     assertEquals("http://test.com/?a=b",
         HttpRequest.append("http://test.com", "a", "b"));
   }
@@ -2588,7 +2590,7 @@ public class HttpRequestTest extends ServerTestCase {
    * @throws Exception
    */
   @Test
-  public void appendWithPath1() throws Exception {
+  public void appendMappedQueryParamsWithPath() throws Exception {
     assertEquals(
         "http://test.com/segment1?a=b",
         HttpRequest.append("http://test.com/segment1",
@@ -2605,7 +2607,7 @@ public class HttpRequestTest extends ServerTestCase {
    * @throws Exception
    */
   @Test
-  public void appendWithPath2() throws Exception {
+  public void appendVarargsQueryParamsWithPath() throws Exception {
     assertEquals("http://test.com/segment1?a=b",
         HttpRequest.append("http://test.com/segment1", "a", "b"));
     assertEquals("http://test.com/?a=b",
@@ -2618,7 +2620,7 @@ public class HttpRequestTest extends ServerTestCase {
    * @throws Exception
    */
   @Test
-  public void appendMultipleParams1() throws Exception {
+  public void appendMultipleMappedQueryParams() throws Exception {
     Map<String, Object> params = new LinkedHashMap<String, Object>();
     params.put("a", "b");
     params.put("c", "d");
@@ -2632,7 +2634,7 @@ public class HttpRequestTest extends ServerTestCase {
    * @throws Exception
    */
   @Test
-  public void appendMultipleParams2() throws Exception {
+  public void appendMultipleVarargsQueryParams() throws Exception {
     assertEquals("http://test.com/1?a=b&c=d",
         HttpRequest.append("http://test.com/1", "a", "b", "c", "d"));
   }
@@ -2643,7 +2645,7 @@ public class HttpRequestTest extends ServerTestCase {
    * @throws Exception
    */
   @Test
-  public void appendNullParams1() throws Exception {
+  public void appendNullMappedQueryParams() throws Exception {
     assertEquals("http://test.com/1",
         HttpRequest.append("http://test.com/1", (Map<?, ?>) null));
   }
@@ -2654,7 +2656,7 @@ public class HttpRequestTest extends ServerTestCase {
    * @throws Exception
    */
   @Test
-  public void appendNullParams2() throws Exception {
+  public void appendNullVaragsQueryParams() throws Exception {
     assertEquals("http://test.com/1",
         HttpRequest.append("http://test.com/1", (String[]) null));
   }
@@ -2665,7 +2667,7 @@ public class HttpRequestTest extends ServerTestCase {
    * @throws Exception
    */
   @Test
-  public void appendEmptyParams1() throws Exception {
+  public void appendEmptyMappedQueryParams() throws Exception {
     assertEquals(
         "http://test.com/1",
         HttpRequest.append("http://test.com/1",
@@ -2678,7 +2680,7 @@ public class HttpRequestTest extends ServerTestCase {
    * @throws Exception
    */
   @Test
-  public void appendEmptyParams2() throws Exception {
+  public void appendEmptyVarargsQueryParams() throws Exception {
     assertEquals("http://test.com/1",
         HttpRequest.append("http://test.com/1", new String[0]));
   }
@@ -2689,7 +2691,7 @@ public class HttpRequestTest extends ServerTestCase {
    * @throws Exception
    */
   @Test
-  public void appendWithNullValues1() throws Exception {
+  public void appendWithNullMappedQueryParamValues() throws Exception {
     Map<String, Object> params = new LinkedHashMap<String, Object>();
     params.put("a", null);
     params.put("b", null);
@@ -2703,7 +2705,7 @@ public class HttpRequestTest extends ServerTestCase {
    * @throws Exception
    */
   @Test
-  public void appendWithNullValues2() throws Exception {
+  public void appendWithNullVaragsQueryParamValues() throws Exception {
     assertEquals("http://test.com/1?a=&b=",
         HttpRequest.append("http://test.com/1", "a", null, "b", null));
   }
@@ -2720,7 +2722,7 @@ public class HttpRequestTest extends ServerTestCase {
    * Append with base URL already containing a '?'
    */
   @Test
-  public void appendWithExistingQueryStart1() {
+  public void appendMappedQueryParamsWithExistingQueryStart() {
     assertEquals(
         "http://test.com/1?a=b",
         HttpRequest.append("http://test.com/1?",
@@ -2731,7 +2733,7 @@ public class HttpRequestTest extends ServerTestCase {
    * Append with base URL already containing a '?'
    */
   @Test
-  public void appendWithExistingQueryStart2() {
+  public void appendVarargsQueryParamsWithExistingQueryStart() {
     assertEquals("http://test.com/1?a=b",
         HttpRequest.append("http://test.com/1?", "a", "b"));
   }
@@ -2740,7 +2742,7 @@ public class HttpRequestTest extends ServerTestCase {
    * Append with base URL already containing a '?'
    */
   @Test
-  public void appendWithExistingParams1() {
+  public void appendMappedQueryParamsWithExistingParams() {
     assertEquals(
         "http://test.com/1?a=b&c=d",
         HttpRequest.append("http://test.com/1?a=b",
@@ -2756,7 +2758,7 @@ public class HttpRequestTest extends ServerTestCase {
    * Append with base URL already containing a '?'
    */
   @Test
-  public void appendWithExistingParams2() {
+  public void appendWithVarargsQueryParamsWithExistingParams() {
     assertEquals("http://test.com/1?a=b&c=d",
         HttpRequest.append("http://test.com/1?a=b", "c", "d"));
     assertEquals("http://test.com/1?a=b&c=d",
