@@ -282,10 +282,15 @@ public class HttpRequest {
     return TRUSTED_VERIFIER;
   }
 
-  private static boolean pathMissing(final String url) {
+  private static StringBuilder addPathSeparator(final String baseUrl,
+      final StringBuilder result) {
+    // Add trailing slash if the base URL doesn't have any path segments.
+    //
     // The following test is checking for the last slash not being part of
     // the protocol to host separator: '://'.
-    return url.indexOf(':') + 2 == url.lastIndexOf('/');
+    if (baseUrl.indexOf(':') + 2 == baseUrl.lastIndexOf('/'))
+      result.append('/');
+    return result;
   }
 
   private static StringBuilder addParamPrefix(final String baseUrl,
@@ -755,9 +760,7 @@ public class HttpRequest {
 
     final StringBuilder result = new StringBuilder(baseUrl);
 
-    // Add trailing slash if the base URL doesn't have any path segments.
-    if (pathMissing(baseUrl))
-      result.append('/');
+    addPathSeparator(baseUrl, result);
     addParamPrefix(baseUrl, result);
 
     Entry<?, ?> entry;
@@ -805,9 +808,7 @@ public class HttpRequest {
 
     final StringBuilder result = new StringBuilder(baseUrl);
 
-    // Add trailing slash if the base URL doesn't have any path segments.
-    if (pathMissing(baseUrl))
-      result.append('/');
+    addPathSeparator(baseUrl, result);
     addParamPrefix(baseUrl, result);
 
     Object value;
