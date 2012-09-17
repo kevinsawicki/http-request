@@ -731,16 +731,14 @@ public class HttpRequest {
     if (port != -1)
       host = host + ':' + Integer.toString(port);
 
-    URI uri;
     try {
-      uri = new URI(parsed.getProtocol(), host, parsed.getPath(),
-          parsed.getQuery(), null);
+      return new URI(parsed.getProtocol(), host, parsed.getPath(),
+          parsed.getQuery(), null).toASCIIString();
     } catch (URISyntaxException e) {
       IOException io = new IOException("Parsing URI failed");
       io.initCause(e);
       throw new HttpRequestException(io);
     }
-    return uri.toASCIIString();
   }
 
   /**
