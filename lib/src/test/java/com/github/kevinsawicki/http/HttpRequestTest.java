@@ -30,7 +30,10 @@ import static com.github.kevinsawicki.http.HttpRequest.options;
 import static com.github.kevinsawicki.http.HttpRequest.post;
 import static com.github.kevinsawicki.http.HttpRequest.put;
 import static com.github.kevinsawicki.http.HttpRequest.trace;
+import static java.net.HttpURLConnection.HTTP_BAD_REQUEST;
 import static java.net.HttpURLConnection.HTTP_CREATED;
+import static java.net.HttpURLConnection.HTTP_INTERNAL_ERROR;
+import static java.net.HttpURLConnection.HTTP_NOT_MODIFIED;
 import static java.net.HttpURLConnection.HTTP_OK;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -2788,5 +2791,59 @@ public class HttpRequestTest extends ServerTestCase {
         HttpRequest.append("http://test.com/1?a=b", "c", "d"));
     assertEquals("http://test.com/1?a=b&c=d",
         HttpRequest.append("http://test.com/1?a=b&", "c", "d"));
+  }
+
+  /**
+   * Get a 500
+   *
+   * @throws Exception
+   */
+  @Test
+  public void serverErrorCode() throws Exception {
+    String url = setUp(new RequestHandler() {
+
+      public void handle(Request request, HttpServletResponse response) {
+        response.setStatus(HTTP_INTERNAL_ERROR);
+      }
+    });
+    HttpRequest request = get(url);
+    assertNotNull(request);
+    assertTrue(request.serverError());
+  }
+
+  /**
+   * Get a 400
+   *
+   * @throws Exception
+   */
+  @Test
+  public void badRequestCode() throws Exception {
+    String url = setUp(new RequestHandler() {
+
+      public void handle(Request request, HttpServletResponse response) {
+        response.setStatus(HTTP_BAD_REQUEST);
+      }
+    });
+    HttpRequest request = get(url);
+    assertNotNull(request);
+    assertTrue(request.badRequest());
+  }
+
+  /**
+   * Get a 304
+   *
+   * @throws Exception
+   */
+  @Test
+  public void notModifiedCode() throws Exception {
+    String url = setUp(new RequestHandler() {
+
+      public void handle(Request request, HttpServletResponse response) {
+        response.setStatus(HTTP_NOT_MODIFIED);
+      }
+    });
+    HttpRequest request = get(url);
+    assertNotNull(request);
+    assertTrue(request.notModified());
   }
 }
