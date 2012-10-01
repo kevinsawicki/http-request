@@ -1874,8 +1874,14 @@ public class HttpRequest {
    *
    * @param name
    * @return response header
+   * @throws HttpRequestException
    */
-  public String header(final String name) {
+  public String header(final String name) throws HttpRequestException {
+    try {
+      closeOutput();
+    } catch (IOException e) {
+      throw new HttpRequestException(e);
+    }
     return connection.getHeaderField(name);
   }
 
