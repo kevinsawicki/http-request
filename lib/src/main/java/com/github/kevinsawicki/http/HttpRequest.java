@@ -1937,8 +1937,9 @@ public class HttpRequest {
    *
    * @param name
    * @return header value as an integer, -1 when missing or parsing fails
+   * @throws HttpRequestException
    */
-  public int intHeader(final String name) {
+  public int intHeader(final String name) throws HttpRequestException {
     return intHeader(name, -1);
   }
 
@@ -1950,8 +1951,15 @@ public class HttpRequest {
    * @param defaultValue
    * @return header value as an integer, default value when missing or parsing
    *         fails
+   * @throws HttpRequestException
    */
-  public int intHeader(final String name, final int defaultValue) {
+  public int intHeader(final String name, final int defaultValue)
+      throws HttpRequestException {
+    try {
+      closeOutput();
+    } catch (IOException e) {
+      throw new HttpRequestException(e);
+    }
     return connection.getHeaderFieldInt(name, defaultValue);
   }
 

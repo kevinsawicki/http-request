@@ -2944,4 +2944,27 @@ public class HttpRequestTest extends ServerTestCase {
     assertEquals(1000, request.send("hello").date());
     assertEquals("hello", body.get());
   }
+
+  /**
+   * Verify data is send when receiving response integer header without first
+   * calling {@link HttpRequest#code()}
+   *
+   * @throws Exception
+   */
+  @Test
+  public void sendIntHeaderWithoutCode() throws Exception {
+    final AtomicReference<String> body = new AtomicReference<String>();
+    String url = setUp(new RequestHandler() {
+
+      public void handle(Request request, HttpServletResponse response) {
+        body.set(new String(read()));
+        response.setIntHeader("Width", 9876);
+        response.setStatus(HTTP_OK);
+      }
+    });
+
+    HttpRequest request = post(url).ignoreCloseExceptions(false);
+    assertEquals(9876, request.send("hello").intHeader("Width"));
+    assertEquals("hello", body.get());
+  }
 }
