@@ -2921,4 +2921,27 @@ public class HttpRequestTest extends ServerTestCase {
     assertEquals("v2", headers.get("h2").get(0));
     assertEquals("hello", body.get());
   }
+
+  /**
+   * Verify data is send when receiving response date header without first
+   * calling {@link HttpRequest#code()}
+   *
+   * @throws Exception
+   */
+  @Test
+  public void sendDateHeaderWithoutCode() throws Exception {
+    final AtomicReference<String> body = new AtomicReference<String>();
+    String url = setUp(new RequestHandler() {
+
+      public void handle(Request request, HttpServletResponse response) {
+        body.set(new String(read()));
+        response.setDateHeader("Date", 1000);
+        response.setStatus(HTTP_OK);
+      }
+    });
+
+    HttpRequest request = post(url).ignoreCloseExceptions(false);
+    assertEquals(1000, request.send("hello").date());
+    assertEquals("hello", body.get());
+  }
 }

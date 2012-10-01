@@ -1906,8 +1906,9 @@ public class HttpRequest {
    *
    * @param name
    * @return date, -1 on failures
+   * @throws HttpRequestException
    */
-  public long dateHeader(final String name) {
+  public long dateHeader(final String name) throws HttpRequestException {
     return dateHeader(name, -1L);
   }
 
@@ -1918,8 +1919,15 @@ public class HttpRequest {
    * @param name
    * @param defaultValue
    * @return date, -1 on failures
+   * @throws HttpRequestException
    */
-  public long dateHeader(final String name, final long defaultValue) {
+  public long dateHeader(final String name, final long defaultValue)
+      throws HttpRequestException {
+    try {
+      closeOutput();
+    } catch (IOException e) {
+      throw new HttpRequestException(e);
+    }
     return connection.getHeaderFieldDate(name, defaultValue);
   }
 
