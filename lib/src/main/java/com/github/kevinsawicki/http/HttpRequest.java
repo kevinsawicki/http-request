@@ -1889,8 +1889,14 @@ public class HttpRequest {
    * Get all the response headers
    *
    * @return map of response header names to their value(s)
+   * @throws HttpRequestException
    */
-  public Map<String, List<String>> headers() {
+  public Map<String, List<String>> headers() throws HttpRequestException {
+    try {
+      closeOutput();
+    } catch (IOException e) {
+      throw new HttpRequestException(e);
+    }
     return connection.getHeaderFields();
   }
 
