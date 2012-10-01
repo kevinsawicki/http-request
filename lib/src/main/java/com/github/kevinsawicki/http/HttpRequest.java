@@ -1877,11 +1877,7 @@ public class HttpRequest {
    * @throws HttpRequestException
    */
   public String header(final String name) throws HttpRequestException {
-    try {
-      closeOutput();
-    } catch (IOException e) {
-      throw new HttpRequestException(e);
-    }
+    closeOutputQuietly();
     return connection.getHeaderField(name);
   }
 
@@ -1892,11 +1888,7 @@ public class HttpRequest {
    * @throws HttpRequestException
    */
   public Map<String, List<String>> headers() throws HttpRequestException {
-    try {
-      closeOutput();
-    } catch (IOException e) {
-      throw new HttpRequestException(e);
-    }
+    closeOutputQuietly();
     return connection.getHeaderFields();
   }
 
@@ -1923,11 +1915,7 @@ public class HttpRequest {
    */
   public long dateHeader(final String name, final long defaultValue)
       throws HttpRequestException {
-    try {
-      closeOutput();
-    } catch (IOException e) {
-      throw new HttpRequestException(e);
-    }
+    closeOutputQuietly();
     return connection.getHeaderFieldDate(name, defaultValue);
   }
 
@@ -1955,11 +1943,7 @@ public class HttpRequest {
    */
   public int intHeader(final String name, final int defaultValue)
       throws HttpRequestException {
-    try {
-      closeOutput();
-    } catch (IOException e) {
-      throw new HttpRequestException(e);
-    }
+    closeOutputQuietly();
     return connection.getHeaderFieldInt(name, defaultValue);
   }
 
@@ -2419,6 +2403,21 @@ public class HttpRequest {
       output.close();
     output = null;
     return this;
+  }
+
+  /**
+   * Call {@link #closeOutput()} and re-throw a caught {@link IOException}s as
+   * an {@link HttpRequestException}
+   *
+   * @return this request
+   * @throws HttpRequestException
+   */
+  protected HttpRequest closeOutputQuietly() throws HttpRequestException {
+    try {
+      return closeOutput();
+    } catch (IOException e) {
+      throw new HttpRequestException(e);
+    }
   }
 
   /**
