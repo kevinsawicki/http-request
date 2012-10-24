@@ -35,7 +35,7 @@ import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.handler.AbstractHandler;
 import org.eclipse.jetty.server.nio.SelectChannelConnector;
-import org.junit.After;
+import org.junit.AfterClass;
 
 /**
  * Base test case that provides a running HTTP server
@@ -118,7 +118,7 @@ public class ServerTestCase {
   /**
    * Server
    */
-  protected Server server;
+  protected static Server server;
 
   /**
    * Set up server with handler
@@ -127,7 +127,7 @@ public class ServerTestCase {
    * @return port
    * @throws Exception
    */
-  public String setUp(final Handler handler) throws Exception {
+  public static String setUp(final Handler handler) throws Exception {
     server = new Server();
     if (handler != null)
       server.setHandler(handler);
@@ -143,8 +143,8 @@ public class ServerTestCase {
    *
    * @throws Exception
    */
-  @After
-  public void tearDown() throws Exception {
+  @AfterClass
+  public static void tearDown() throws Exception {
     if (server != null)
       server.stop();
   }

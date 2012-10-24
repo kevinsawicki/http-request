@@ -70,16 +70,57 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.zip.GZIPOutputStream;
 
 import javax.net.ssl.HttpsURLConnection;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.util.B64Code;
+import org.junit.After;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 /**
  * Unit tests of {@link HttpRequest}
  */
 public class HttpRequestTest extends ServerTestCase {
+
+  private static String url;
+
+  private static RequestHandler handler;
+
+  /**
+   * Set up server
+   *
+   * @throws Exception
+   */
+  @BeforeClass
+  public static void startServer() throws Exception {
+    url = setUp(new RequestHandler() {
+
+      @Override
+      public void handle(String target, Request baseRequest,
+          HttpServletRequest request, HttpServletResponse response)
+          throws IOException, ServletException {
+        if (handler != null)
+          handler.handle(target, baseRequest, request, response);
+      }
+
+      @Override
+      public void handle(Request request, HttpServletResponse response) {
+        if (handler != null)
+          handler.handle(request, response);
+      }
+    });
+  }
+
+  /**
+   * Clear handler
+   */
+  @After
+  public void clearHandler() {
+    handler = null;
+  }
 
   /**
    * Create request with malformed URL
@@ -118,13 +159,14 @@ public class HttpRequestTest extends ServerTestCase {
   @Test
   public void getEmpty() throws Exception {
     final AtomicReference<String> method = new AtomicReference<String>();
-    String url = setUp(new RequestHandler() {
+    handler = new RequestHandler() {
 
+      @Override
       public void handle(Request request, HttpServletResponse response) {
         method.set(request.getMethod());
         response.setStatus(HTTP_OK);
       }
-    });
+    };
     HttpRequest request = get(url);
     assertNotNull(request.getConnection());
     assertEquals(30000, request.readTimeout(30000).getConnection()
@@ -158,13 +200,14 @@ public class HttpRequestTest extends ServerTestCase {
   @Test
   public void getUrlEmpty() throws Exception {
     final AtomicReference<String> method = new AtomicReference<String>();
-    String url = setUp(new RequestHandler() {
+    handler = new RequestHandler() {
 
+      @Override
       public void handle(Request request, HttpServletResponse response) {
         method.set(request.getMethod());
         response.setStatus(HTTP_OK);
       }
-    });
+    };
     HttpRequest request = get(new URL(url));
     assertNotNull(request.getConnection());
     int code = request.code();
@@ -188,13 +231,14 @@ public class HttpRequestTest extends ServerTestCase {
   public void getUrlEncodedWithSpace() throws Exception {
     String unencoded = "/a resource";
     final AtomicReference<String> path = new AtomicReference<String>();
-    String url = setUp(new RequestHandler() {
+    handler = new RequestHandler() {
 
+      @Override
       public void handle(Request request, HttpServletResponse response) {
         path.set(request.getPathInfo());
         response.setStatus(HTTP_OK);
       }
-    });
+    };
     HttpRequest request = get(encode(url + unencoded));
     assertTrue(request.ok());
     assertEquals(unencoded, path.get());
@@ -209,13 +253,14 @@ public class HttpRequestTest extends ServerTestCase {
   public void getUrlEncodedWithUnicode() throws Exception {
     String unencoded = "/\u00DF";
     final AtomicReference<String> path = new AtomicReference<String>();
-    String url = setUp(new RequestHandler() {
+    handler = new RequestHandler() {
 
+      @Override
       public void handle(Request request, HttpServletResponse response) {
         path.set(request.getPathInfo());
         response.setStatus(HTTP_OK);
       }
-    });
+    };
     HttpRequest request = get(encode(url + unencoded));
     assertTrue(request.ok());
     assertEquals(unencoded, path.get());
@@ -230,13 +275,14 @@ public class HttpRequestTest extends ServerTestCase {
   public void getUrlEncodedWithPercent() throws Exception {
     String unencoded = "/%";
     final AtomicReference<String> path = new AtomicReference<String>();
-    String url = setUp(new RequestHandler() {
+    handler = new RequestHandler() {
 
+      @Override
       public void handle(Request request, HttpServletResponse response) {
         path.set(request.getPathInfo());
         response.setStatus(HTTP_OK);
       }
-    });
+    };
     HttpRequest request = get(encode(url + unencoded));
     assertTrue(request.ok());
     assertEquals(unencoded, path.get());
@@ -250,13 +296,14 @@ public class HttpRequestTest extends ServerTestCase {
   @Test
   public void deleteEmpty() throws Exception {
     final AtomicReference<String> method = new AtomicReference<String>();
-    String url = setUp(new RequestHandler() {
+    handler = new RequestHandler() {
 
+      @Override
       public void handle(Request request, HttpServletResponse response) {
         method.set(request.getMethod());
         response.setStatus(HTTP_OK);
       }
-    });
+    };
     HttpRequest request = delete(url);
     assertNotNull(request.getConnection());
     assertTrue(request.ok());
@@ -273,13 +320,14 @@ public class HttpRequestTest extends ServerTestCase {
   @Test
   public void deleteUrlEmpty() throws Exception {
     final AtomicReference<String> method = new AtomicReference<String>();
-    String url = setUp(new RequestHandler() {
+    handler = new RequestHandler() {
 
+      @Override
       public void handle(Request request, HttpServletResponse response) {
         method.set(request.getMethod());
         response.setStatus(HTTP_OK);
       }
-    });
+    };
     HttpRequest request = delete(new URL(url));
     assertNotNull(request.getConnection());
     assertTrue(request.ok());
@@ -296,13 +344,14 @@ public class HttpRequestTest extends ServerTestCase {
   @Test
   public void optionsEmpty() throws Exception {
     final AtomicReference<String> method = new AtomicReference<String>();
-    String url = setUp(new RequestHandler() {
+    handler = new RequestHandler() {
 
+      @Override
       public void handle(Request request, HttpServletResponse response) {
         method.set(request.getMethod());
         response.setStatus(HTTP_OK);
       }
-    });
+    };
     HttpRequest request = options(url);
     assertNotNull(request.getConnection());
     assertTrue(request.ok());
@@ -319,13 +368,14 @@ public class HttpRequestTest extends ServerTestCase {
   @Test
   public void optionsUrlEmpty() throws Exception {
     final AtomicReference<String> method = new AtomicReference<String>();
-    String url = setUp(new RequestHandler() {
+    handler = new RequestHandler() {
 
+      @Override
       public void handle(Request request, HttpServletResponse response) {
         method.set(request.getMethod());
         response.setStatus(HTTP_OK);
       }
-    });
+    };
     HttpRequest request = options(new URL(url));
     assertNotNull(request.getConnection());
     assertTrue(request.ok());
@@ -342,13 +392,14 @@ public class HttpRequestTest extends ServerTestCase {
   @Test
   public void headEmpty() throws Exception {
     final AtomicReference<String> method = new AtomicReference<String>();
-    String url = setUp(new RequestHandler() {
+    handler = new RequestHandler() {
 
+      @Override
       public void handle(Request request, HttpServletResponse response) {
         method.set(request.getMethod());
         response.setStatus(HTTP_OK);
       }
-    });
+    };
     HttpRequest request = head(url);
     assertNotNull(request.getConnection());
     assertTrue(request.ok());
@@ -365,13 +416,14 @@ public class HttpRequestTest extends ServerTestCase {
   @Test
   public void headUrlEmpty() throws Exception {
     final AtomicReference<String> method = new AtomicReference<String>();
-    String url = setUp(new RequestHandler() {
+    handler = new RequestHandler() {
 
+      @Override
       public void handle(Request request, HttpServletResponse response) {
         method.set(request.getMethod());
         response.setStatus(HTTP_OK);
       }
-    });
+    };
     HttpRequest request = head(new URL(url));
     assertNotNull(request.getConnection());
     assertTrue(request.ok());
@@ -388,13 +440,14 @@ public class HttpRequestTest extends ServerTestCase {
   @Test
   public void putEmpty() throws Exception {
     final AtomicReference<String> method = new AtomicReference<String>();
-    String url = setUp(new RequestHandler() {
+    handler = new RequestHandler() {
 
+      @Override
       public void handle(Request request, HttpServletResponse response) {
         method.set(request.getMethod());
         response.setStatus(HTTP_OK);
       }
-    });
+    };
     HttpRequest request = put(url);
     assertNotNull(request.getConnection());
     assertTrue(request.ok());
@@ -411,13 +464,14 @@ public class HttpRequestTest extends ServerTestCase {
   @Test
   public void putUrlEmpty() throws Exception {
     final AtomicReference<String> method = new AtomicReference<String>();
-    String url = setUp(new RequestHandler() {
+    handler = new RequestHandler() {
 
+      @Override
       public void handle(Request request, HttpServletResponse response) {
         method.set(request.getMethod());
         response.setStatus(HTTP_OK);
       }
-    });
+    };
     HttpRequest request = put(new URL(url));
     assertNotNull(request.getConnection());
     assertTrue(request.ok());
@@ -434,13 +488,14 @@ public class HttpRequestTest extends ServerTestCase {
   @Test
   public void traceEmpty() throws Exception {
     final AtomicReference<String> method = new AtomicReference<String>();
-    String url = setUp(new RequestHandler() {
+    handler = new RequestHandler() {
 
+      @Override
       public void handle(Request request, HttpServletResponse response) {
         method.set(request.getMethod());
         response.setStatus(HTTP_OK);
       }
-    });
+    };
     HttpRequest request = trace(url);
     assertNotNull(request.getConnection());
     assertTrue(request.ok());
@@ -457,13 +512,14 @@ public class HttpRequestTest extends ServerTestCase {
   @Test
   public void traceUrlEmpty() throws Exception {
     final AtomicReference<String> method = new AtomicReference<String>();
-    String url = setUp(new RequestHandler() {
+    handler = new RequestHandler() {
 
+      @Override
       public void handle(Request request, HttpServletResponse response) {
         method.set(request.getMethod());
         response.setStatus(HTTP_OK);
       }
-    });
+    };
     HttpRequest request = trace(new URL(url));
     assertNotNull(request.getConnection());
     assertTrue(request.ok());
@@ -480,13 +536,14 @@ public class HttpRequestTest extends ServerTestCase {
   @Test
   public void postEmpty() throws Exception {
     final AtomicReference<String> method = new AtomicReference<String>();
-    String url = setUp(new RequestHandler() {
+    handler = new RequestHandler() {
 
+      @Override
       public void handle(Request request, HttpServletResponse response) {
         method.set(request.getMethod());
         response.setStatus(HTTP_CREATED);
       }
-    });
+    };
     HttpRequest request = post(url);
     int code = request.code();
     assertEquals("POST", method.get());
@@ -503,13 +560,14 @@ public class HttpRequestTest extends ServerTestCase {
   @Test
   public void postUrlEmpty() throws Exception {
     final AtomicReference<String> method = new AtomicReference<String>();
-    String url = setUp(new RequestHandler() {
+    handler = new RequestHandler() {
 
+      @Override
       public void handle(Request request, HttpServletResponse response) {
         method.set(request.getMethod());
         response.setStatus(HTTP_CREATED);
       }
-    });
+    };
     HttpRequest request = post(new URL(url));
     int code = request.code();
     assertEquals("POST", method.get());
@@ -526,13 +584,14 @@ public class HttpRequestTest extends ServerTestCase {
   @Test
   public void postNonEmptyString() throws Exception {
     final AtomicReference<String> body = new AtomicReference<String>();
-    String url = setUp(new RequestHandler() {
+    handler = new RequestHandler() {
 
+      @Override
       public void handle(Request request, HttpServletResponse response) {
         body.set(new String(read()));
         response.setStatus(HTTP_OK);
       }
-    });
+    };
     int code = post(url).send("hello").code();
     assertEquals(HTTP_OK, code);
     assertEquals("hello", body.get());
@@ -546,13 +605,14 @@ public class HttpRequestTest extends ServerTestCase {
   @Test
   public void postNonEmptyFile() throws Exception {
     final AtomicReference<String> body = new AtomicReference<String>();
-    String url = setUp(new RequestHandler() {
+    handler = new RequestHandler() {
 
+      @Override
       public void handle(Request request, HttpServletResponse response) {
         body.set(new String(read()));
         response.setStatus(HTTP_OK);
       }
-    });
+    };
     File file = File.createTempFile("post", ".txt");
     new FileWriter(file).append("hello").close();
     int code = post(url).send(file).code();
@@ -568,13 +628,14 @@ public class HttpRequestTest extends ServerTestCase {
   @Test
   public void postMultipleFiles() throws Exception {
     final AtomicReference<String> body = new AtomicReference<String>();
-    String url = setUp(new RequestHandler() {
+    handler = new RequestHandler() {
 
+      @Override
       public void handle(Request request, HttpServletResponse response) {
         body.set(new String(read()));
         response.setStatus(HTTP_OK);
       }
-    });
+    };
 
     File file1 = File.createTempFile("post", ".txt");
     new FileWriter(file1).append("hello").close();
@@ -595,13 +656,14 @@ public class HttpRequestTest extends ServerTestCase {
   @Test
   public void postNonEmptyReader() throws Exception {
     final AtomicReference<String> body = new AtomicReference<String>();
-    String url = setUp(new RequestHandler() {
+    handler = new RequestHandler() {
 
+      @Override
       public void handle(Request request, HttpServletResponse response) {
         body.set(new String(read()));
         response.setStatus(HTTP_OK);
       }
-    });
+    };
     File file = File.createTempFile("post", ".txt");
     new FileWriter(file).append("hello").close();
     int code = post(url).send(new FileReader(file)).code();
@@ -617,13 +679,14 @@ public class HttpRequestTest extends ServerTestCase {
   @Test
   public void postNonEmptyByteArray() throws Exception {
     final AtomicReference<String> body = new AtomicReference<String>();
-    String url = setUp(new RequestHandler() {
+    handler = new RequestHandler() {
 
+      @Override
       public void handle(Request request, HttpServletResponse response) {
         body.set(new String(read()));
         response.setStatus(HTTP_OK);
       }
-    });
+    };
     byte[] bytes = "hello".getBytes(CHARSET_UTF8);
     int code = post(url).contentLength(Integer.toString(bytes.length))
         .send(bytes).code();
@@ -640,14 +703,15 @@ public class HttpRequestTest extends ServerTestCase {
   public void postWithLength() throws Exception {
     final AtomicReference<String> body = new AtomicReference<String>();
     final AtomicReference<Integer> length = new AtomicReference<Integer>();
-    String url = setUp(new RequestHandler() {
+    handler = new RequestHandler() {
 
+      @Override
       public void handle(Request request, HttpServletResponse response) {
         body.set(new String(read()));
         length.set(request.getContentLength());
         response.setStatus(HTTP_OK);
       }
-    });
+    };
     String data = "hello";
     int sent = data.getBytes().length;
     int code = post(url).contentLength(sent).send(data).code();
@@ -664,13 +728,14 @@ public class HttpRequestTest extends ServerTestCase {
   @Test
   public void postForm() throws Exception {
     final AtomicReference<String> body = new AtomicReference<String>();
-    String url = setUp(new RequestHandler() {
+    handler = new RequestHandler() {
 
+      @Override
       public void handle(Request request, HttpServletResponse response) {
         body.set(new String(read()));
         response.setStatus(HTTP_OK);
       }
-    });
+    };
     Map<String, String> data = new LinkedHashMap<String, String>();
     data.put("name", "user");
     data.put("number", "100");
@@ -687,13 +752,14 @@ public class HttpRequestTest extends ServerTestCase {
   @Test
   public void postEmptyForm() throws Exception {
     final AtomicReference<String> body = new AtomicReference<String>();
-    String url = setUp(new RequestHandler() {
+    handler = new RequestHandler() {
 
+      @Override
       public void handle(Request request, HttpServletResponse response) {
         body.set(new String(read()));
         response.setStatus(HTTP_OK);
       }
-    });
+    };
     int code = post(url).form(new HashMap<String, String>()).code();
     assertEquals(HTTP_OK, code);
     assertEquals("", body.get());
@@ -708,14 +774,15 @@ public class HttpRequestTest extends ServerTestCase {
   public void chunkPost() throws Exception {
     final AtomicReference<String> body = new AtomicReference<String>();
     final AtomicReference<String> encoding = new AtomicReference<String>();
-    String url = setUp(new RequestHandler() {
+    handler = new RequestHandler() {
 
+      @Override
       public void handle(Request request, HttpServletResponse response) {
         body.set(new String(read()));
         response.setStatus(HTTP_OK);
         encoding.set(request.getHeader("Transfer-Encoding"));
       }
-    });
+    };
     String data = "hello";
     int code = post(url).chunk(2).send(data).code();
     assertEquals(HTTP_OK, code);
@@ -730,13 +797,14 @@ public class HttpRequestTest extends ServerTestCase {
    */
   @Test
   public void getNonEmptyString() throws Exception {
-    String url = setUp(new RequestHandler() {
+    handler = new RequestHandler() {
 
+      @Override
       public void handle(Request request, HttpServletResponse response) {
         response.setStatus(HTTP_OK);
         write("hello");
       }
-    });
+    };
     HttpRequest request = get(url);
     assertEquals(HTTP_OK, request.code());
     assertEquals("hello", request.body());
@@ -750,13 +818,14 @@ public class HttpRequestTest extends ServerTestCase {
    */
   @Test
   public void getWithResponseCharset() throws Exception {
-    String url = setUp(new RequestHandler() {
+    handler = new RequestHandler() {
 
+      @Override
       public void handle(Request request, HttpServletResponse response) {
         response.setStatus(HTTP_OK);
         response.setContentType("text/html; charset=UTF-8");
       }
-    });
+    };
     HttpRequest request = get(url);
     assertEquals(HTTP_OK, request.code());
     assertEquals(CHARSET_UTF8, request.charset());
@@ -769,13 +838,14 @@ public class HttpRequestTest extends ServerTestCase {
    */
   @Test
   public void getWithResponseCharsetAsSecondParam() throws Exception {
-    String url = setUp(new RequestHandler() {
+    handler = new RequestHandler() {
 
+      @Override
       public void handle(Request request, HttpServletResponse response) {
         response.setStatus(HTTP_OK);
         response.setContentType("text/html; param1=val1; charset=UTF-8");
       }
-    });
+    };
     HttpRequest request = get(url);
     assertEquals(HTTP_OK, request.code());
     assertEquals(CHARSET_UTF8, request.charset());
@@ -790,8 +860,9 @@ public class HttpRequestTest extends ServerTestCase {
   public void basicAuthentication() throws Exception {
     final AtomicReference<String> user = new AtomicReference<String>();
     final AtomicReference<String> password = new AtomicReference<String>();
-    String url = setUp(new RequestHandler() {
+    handler = new RequestHandler() {
 
+      @Override
       public void handle(Request request, HttpServletResponse response) {
         String auth = request.getHeader("Authorization");
         auth = auth.substring(auth.indexOf(' ') + 1);
@@ -805,7 +876,7 @@ public class HttpRequestTest extends ServerTestCase {
         password.set(auth.substring(colon + 1));
         response.setStatus(HTTP_OK);
       }
-    });
+    };
     assertTrue(get(url).basic("user", "p4ssw0rd").ok());
     assertEquals("user", user.get());
     assertEquals("p4ssw0rd", password.get());
@@ -818,13 +889,14 @@ public class HttpRequestTest extends ServerTestCase {
    */
   @Test
   public void getReader() throws Exception {
-    String url = setUp(new RequestHandler() {
+    handler = new RequestHandler() {
 
+      @Override
       public void handle(Request request, HttpServletResponse response) {
         response.setStatus(HTTP_OK);
         write("hello");
       }
-    });
+    };
     HttpRequest request = get(url);
     assertTrue(request.ok());
     BufferedReader reader = new BufferedReader(request.reader());
@@ -840,13 +912,14 @@ public class HttpRequestTest extends ServerTestCase {
   @Test
   public void sendWithWriter() throws Exception {
     final AtomicReference<String> body = new AtomicReference<String>();
-    String url = setUp(new RequestHandler() {
+    handler = new RequestHandler() {
 
+      @Override
       public void handle(Request request, HttpServletResponse response) {
         body.set(new String(read()));
         response.setStatus(HTTP_OK);
       }
-    });
+    };
 
     HttpRequest request = post(url);
     request.writer().append("hello").close();
@@ -861,13 +934,14 @@ public class HttpRequestTest extends ServerTestCase {
    */
   @Test
   public void getBufferedReader() throws Exception {
-    String url = setUp(new RequestHandler() {
+    handler = new RequestHandler() {
 
+      @Override
       public void handle(Request request, HttpServletResponse response) {
         response.setStatus(HTTP_OK);
         write("hello");
       }
-    });
+    };
     HttpRequest request = get(url);
     assertTrue(request.ok());
     BufferedReader reader = request.bufferedReader();
@@ -882,13 +956,14 @@ public class HttpRequestTest extends ServerTestCase {
    */
   @Test
   public void getReaderWithCharset() throws Exception {
-    String url = setUp(new RequestHandler() {
+    handler = new RequestHandler() {
 
+      @Override
       public void handle(Request request, HttpServletResponse response) {
         response.setStatus(HTTP_OK);
         write("hello");
       }
-    });
+    };
     HttpRequest request = get(url);
     assertTrue(request.ok());
     BufferedReader reader = new BufferedReader(request.reader(CHARSET_UTF8));
@@ -903,13 +978,14 @@ public class HttpRequestTest extends ServerTestCase {
    */
   @Test
   public void getBytes() throws Exception {
-    String url = setUp(new RequestHandler() {
+    handler = new RequestHandler() {
 
+      @Override
       public void handle(Request request, HttpServletResponse response) {
         response.setStatus(HTTP_OK);
         write("hello");
       }
-    });
+    };
     HttpRequest request = get(url);
     assertTrue(request.ok());
     assertTrue(Arrays.equals("hello".getBytes(), request.bytes()));
@@ -922,13 +998,14 @@ public class HttpRequestTest extends ServerTestCase {
    */
   @Test
   public void getError() throws Exception {
-    String url = setUp(new RequestHandler() {
+    handler = new RequestHandler() {
 
+      @Override
       public void handle(Request request, HttpServletResponse response) {
         response.setStatus(HttpServletResponse.SC_NOT_FOUND);
         write("error");
       }
-    });
+    };
     HttpRequest request = get(url);
     assertTrue(request.notFound());
     assertEquals("error", request.body());
@@ -941,12 +1018,13 @@ public class HttpRequestTest extends ServerTestCase {
    */
   @Test
   public void noError() throws Exception {
-    String url = setUp(new RequestHandler() {
+    handler = new RequestHandler() {
 
+      @Override
       public void handle(Request request, HttpServletResponse response) {
         response.setStatus(HTTP_OK);
       }
-    });
+    };
     HttpRequest request = get(url);
     assertTrue(request.ok());
     assertEquals("", request.body());
@@ -959,13 +1037,14 @@ public class HttpRequestTest extends ServerTestCase {
    */
   @Test
   public void serverHeader() throws Exception {
-    String url = setUp(new RequestHandler() {
+    handler = new RequestHandler() {
 
+      @Override
       public void handle(Request request, HttpServletResponse response) {
         response.setStatus(HTTP_OK);
         response.setHeader("Server", "aserver");
       }
-    });
+    };
     assertEquals("aserver", get(url).server());
   }
 
@@ -976,13 +1055,14 @@ public class HttpRequestTest extends ServerTestCase {
    */
   @Test
   public void expiresHeader() throws Exception {
-    String url = setUp(new RequestHandler() {
+    handler = new RequestHandler() {
 
+      @Override
       public void handle(Request request, HttpServletResponse response) {
         response.setStatus(HTTP_OK);
         response.setDateHeader("Expires", 1234000);
       }
-    });
+    };
     assertEquals(1234000, get(url).expires());
   }
 
@@ -993,13 +1073,14 @@ public class HttpRequestTest extends ServerTestCase {
    */
   @Test
   public void lastModifiedHeader() throws Exception {
-    String url = setUp(new RequestHandler() {
+    handler = new RequestHandler() {
 
+      @Override
       public void handle(Request request, HttpServletResponse response) {
         response.setStatus(HTTP_OK);
         response.setDateHeader("Last-Modified", 555000);
       }
-    });
+    };
     assertEquals(555000, get(url).lastModified());
   }
 
@@ -1010,13 +1091,14 @@ public class HttpRequestTest extends ServerTestCase {
    */
   @Test
   public void dateHeader() throws Exception {
-    String url = setUp(new RequestHandler() {
+    handler = new RequestHandler() {
 
+      @Override
       public void handle(Request request, HttpServletResponse response) {
         response.setStatus(HTTP_OK);
         response.setDateHeader("Date", 66000);
       }
-    });
+    };
     assertEquals(66000, get(url).date());
   }
 
@@ -1027,13 +1109,14 @@ public class HttpRequestTest extends ServerTestCase {
    */
   @Test
   public void eTagHeader() throws Exception {
-    String url = setUp(new RequestHandler() {
+    handler = new RequestHandler() {
 
+      @Override
       public void handle(Request request, HttpServletResponse response) {
         response.setStatus(HTTP_OK);
         response.setHeader("ETag", "abcd");
       }
-    });
+    };
     assertEquals("abcd", get(url).eTag());
   }
 
@@ -1044,13 +1127,14 @@ public class HttpRequestTest extends ServerTestCase {
    */
   @Test
   public void locationHeader() throws Exception {
-    String url = setUp(new RequestHandler() {
+    handler = new RequestHandler() {
 
+      @Override
       public void handle(Request request, HttpServletResponse response) {
         response.setStatus(HTTP_OK);
         response.setHeader("Location", "http://nowhere");
       }
-    });
+    };
     assertEquals("http://nowhere", get(url).location());
   }
 
@@ -1061,13 +1145,14 @@ public class HttpRequestTest extends ServerTestCase {
    */
   @Test
   public void contentEncodingHeader() throws Exception {
-    String url = setUp(new RequestHandler() {
+    handler = new RequestHandler() {
 
+      @Override
       public void handle(Request request, HttpServletResponse response) {
         response.setStatus(HTTP_OK);
         response.setHeader("Content-Encoding", "gzip");
       }
-    });
+    };
     assertEquals("gzip", get(url).contentEncoding());
   }
 
@@ -1078,13 +1163,14 @@ public class HttpRequestTest extends ServerTestCase {
    */
   @Test
   public void contentTypeHeader() throws Exception {
-    String url = setUp(new RequestHandler() {
+    handler = new RequestHandler() {
 
+      @Override
       public void handle(Request request, HttpServletResponse response) {
         response.setStatus(HTTP_OK);
         response.setHeader("Content-Type", "text/html");
       }
-    });
+    };
     assertEquals("text/html", get(url).contentType());
   }
 
@@ -1095,13 +1181,14 @@ public class HttpRequestTest extends ServerTestCase {
    */
   @Test
   public void cacheControlHeader() throws Exception {
-    String url = setUp(new RequestHandler() {
+    handler = new RequestHandler() {
 
+      @Override
       public void handle(Request request, HttpServletResponse response) {
         response.setStatus(HTTP_OK);
         response.setHeader("Cache-Control", "no-cache");
       }
-    });
+    };
     assertEquals("no-cache", get(url).cacheControl());
   }
 
@@ -1114,14 +1201,15 @@ public class HttpRequestTest extends ServerTestCase {
   public void headers() throws Exception {
     final AtomicReference<String> h1 = new AtomicReference<String>();
     final AtomicReference<String> h2 = new AtomicReference<String>();
-    String url = setUp(new RequestHandler() {
+    handler = new RequestHandler() {
 
+      @Override
       public void handle(Request request, HttpServletResponse response) {
         response.setStatus(HTTP_OK);
         h1.set(request.getHeader("h1"));
         h2.set(request.getHeader("h2"));
       }
-    });
+    };
     Map<String, String> headers = new HashMap<String, String>();
     headers.put("h1", "v1");
     headers.put("h2", "v2");
@@ -1137,16 +1225,16 @@ public class HttpRequestTest extends ServerTestCase {
    */
   @Test
   public void getAllHeaders() throws Exception {
-    String url = setUp(new RequestHandler() {
+    handler = new RequestHandler() {
 
+      @Override
       public void handle(Request request, HttpServletResponse response) {
         response.setStatus(HTTP_OK);
         response.setHeader("a", "a");
         response.setHeader("b", "b");
         response.addHeader("a", "another");
-
       }
-    });
+    };
     Map<String, List<String>> headers = get(url).headers();
     assertEquals(headers.size(), 5);
     assertEquals(headers.get("a").size(), 2);
@@ -1161,13 +1249,14 @@ public class HttpRequestTest extends ServerTestCase {
   @Test
   public void numberHead() throws Exception {
     final AtomicReference<String> h1 = new AtomicReference<String>();
-    String url = setUp(new RequestHandler() {
+    handler = new RequestHandler() {
 
+      @Override
       public void handle(Request request, HttpServletResponse response) {
         response.setStatus(HTTP_OK);
         h1.set(request.getHeader("h1"));
       }
-    });
+    };
     assertTrue(get(url).header("h1", 5).ok());
     assertEquals("5", h1.get());
   }
@@ -1180,13 +1269,14 @@ public class HttpRequestTest extends ServerTestCase {
   @Test
   public void userAgentHeader() throws Exception {
     final AtomicReference<String> header = new AtomicReference<String>();
-    String url = setUp(new RequestHandler() {
+    handler = new RequestHandler() {
 
+      @Override
       public void handle(Request request, HttpServletResponse response) {
         response.setStatus(HTTP_OK);
         header.set(request.getHeader("User-Agent"));
       }
-    });
+    };
     assertTrue(get(url).userAgent("browser 1.0").ok());
     assertEquals("browser 1.0", header.get());
   }
@@ -1199,13 +1289,14 @@ public class HttpRequestTest extends ServerTestCase {
   @Test
   public void acceptHeader() throws Exception {
     final AtomicReference<String> header = new AtomicReference<String>();
-    String url = setUp(new RequestHandler() {
+    handler = new RequestHandler() {
 
+      @Override
       public void handle(Request request, HttpServletResponse response) {
         response.setStatus(HTTP_OK);
         header.set(request.getHeader("Accept"));
       }
-    });
+    };
     assertTrue(get(url).accept("application/json").ok());
     assertEquals("application/json", header.get());
   }
@@ -1219,13 +1310,14 @@ public class HttpRequestTest extends ServerTestCase {
   @Test
   public void acceptJson() throws Exception {
     final AtomicReference<String> header = new AtomicReference<String>();
-    String url = setUp(new RequestHandler() {
+    handler = new RequestHandler() {
 
+      @Override
       public void handle(Request request, HttpServletResponse response) {
         response.setStatus(HTTP_OK);
         header.set(request.getHeader("Accept"));
       }
-    });
+    };
     assertTrue(get(url).acceptJson().ok());
     assertEquals("application/json", header.get());
   }
@@ -1238,13 +1330,14 @@ public class HttpRequestTest extends ServerTestCase {
   @Test
   public void ifNoneMatchHeader() throws Exception {
     final AtomicReference<String> header = new AtomicReference<String>();
-    String url = setUp(new RequestHandler() {
+    handler = new RequestHandler() {
 
+      @Override
       public void handle(Request request, HttpServletResponse response) {
         response.setStatus(HTTP_OK);
         header.set(request.getHeader("If-None-Match"));
       }
-    });
+    };
     assertTrue(get(url).ifNoneMatch("eid").ok());
     assertEquals("eid", header.get());
   }
@@ -1257,13 +1350,14 @@ public class HttpRequestTest extends ServerTestCase {
   @Test
   public void acceptCharsetHeader() throws Exception {
     final AtomicReference<String> header = new AtomicReference<String>();
-    String url = setUp(new RequestHandler() {
+    handler = new RequestHandler() {
 
+      @Override
       public void handle(Request request, HttpServletResponse response) {
         response.setStatus(HTTP_OK);
         header.set(request.getHeader("Accept-Charset"));
       }
-    });
+    };
     assertTrue(get(url).acceptCharset(CHARSET_UTF8).ok());
     assertEquals(CHARSET_UTF8, header.get());
   }
@@ -1276,13 +1370,14 @@ public class HttpRequestTest extends ServerTestCase {
   @Test
   public void acceptEncodingHeader() throws Exception {
     final AtomicReference<String> header = new AtomicReference<String>();
-    String url = setUp(new RequestHandler() {
+    handler = new RequestHandler() {
 
+      @Override
       public void handle(Request request, HttpServletResponse response) {
         response.setStatus(HTTP_OK);
         header.set(request.getHeader("Accept-Encoding"));
       }
-    });
+    };
     assertTrue(get(url).acceptEncoding("compress").ok());
     assertEquals("compress", header.get());
   }
@@ -1295,13 +1390,14 @@ public class HttpRequestTest extends ServerTestCase {
   @Test
   public void ifModifiedSinceHeader() throws Exception {
     final AtomicLong header = new AtomicLong();
-    String url = setUp(new RequestHandler() {
+    handler = new RequestHandler() {
 
+      @Override
       public void handle(Request request, HttpServletResponse response) {
         response.setStatus(HTTP_OK);
         header.set(request.getDateHeader("If-Modified-Since"));
       }
-    });
+    };
     assertTrue(get(url).ifModifiedSince(5000).ok());
     assertEquals(5000, header.get());
   }
@@ -1314,8 +1410,9 @@ public class HttpRequestTest extends ServerTestCase {
   @Test
   public void postMultipart() throws Exception {
     final StringBuilder body = new StringBuilder();
-    String url = setUp(new RequestHandler() {
+    handler = new RequestHandler() {
 
+      @Override
       public void handle(Request request, HttpServletResponse response) {
         response.setStatus(HTTP_OK);
         char[] buffer = new char[8192];
@@ -1327,7 +1424,7 @@ public class HttpRequestTest extends ServerTestCase {
           fail();
         }
       }
-    });
+    };
     File file = File.createTempFile("body", ".txt");
     File file2 = File.createTempFile("body", ".txt");
     new FileWriter(file).append("content1").close();
@@ -1354,8 +1451,9 @@ public class HttpRequestTest extends ServerTestCase {
   @Test
   public void receiveAppendable() throws Exception {
     final StringBuilder body = new StringBuilder();
-    String url = setUp(new RequestHandler() {
+    handler = new RequestHandler() {
 
+      @Override
       public void handle(Request request, HttpServletResponse response) {
         response.setStatus(HTTP_OK);
         try {
@@ -1364,7 +1462,7 @@ public class HttpRequestTest extends ServerTestCase {
           fail();
         }
       }
-    });
+    };
     assertTrue(post(url).receive(body).ok());
     assertEquals("content", body.toString());
   }
@@ -1376,8 +1474,9 @@ public class HttpRequestTest extends ServerTestCase {
    */
   @Test
   public void receiveWriter() throws Exception {
-    String url = setUp(new RequestHandler() {
+    handler = new RequestHandler() {
 
+      @Override
       public void handle(Request request, HttpServletResponse response) {
         response.setStatus(HTTP_OK);
         try {
@@ -1386,7 +1485,7 @@ public class HttpRequestTest extends ServerTestCase {
           fail();
         }
       }
-    });
+    };
     StringWriter writer = new StringWriter();
     assertTrue(post(url).receive(writer).ok());
     assertEquals("content", writer.toString());
@@ -1399,8 +1498,9 @@ public class HttpRequestTest extends ServerTestCase {
    */
   @Test
   public void receivePrintStream() throws Exception {
-    String url = setUp(new RequestHandler() {
+    handler = new RequestHandler() {
 
+      @Override
       public void handle(Request request, HttpServletResponse response) {
         response.setStatus(HTTP_OK);
         try {
@@ -1409,7 +1509,7 @@ public class HttpRequestTest extends ServerTestCase {
           fail();
         }
       }
-    });
+    };
     ByteArrayOutputStream output = new ByteArrayOutputStream();
     PrintStream stream = new PrintStream(output, true, CHARSET_UTF8);
     assertTrue(post(url).receive(stream).ok());
@@ -1424,8 +1524,9 @@ public class HttpRequestTest extends ServerTestCase {
    */
   @Test
   public void receiveFile() throws Exception {
-    String url = setUp(new RequestHandler() {
+    handler = new RequestHandler() {
 
+      @Override
       public void handle(Request request, HttpServletResponse response) {
         response.setStatus(HTTP_OK);
         try {
@@ -1434,7 +1535,7 @@ public class HttpRequestTest extends ServerTestCase {
           fail();
         }
       }
-    });
+    };
     File output = File.createTempFile("output", ".txt");
     assertTrue(post(url).receive(output).ok());
     StringBuilder buffer = new StringBuilder();
@@ -1518,8 +1619,9 @@ public class HttpRequestTest extends ServerTestCase {
    */
   @Test
   public void sendErrorReadStream() throws Exception {
-    String url = setUp(new RequestHandler() {
+    handler = new RequestHandler() {
 
+      @Override
       public void handle(Request request, HttpServletResponse response) {
         response.setStatus(HTTP_OK);
         try {
@@ -1528,7 +1630,7 @@ public class HttpRequestTest extends ServerTestCase {
           fail();
         }
       }
-    });
+    };
     final IOException readCause = new IOException();
     final IOException closeCause = new IOException();
     InputStream stream = new InputStream() {
@@ -1556,8 +1658,9 @@ public class HttpRequestTest extends ServerTestCase {
    */
   @Test
   public void sendErrorCloseStream() throws Exception {
-    String url = setUp(new RequestHandler() {
+    handler = new RequestHandler() {
 
+      @Override
       public void handle(Request request, HttpServletResponse response) {
         response.setStatus(HTTP_OK);
         try {
@@ -1566,7 +1669,7 @@ public class HttpRequestTest extends ServerTestCase {
           fail();
         }
       }
-    });
+    };
     final IOException closeCause = new IOException();
     InputStream stream = new InputStream() {
 
@@ -1593,12 +1696,13 @@ public class HttpRequestTest extends ServerTestCase {
    */
   @Test
   public void getToOutputCode() throws Exception {
-    String url = setUp(new RequestHandler() {
+    handler = new RequestHandler() {
 
+      @Override
       public void handle(Request request, HttpServletResponse response) {
         response.setStatus(HTTP_OK);
       }
-    });
+    };
     AtomicInteger code = new AtomicInteger(0);
     get(url).code(code);
     assertEquals(HTTP_OK, code.get());
@@ -1611,8 +1715,9 @@ public class HttpRequestTest extends ServerTestCase {
    */
   @Test
   public void getGzipped() throws Exception {
-    String url = setUp(new RequestHandler() {
+    handler = new RequestHandler() {
 
+      @Override
       public void handle(Request request, HttpServletResponse response) {
         response.setStatus(HTTP_OK);
         if (!"gzip".equals(request.getHeader("Accept-Encoding")))
@@ -1637,7 +1742,7 @@ public class HttpRequestTest extends ServerTestCase {
           }
         }
       }
-    });
+    };
     HttpRequest request = get(url).acceptGzipEncoding().uncompress(true);
     assertTrue(request.ok());
     assertEquals("hello compressed", request.body(CHARSET_UTF8));
@@ -1650,8 +1755,9 @@ public class HttpRequestTest extends ServerTestCase {
    */
   @Test
   public void getNonGzippedWithUncompressEnabled() throws Exception {
-    String url = setUp(new RequestHandler() {
+    handler = new RequestHandler() {
 
+      @Override
       public void handle(Request request, HttpServletResponse response) {
         response.setStatus(HTTP_OK);
         if (!"gzip".equals(request.getHeader("Accept-Encoding")))
@@ -1659,7 +1765,7 @@ public class HttpRequestTest extends ServerTestCase {
 
         write("hello not compressed");
       }
-    });
+    };
     HttpRequest request = get(url).acceptGzipEncoding().uncompress(true);
     assertTrue(request.ok());
     assertEquals("hello not compressed", request.body(CHARSET_UTF8));
@@ -1672,14 +1778,15 @@ public class HttpRequestTest extends ServerTestCase {
    */
   @Test
   public void getHeaders() throws Exception {
-    String url = setUp(new RequestHandler() {
+    handler = new RequestHandler() {
 
+      @Override
       public void handle(Request request, HttpServletResponse response) {
         response.setStatus(HTTP_OK);
         response.addHeader("a", "1");
         response.addHeader("a", "2");
       }
-    });
+    };
     HttpRequest request = get(url);
     assertTrue(request.ok());
     String[] values = request.headers("a");
@@ -1696,12 +1803,13 @@ public class HttpRequestTest extends ServerTestCase {
    */
   @Test
   public void getEmptyHeaders() throws Exception {
-    String url = setUp(new RequestHandler() {
+    handler = new RequestHandler() {
 
+      @Override
       public void handle(Request request, HttpServletResponse response) {
         response.setStatus(HTTP_OK);
       }
-    });
+    };
     HttpRequest request = get(url);
     assertTrue(request.ok());
     String[] values = request.headers("a");
@@ -1716,13 +1824,14 @@ public class HttpRequestTest extends ServerTestCase {
    */
   @Test
   public void getSingleParameter() throws Exception {
-    String url = setUp(new RequestHandler() {
+    handler = new RequestHandler() {
 
+      @Override
       public void handle(Request request, HttpServletResponse response) {
         response.setStatus(HTTP_OK);
         response.setHeader("a", "b;c=d");
       }
-    });
+    };
     HttpRequest request = get(url);
     assertTrue(request.ok());
     assertEquals("d", request.parameter("a", "c"));
@@ -1735,13 +1844,14 @@ public class HttpRequestTest extends ServerTestCase {
    */
   @Test
   public void getMultipleParameters() throws Exception {
-    String url = setUp(new RequestHandler() {
+    handler = new RequestHandler() {
 
+      @Override
       public void handle(Request request, HttpServletResponse response) {
         response.setStatus(HTTP_OK);
         response.setHeader("a", "b;c=d;e=f");
       }
-    });
+    };
     HttpRequest request = get(url);
     assertTrue(request.ok());
     assertEquals("d", request.parameter("a", "c"));
@@ -1755,13 +1865,14 @@ public class HttpRequestTest extends ServerTestCase {
    */
   @Test
   public void getSingleParameterQuoted() throws Exception {
-    String url = setUp(new RequestHandler() {
+    handler = new RequestHandler() {
 
+      @Override
       public void handle(Request request, HttpServletResponse response) {
         response.setStatus(HTTP_OK);
         response.setHeader("a", "b;c=\"d\"");
       }
-    });
+    };
     HttpRequest request = get(url);
     assertTrue(request.ok());
     assertEquals("d", request.parameter("a", "c"));
@@ -1774,13 +1885,14 @@ public class HttpRequestTest extends ServerTestCase {
    */
   @Test
   public void getMultipleParametersQuoted() throws Exception {
-    String url = setUp(new RequestHandler() {
+    handler = new RequestHandler() {
 
+      @Override
       public void handle(Request request, HttpServletResponse response) {
         response.setStatus(HTTP_OK);
         response.setHeader("a", "b;c=\"d\";e=\"f\"");
       }
-    });
+    };
     HttpRequest request = get(url);
     assertTrue(request.ok());
     assertEquals("d", request.parameter("a", "c"));
@@ -1794,13 +1906,14 @@ public class HttpRequestTest extends ServerTestCase {
    */
   @Test
   public void getMissingParameter() throws Exception {
-    String url = setUp(new RequestHandler() {
+    handler = new RequestHandler() {
 
+      @Override
       public void handle(Request request, HttpServletResponse response) {
         response.setStatus(HTTP_OK);
         response.setHeader("a", "b;c=d");
       }
-    });
+    };
     HttpRequest request = get(url);
     assertTrue(request.ok());
     assertNull(request.parameter("a", "e"));
@@ -1813,13 +1926,14 @@ public class HttpRequestTest extends ServerTestCase {
    */
   @Test
   public void getParameterFromMissingHeader() throws Exception {
-    String url = setUp(new RequestHandler() {
+    handler = new RequestHandler() {
 
+      @Override
       public void handle(Request request, HttpServletResponse response) {
         response.setStatus(HTTP_OK);
         response.setHeader("a", "b;c=d");
       }
-    });
+    };
     HttpRequest request = get(url);
     assertTrue(request.ok());
     assertNull(request.parameter("b", "c"));
@@ -1833,13 +1947,14 @@ public class HttpRequestTest extends ServerTestCase {
    */
   @Test
   public void getEmptyParameter() throws Exception {
-    String url = setUp(new RequestHandler() {
+    handler = new RequestHandler() {
 
+      @Override
       public void handle(Request request, HttpServletResponse response) {
         response.setStatus(HTTP_OK);
         response.setHeader("a", "b;c=");
       }
-    });
+    };
     HttpRequest request = get(url);
     assertTrue(request.ok());
     assertNull(request.parameter("a", "c"));
@@ -1853,13 +1968,14 @@ public class HttpRequestTest extends ServerTestCase {
    */
   @Test
   public void getEmptyParameters() throws Exception {
-    String url = setUp(new RequestHandler() {
+    handler = new RequestHandler() {
 
+      @Override
       public void handle(Request request, HttpServletResponse response) {
         response.setStatus(HTTP_OK);
         response.setHeader("a", "b;");
       }
-    });
+    };
     HttpRequest request = get(url);
     assertTrue(request.ok());
     assertNull(request.parameter("a", "c"));
@@ -1873,13 +1989,14 @@ public class HttpRequestTest extends ServerTestCase {
    */
   @Test
   public void getParameters() throws Exception {
-    String url = setUp(new RequestHandler() {
+    handler = new RequestHandler() {
 
+      @Override
       public void handle(Request request, HttpServletResponse response) {
         response.setStatus(HTTP_OK);
         response.setHeader("a", "value;b=c;d=e");
       }
-    });
+    };
     HttpRequest request = get(url);
     assertTrue(request.ok());
     Map<String, String> params = request.parameters("a");
@@ -1896,13 +2013,14 @@ public class HttpRequestTest extends ServerTestCase {
    */
   @Test
   public void getQuotedParameters() throws Exception {
-    String url = setUp(new RequestHandler() {
+    handler = new RequestHandler() {
 
+      @Override
       public void handle(Request request, HttpServletResponse response) {
         response.setStatus(HTTP_OK);
         response.setHeader("a", "value;b=\"c\";d=\"e\"");
       }
-    });
+    };
     HttpRequest request = get(url);
     assertTrue(request.ok());
     Map<String, String> params = request.parameters("a");
@@ -1919,13 +2037,14 @@ public class HttpRequestTest extends ServerTestCase {
    */
   @Test
   public void getMixQuotedParameters() throws Exception {
-    String url = setUp(new RequestHandler() {
+    handler = new RequestHandler() {
 
+      @Override
       public void handle(Request request, HttpServletResponse response) {
         response.setStatus(HTTP_OK);
         response.setHeader("a", "value; b=c; d=\"e\"");
       }
-    });
+    };
     HttpRequest request = get(url);
     assertTrue(request.ok());
     Map<String, String> params = request.parameters("a");
@@ -1942,12 +2061,13 @@ public class HttpRequestTest extends ServerTestCase {
    */
   @Test
   public void missingDateHeader() throws Exception {
-    String url = setUp(new RequestHandler() {
+    handler = new RequestHandler() {
 
+      @Override
       public void handle(Request request, HttpServletResponse response) {
         response.setStatus(HTTP_OK);
       }
-    });
+    };
     assertEquals(1234L, get(url).dateHeader("missing", 1234L));
   }
 
@@ -1958,13 +2078,14 @@ public class HttpRequestTest extends ServerTestCase {
    */
   @Test
   public void malformedDateHeader() throws Exception {
-    String url = setUp(new RequestHandler() {
+    handler = new RequestHandler() {
 
+      @Override
       public void handle(Request request, HttpServletResponse response) {
         response.setStatus(HTTP_OK);
         response.setHeader("malformed", "not a date");
       }
-    });
+    };
     assertEquals(1234L, get(url).dateHeader("malformed", 1234L));
   }
 
@@ -1975,12 +2096,13 @@ public class HttpRequestTest extends ServerTestCase {
    */
   @Test
   public void missingIntHeader() throws Exception {
-    String url = setUp(new RequestHandler() {
+    handler = new RequestHandler() {
 
+      @Override
       public void handle(Request request, HttpServletResponse response) {
         response.setStatus(HTTP_OK);
       }
-    });
+    };
     assertEquals(4321, get(url).intHeader("missing", 4321));
   }
 
@@ -1991,13 +2113,14 @@ public class HttpRequestTest extends ServerTestCase {
    */
   @Test
   public void malformedIntHeader() throws Exception {
-    String url = setUp(new RequestHandler() {
+    handler = new RequestHandler() {
 
+      @Override
       public void handle(Request request, HttpServletResponse response) {
         response.setStatus(HTTP_OK);
         response.setHeader("malformed", "not an integer");
       }
-    });
+    };
     assertEquals(4321, get(url).intHeader("malformed", 4321));
   }
 
@@ -2009,13 +2132,14 @@ public class HttpRequestTest extends ServerTestCase {
   @Test
   public void postFormAsEntries() throws Exception {
     final AtomicReference<String> body = new AtomicReference<String>();
-    String url = setUp(new RequestHandler() {
+    handler = new RequestHandler() {
 
+      @Override
       public void handle(Request request, HttpServletResponse response) {
         body.set(new String(read()));
         response.setStatus(HTTP_OK);
       }
-    });
+    };
     Map<String, String> data = new LinkedHashMap<String, String>();
     data.put("name", "user");
     data.put("number", "100");
@@ -2035,13 +2159,14 @@ public class HttpRequestTest extends ServerTestCase {
   @Test
   public void postFormEntryWithNullValue() throws Exception {
     final AtomicReference<String> body = new AtomicReference<String>();
-    String url = setUp(new RequestHandler() {
+    handler = new RequestHandler() {
 
+      @Override
       public void handle(Request request, HttpServletResponse response) {
         body.set(new String(read()));
         response.setStatus(HTTP_OK);
       }
-    });
+    };
     Map<String, String> data = new LinkedHashMap<String, String>();
     data.put("name", null);
     HttpRequest request = post(url);
@@ -2064,15 +2189,16 @@ public class HttpRequestTest extends ServerTestCase {
     inputParams.put("number", "100");
     final Map<String, String> outputParams = new HashMap<String, String>();
     final AtomicReference<String> method = new AtomicReference<String>();
-    String url = setUp(new RequestHandler() {
+    handler = new RequestHandler() {
 
+      @Override
       public void handle(Request request, HttpServletResponse response) {
         method.set(request.getMethod());
         outputParams.put("name", request.getParameter("name"));
         outputParams.put("number", request.getParameter("number"));
         response.setStatus(HTTP_OK);
       }
-    });
+    };
     HttpRequest request = post(url, inputParams, false);
     assertTrue(request.ok());
     assertEquals("POST", method.get());
@@ -2089,15 +2215,16 @@ public class HttpRequestTest extends ServerTestCase {
   public void postWithVaragsQueryParams() throws Exception {
     final Map<String, String> outputParams = new HashMap<String, String>();
     final AtomicReference<String> method = new AtomicReference<String>();
-    String url = setUp(new RequestHandler() {
+    handler = new RequestHandler() {
 
+      @Override
       public void handle(Request request, HttpServletResponse response) {
         method.set(request.getMethod());
         outputParams.put("name", request.getParameter("name"));
         outputParams.put("number", request.getParameter("number"));
         response.setStatus(HTTP_OK);
       }
-    });
+    };
     HttpRequest request = post(url, false, "name", "user", "number", "100");
     assertTrue(request.ok());
     assertEquals("POST", method.get());
@@ -2117,15 +2244,16 @@ public class HttpRequestTest extends ServerTestCase {
     inputParams.put("number", "100");
     final Map<String, String> outputParams = new HashMap<String, String>();
     final AtomicReference<String> method = new AtomicReference<String>();
-    String url = setUp(new RequestHandler() {
+    handler = new RequestHandler() {
 
+      @Override
       public void handle(Request request, HttpServletResponse response) {
         method.set(request.getMethod());
         outputParams.put("name", request.getParameter("name"));
         outputParams.put("number", request.getParameter("number"));
         response.setStatus(HTTP_OK);
       }
-    });
+    };
     HttpRequest request = post(url, inputParams, true);
     assertTrue(request.ok());
     assertEquals("POST", method.get());
@@ -2142,15 +2270,16 @@ public class HttpRequestTest extends ServerTestCase {
   public void postWithEscapedVarargsQueryParams() throws Exception {
     final Map<String, String> outputParams = new HashMap<String, String>();
     final AtomicReference<String> method = new AtomicReference<String>();
-    String url = setUp(new RequestHandler() {
+    handler = new RequestHandler() {
 
+      @Override
       public void handle(Request request, HttpServletResponse response) {
         method.set(request.getMethod());
         outputParams.put("name", request.getParameter("name"));
         outputParams.put("number", request.getParameter("number"));
         response.setStatus(HTTP_OK);
       }
-    });
+    };
     HttpRequest request = post(url, true, "name", "us er", "number", "100");
     assertTrue(request.ok());
     assertEquals("POST", method.get());
@@ -2170,15 +2299,16 @@ public class HttpRequestTest extends ServerTestCase {
     inputParams.put(3, 4);
     final Map<String, String> outputParams = new HashMap<String, String>();
     final AtomicReference<String> method = new AtomicReference<String>();
-    String url = setUp(new RequestHandler() {
+    handler = new RequestHandler() {
 
+      @Override
       public void handle(Request request, HttpServletResponse response) {
         method.set(request.getMethod());
         outputParams.put("1", request.getParameter("1"));
         outputParams.put("3", request.getParameter("3"));
         response.setStatus(HTTP_OK);
       }
-    });
+    };
     HttpRequest request = post(url, inputParams, false);
     assertTrue(request.ok());
     assertEquals("POST", method.get());
@@ -2198,15 +2328,16 @@ public class HttpRequestTest extends ServerTestCase {
     inputParams.put("number", "100");
     final Map<String, String> outputParams = new HashMap<String, String>();
     final AtomicReference<String> method = new AtomicReference<String>();
-    String url = setUp(new RequestHandler() {
+    handler = new RequestHandler() {
 
+      @Override
       public void handle(Request request, HttpServletResponse response) {
         method.set(request.getMethod());
         outputParams.put("name", request.getParameter("name"));
         outputParams.put("number", request.getParameter("number"));
         response.setStatus(HTTP_OK);
       }
-    });
+    };
     HttpRequest request = get(url, inputParams, false);
     assertTrue(request.ok());
     assertEquals("GET", method.get());
@@ -2223,15 +2354,16 @@ public class HttpRequestTest extends ServerTestCase {
   public void getWithVarargsQueryParams() throws Exception {
     final Map<String, String> outputParams = new HashMap<String, String>();
     final AtomicReference<String> method = new AtomicReference<String>();
-    String url = setUp(new RequestHandler() {
+    handler = new RequestHandler() {
 
+      @Override
       public void handle(Request request, HttpServletResponse response) {
         method.set(request.getMethod());
         outputParams.put("name", request.getParameter("name"));
         outputParams.put("number", request.getParameter("number"));
         response.setStatus(HTTP_OK);
       }
-    });
+    };
     HttpRequest request = get(url, false, "name", "user", "number", "100");
     assertTrue(request.ok());
     assertEquals("GET", method.get());
@@ -2251,15 +2383,16 @@ public class HttpRequestTest extends ServerTestCase {
     inputParams.put("number", "100");
     final Map<String, String> outputParams = new HashMap<String, String>();
     final AtomicReference<String> method = new AtomicReference<String>();
-    String url = setUp(new RequestHandler() {
+    handler = new RequestHandler() {
 
+      @Override
       public void handle(Request request, HttpServletResponse response) {
         method.set(request.getMethod());
         outputParams.put("name", request.getParameter("name"));
         outputParams.put("number", request.getParameter("number"));
         response.setStatus(HTTP_OK);
       }
-    });
+    };
     HttpRequest request = get(url, inputParams, true);
     assertTrue(request.ok());
     assertEquals("GET", method.get());
@@ -2276,15 +2409,16 @@ public class HttpRequestTest extends ServerTestCase {
   public void getWithEscapedVarargsQueryParams() throws Exception {
     final Map<String, String> outputParams = new HashMap<String, String>();
     final AtomicReference<String> method = new AtomicReference<String>();
-    String url = setUp(new RequestHandler() {
+    handler = new RequestHandler() {
 
+      @Override
       public void handle(Request request, HttpServletResponse response) {
         method.set(request.getMethod());
         outputParams.put("name", request.getParameter("name"));
         outputParams.put("number", request.getParameter("number"));
         response.setStatus(HTTP_OK);
       }
-    });
+    };
     HttpRequest request = get(url, true, "name", "us er", "number", "100");
     assertTrue(request.ok());
     assertEquals("GET", method.get());
@@ -2304,15 +2438,16 @@ public class HttpRequestTest extends ServerTestCase {
     inputParams.put("number", "100");
     final Map<String, String> outputParams = new HashMap<String, String>();
     final AtomicReference<String> method = new AtomicReference<String>();
-    String url = setUp(new RequestHandler() {
+    handler = new RequestHandler() {
 
+      @Override
       public void handle(Request request, HttpServletResponse response) {
         method.set(request.getMethod());
         outputParams.put("name", request.getParameter("name"));
         outputParams.put("number", request.getParameter("number"));
         response.setStatus(HTTP_OK);
       }
-    });
+    };
     HttpRequest request = delete(url, inputParams, false);
     assertTrue(request.ok());
     assertEquals("DELETE", method.get());
@@ -2329,15 +2464,16 @@ public class HttpRequestTest extends ServerTestCase {
   public void deleteWithVarargsQueryParams() throws Exception {
     final Map<String, String> outputParams = new HashMap<String, String>();
     final AtomicReference<String> method = new AtomicReference<String>();
-    String url = setUp(new RequestHandler() {
+    handler = new RequestHandler() {
 
+      @Override
       public void handle(Request request, HttpServletResponse response) {
         method.set(request.getMethod());
         outputParams.put("name", request.getParameter("name"));
         outputParams.put("number", request.getParameter("number"));
         response.setStatus(HTTP_OK);
       }
-    });
+    };
     HttpRequest request = delete(url, false, "name", "user", "number", "100");
     assertTrue(request.ok());
     assertEquals("DELETE", method.get());
@@ -2357,15 +2493,16 @@ public class HttpRequestTest extends ServerTestCase {
     inputParams.put("number", "100");
     final Map<String, String> outputParams = new HashMap<String, String>();
     final AtomicReference<String> method = new AtomicReference<String>();
-    String url = setUp(new RequestHandler() {
+    handler = new RequestHandler() {
 
+      @Override
       public void handle(Request request, HttpServletResponse response) {
         method.set(request.getMethod());
         outputParams.put("name", request.getParameter("name"));
         outputParams.put("number", request.getParameter("number"));
         response.setStatus(HTTP_OK);
       }
-    });
+    };
     HttpRequest request = delete(url, inputParams, true);
     assertTrue(request.ok());
     assertEquals("DELETE", method.get());
@@ -2382,15 +2519,16 @@ public class HttpRequestTest extends ServerTestCase {
   public void deleteWithEscapedVarargsQueryParams() throws Exception {
     final Map<String, String> outputParams = new HashMap<String, String>();
     final AtomicReference<String> method = new AtomicReference<String>();
-    String url = setUp(new RequestHandler() {
+    handler = new RequestHandler() {
 
+      @Override
       public void handle(Request request, HttpServletResponse response) {
         method.set(request.getMethod());
         outputParams.put("name", request.getParameter("name"));
         outputParams.put("number", request.getParameter("number"));
         response.setStatus(HTTP_OK);
       }
-    });
+    };
     HttpRequest request = delete(url, true, "name", "us er", "number", "100");
     assertTrue(request.ok());
     assertEquals("DELETE", method.get());
@@ -2410,15 +2548,16 @@ public class HttpRequestTest extends ServerTestCase {
     inputParams.put("number", "100");
     final Map<String, String> outputParams = new HashMap<String, String>();
     final AtomicReference<String> method = new AtomicReference<String>();
-    String url = setUp(new RequestHandler() {
+    handler = new RequestHandler() {
 
+      @Override
       public void handle(Request request, HttpServletResponse response) {
         method.set(request.getMethod());
         outputParams.put("name", request.getParameter("name"));
         outputParams.put("number", request.getParameter("number"));
         response.setStatus(HTTP_OK);
       }
-    });
+    };
     HttpRequest request = put(url, inputParams, false);
     assertTrue(request.ok());
     assertEquals("PUT", method.get());
@@ -2435,15 +2574,16 @@ public class HttpRequestTest extends ServerTestCase {
   public void putWithVarargsQueryParams() throws Exception {
     final Map<String, String> outputParams = new HashMap<String, String>();
     final AtomicReference<String> method = new AtomicReference<String>();
-    String url = setUp(new RequestHandler() {
+    handler = new RequestHandler() {
 
+      @Override
       public void handle(Request request, HttpServletResponse response) {
         method.set(request.getMethod());
         outputParams.put("name", request.getParameter("name"));
         outputParams.put("number", request.getParameter("number"));
         response.setStatus(HTTP_OK);
       }
-    });
+    };
     HttpRequest request = put(url, false, "name", "user", "number", "100");
     assertTrue(request.ok());
     assertEquals("PUT", method.get());
@@ -2463,15 +2603,16 @@ public class HttpRequestTest extends ServerTestCase {
     inputParams.put("number", "100");
     final Map<String, String> outputParams = new HashMap<String, String>();
     final AtomicReference<String> method = new AtomicReference<String>();
-    String url = setUp(new RequestHandler() {
+    handler = new RequestHandler() {
 
+      @Override
       public void handle(Request request, HttpServletResponse response) {
         method.set(request.getMethod());
         outputParams.put("name", request.getParameter("name"));
         outputParams.put("number", request.getParameter("number"));
         response.setStatus(HTTP_OK);
       }
-    });
+    };
     HttpRequest request = put(url, inputParams, true);
     assertTrue(request.ok());
     assertEquals("PUT", method.get());
@@ -2488,15 +2629,16 @@ public class HttpRequestTest extends ServerTestCase {
   public void putWithEscapedVarargsQueryParams() throws Exception {
     final Map<String, String> outputParams = new HashMap<String, String>();
     final AtomicReference<String> method = new AtomicReference<String>();
-    String url = setUp(new RequestHandler() {
+    handler = new RequestHandler() {
 
+      @Override
       public void handle(Request request, HttpServletResponse response) {
         method.set(request.getMethod());
         outputParams.put("name", request.getParameter("name"));
         outputParams.put("number", request.getParameter("number"));
         response.setStatus(HTTP_OK);
       }
-    });
+    };
     HttpRequest request = put(url, true, "name", "us er", "number", "100");
     assertTrue(request.ok());
     assertEquals("PUT", method.get());
@@ -2516,15 +2658,16 @@ public class HttpRequestTest extends ServerTestCase {
     inputParams.put("number", "100");
     final Map<String, String> outputParams = new HashMap<String, String>();
     final AtomicReference<String> method = new AtomicReference<String>();
-    String url = setUp(new RequestHandler() {
+    handler = new RequestHandler() {
 
+      @Override
       public void handle(Request request, HttpServletResponse response) {
         method.set(request.getMethod());
         outputParams.put("name", request.getParameter("name"));
         outputParams.put("number", request.getParameter("number"));
         response.setStatus(HTTP_OK);
       }
-    });
+    };
     HttpRequest request = head(url, inputParams, false);
     assertTrue(request.ok());
     assertEquals("HEAD", method.get());
@@ -2541,15 +2684,16 @@ public class HttpRequestTest extends ServerTestCase {
   public void headWithVaragsQueryParams() throws Exception {
     final Map<String, String> outputParams = new HashMap<String, String>();
     final AtomicReference<String> method = new AtomicReference<String>();
-    String url = setUp(new RequestHandler() {
+    handler = new RequestHandler() {
 
+      @Override
       public void handle(Request request, HttpServletResponse response) {
         method.set(request.getMethod());
         outputParams.put("name", request.getParameter("name"));
         outputParams.put("number", request.getParameter("number"));
         response.setStatus(HTTP_OK);
       }
-    });
+    };
     HttpRequest request = head(url, false, "name", "user", "number", "100");
     assertTrue(request.ok());
     assertEquals("HEAD", method.get());
@@ -2569,15 +2713,16 @@ public class HttpRequestTest extends ServerTestCase {
     inputParams.put("number", "100");
     final Map<String, String> outputParams = new HashMap<String, String>();
     final AtomicReference<String> method = new AtomicReference<String>();
-    String url = setUp(new RequestHandler() {
+    handler = new RequestHandler() {
 
+      @Override
       public void handle(Request request, HttpServletResponse response) {
         method.set(request.getMethod());
         outputParams.put("name", request.getParameter("name"));
         outputParams.put("number", request.getParameter("number"));
         response.setStatus(HTTP_OK);
       }
-    });
+    };
     HttpRequest request = head(url, inputParams, true);
     assertTrue(request.ok());
     assertEquals("HEAD", method.get());
@@ -2594,15 +2739,16 @@ public class HttpRequestTest extends ServerTestCase {
   public void headWithEscapedVarargsQueryParams() throws Exception {
     final Map<String, String> outputParams = new HashMap<String, String>();
     final AtomicReference<String> method = new AtomicReference<String>();
-    String url = setUp(new RequestHandler() {
+    handler = new RequestHandler() {
 
+      @Override
       public void handle(Request request, HttpServletResponse response) {
         method.set(request.getMethod());
         outputParams.put("name", request.getParameter("name"));
         outputParams.put("number", request.getParameter("number"));
         response.setStatus(HTTP_OK);
       }
-    });
+    };
     HttpRequest request = head(url, true, "name", "us er", "number", "100");
     assertTrue(request.ok());
     assertEquals("HEAD", method.get());
@@ -2822,12 +2968,13 @@ public class HttpRequestTest extends ServerTestCase {
    */
   @Test
   public void serverErrorCode() throws Exception {
-    String url = setUp(new RequestHandler() {
+    handler = new RequestHandler() {
 
+      @Override
       public void handle(Request request, HttpServletResponse response) {
         response.setStatus(HTTP_INTERNAL_ERROR);
       }
-    });
+    };
     HttpRequest request = get(url);
     assertNotNull(request);
     assertTrue(request.serverError());
@@ -2840,12 +2987,13 @@ public class HttpRequestTest extends ServerTestCase {
    */
   @Test
   public void badRequestCode() throws Exception {
-    String url = setUp(new RequestHandler() {
+    handler = new RequestHandler() {
 
+      @Override
       public void handle(Request request, HttpServletResponse response) {
         response.setStatus(HTTP_BAD_REQUEST);
       }
-    });
+    };
     HttpRequest request = get(url);
     assertNotNull(request);
     assertTrue(request.badRequest());
@@ -2858,12 +3006,13 @@ public class HttpRequestTest extends ServerTestCase {
    */
   @Test
   public void notModifiedCode() throws Exception {
-    String url = setUp(new RequestHandler() {
+    handler = new RequestHandler() {
 
+      @Override
       public void handle(Request request, HttpServletResponse response) {
         response.setStatus(HTTP_NOT_MODIFIED);
       }
-    });
+    };
     HttpRequest request = get(url);
     assertNotNull(request);
     assertTrue(request.notModified());
@@ -2878,8 +3027,9 @@ public class HttpRequestTest extends ServerTestCase {
   @Test
   public void sendReceiveWithoutCode() throws Exception {
     final AtomicReference<String> body = new AtomicReference<String>();
-    String url = setUp(new RequestHandler() {
+    handler = new RequestHandler() {
 
+      @Override
       public void handle(Request request, HttpServletResponse response) {
         body.set(new String(read()));
         try {
@@ -2889,7 +3039,7 @@ public class HttpRequestTest extends ServerTestCase {
         }
         response.setStatus(HTTP_OK);
       }
-    });
+    };
 
     HttpRequest request = post(url).ignoreCloseExceptions(false);
     assertEquals("world", request.send("hello").body());
@@ -2905,15 +3055,16 @@ public class HttpRequestTest extends ServerTestCase {
   @Test
   public void sendHeadersWithoutCode() throws Exception {
     final AtomicReference<String> body = new AtomicReference<String>();
-    String url = setUp(new RequestHandler() {
+    handler = new RequestHandler() {
 
+      @Override
       public void handle(Request request, HttpServletResponse response) {
         body.set(new String(read()));
         response.setHeader("h1", "v1");
         response.setHeader("h2", "v2");
         response.setStatus(HTTP_OK);
       }
-    });
+    };
 
     HttpRequest request = post(url).ignoreCloseExceptions(false);
     Map<String, List<String>> headers = request.send("hello").headers();
@@ -2931,14 +3082,15 @@ public class HttpRequestTest extends ServerTestCase {
   @Test
   public void sendDateHeaderWithoutCode() throws Exception {
     final AtomicReference<String> body = new AtomicReference<String>();
-    String url = setUp(new RequestHandler() {
+    handler = new RequestHandler() {
 
+      @Override
       public void handle(Request request, HttpServletResponse response) {
         body.set(new String(read()));
         response.setDateHeader("Date", 1000);
         response.setStatus(HTTP_OK);
       }
-    });
+    };
 
     HttpRequest request = post(url).ignoreCloseExceptions(false);
     assertEquals(1000, request.send("hello").date());
@@ -2954,14 +3106,15 @@ public class HttpRequestTest extends ServerTestCase {
   @Test
   public void sendIntHeaderWithoutCode() throws Exception {
     final AtomicReference<String> body = new AtomicReference<String>();
-    String url = setUp(new RequestHandler() {
+    handler = new RequestHandler() {
 
+      @Override
       public void handle(Request request, HttpServletResponse response) {
         body.set(new String(read()));
         response.setIntHeader("Width", 9876);
         response.setStatus(HTTP_OK);
       }
-    });
+    };
 
     HttpRequest request = post(url).ignoreCloseExceptions(false);
     assertEquals(9876, request.send("hello").intHeader("Width"));
