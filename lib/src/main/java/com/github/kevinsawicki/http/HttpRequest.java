@@ -1588,6 +1588,16 @@ public class HttpRequest {
   }
 
   /**
+   * Is the response body empty?
+   *
+   * @return true if the Content-Length response header is 0, false otherwise
+   * @throws HttpRequestException
+   */
+  public boolean isBodyEmpty() throws HttpRequestException {
+    return contentLength() == 0;
+  }
+
+  /**
    * Get response as byte array
    *
    * @return byte array

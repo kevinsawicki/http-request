@@ -190,6 +190,7 @@ public class HttpRequestTest extends ServerTestCase {
     assertNotNull(request.toString());
     assertFalse(request.toString().length() == 0);
     assertEquals(request, request.disconnect());
+    assertTrue(request.isBodyEmpty());
   }
 
   /**
@@ -809,6 +810,7 @@ public class HttpRequestTest extends ServerTestCase {
     assertEquals(HTTP_OK, request.code());
     assertEquals("hello", request.body());
     assertEquals("hello".getBytes().length, request.contentLength());
+    assertFalse(request.isBodyEmpty());
   }
 
   /**
