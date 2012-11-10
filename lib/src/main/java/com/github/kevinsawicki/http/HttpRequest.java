@@ -2297,7 +2297,7 @@ public class HttpRequest {
   }
 
   /**
-   * Get the 'Content-Type' header from the response
+   * Get the 'Content-Length' header from the response
    *
    * @return response header value
    */
