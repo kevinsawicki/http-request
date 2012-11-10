@@ -1920,7 +1920,7 @@ public class HttpRequest {
    *
    * @param name
    * @param defaultValue
-   * @return date, -1 on failures
+   * @return date, default value on failures
    * @throws HttpRequestException
    */
   public long dateHeader(final String name, final long defaultValue)
