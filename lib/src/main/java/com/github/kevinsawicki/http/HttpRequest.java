@@ -1240,10 +1240,8 @@ public class HttpRequest {
    *
    * @param hosts
    */
-  public static void nonProxyHosts(String... hosts) {
-    if (hosts == null)
-      hosts = new String[0];
-    if (hosts.length > 0) {
+  public static void nonProxyHosts(final String... hosts) {
+    if (hosts != null && hosts.length > 0) {
       StringBuilder separated = new StringBuilder();
       int last = hosts.length - 1;
       for (int i = 0; i < last; i++)
