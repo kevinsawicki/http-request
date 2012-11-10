@@ -1262,20 +1262,22 @@ public class HttpRequest {
    * @return previous value
    */
   private static final String setProperty(final String name, final String value) {
+    final PrivilegedAction<String> action;
     if (value != null)
-      return AccessController.doPrivileged(new PrivilegedAction<String>() {
+      action = new PrivilegedAction<String>() {
 
         public String run() {
           return System.setProperty(name, value);
         }
-      });
+      };
     else
-      return AccessController.doPrivileged(new PrivilegedAction<String>() {
+      action = new PrivilegedAction<String>() {
 
         public String run() {
           return System.clearProperty(name);
         }
-      });
+      };
+    return AccessController.doPrivileged(action);
   }
 
   private final HttpURLConnection connection;
