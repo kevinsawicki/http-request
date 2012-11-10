@@ -1233,8 +1233,9 @@ public class HttpRequest {
   }
 
   /**
-   * Set the 'http.nonProxyHosts' properties to the given host values. Hosts
-   * will be separated by a '|' character.
+   * Set the 'http.nonProxyHosts' property to the given host values.
+   * <p>
+   * Hosts will be separated by a '|' character.
    * <p>
    * This setting will apply to requests.
    *
