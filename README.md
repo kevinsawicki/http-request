@@ -19,6 +19,11 @@ Javadocs are available [here](http://kevinsawicki.github.com/http-request/apidoc
 
 ## FAQ
 
+### Who uses this?
+
+See [here](https://github.com/kevinsawicki/http-request/wiki/Used-By) for a
+list of known projects using this library.
+
 ### Why was this written?
 
 This library was written to make HTTP requests simple and easy when using a `HttpURLConnection`.
