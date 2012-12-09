@@ -2801,13 +2801,14 @@ public class HttpRequest {
    * @return this request
    * @throws HttpRequestException
    */
-  public HttpRequest form(final Object name, final Object value,
-      final String charset) throws HttpRequestException {
+  public HttpRequest form(final Object name, final Object value, String charset)
+      throws HttpRequestException {
     final boolean first = !form;
     if (first) {
       contentType(CONTENT_TYPE_FORM, charset);
       form = true;
     }
+    charset = getValidCharset(charset);
     try {
       openOutput();
       if (!first)
