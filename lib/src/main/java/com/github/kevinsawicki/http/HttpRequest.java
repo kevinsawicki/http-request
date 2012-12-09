@@ -232,7 +232,7 @@ public class HttpRequest {
   private static HostnameVerifier TRUSTED_VERIFIER;
 
   private static String getValidCharset(final String charset) {
-    if (charset != null)
+    if (charset != null && charset.length() > 0)
       return charset;
     else
       return CHARSET_UTF8;
@@ -2281,7 +2281,7 @@ public class HttpRequest {
    * @return this request
    */
   public HttpRequest contentType(final String value, final String charset) {
-    if (charset != null) {
+    if (charset != null && charset.length() > 0) {
       final String separator = "; " + PARAM_CHARSET + '=';
       return header(HEADER_CONTENT_TYPE, value + separator + charset);
     } else
