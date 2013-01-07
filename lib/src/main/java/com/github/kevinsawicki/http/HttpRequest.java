@@ -2474,12 +2474,23 @@ public class HttpRequest {
    */
   protected HttpRequest writePartHeader(final String name, final String filename)
       throws IOException {
-    final StringBuilder partBuffer = new StringBuilder();
-    partBuffer.append("form-data; name=\"").append(name);
-    if (filename != null)
-      partBuffer.append("\"; filename=\"").append(filename);
-    partBuffer.append('"');
-    return partHeader("Content-Disposition", partBuffer.toString());
+      return writePartHeader(name, filename, null);
+  }
+
+  protected HttpRequest writePartHeader(final String name, final String filename,
+      final String type) throws IOException {
+      final StringBuilder partBuffer = new StringBuilder();
+      partBuffer.append("form-data; name=\"").append(name);
+      if (filename != null)
+        partBuffer.append("\"; filename=\"").append(filename);
+      partBuffer.append('"');
+      if (type == null) {
+        partHeader("Content-Disposition", partBuffer.toString());
+      } else {
+        partHeader("Content-Disposition", partBuffer.toString())
+          .partHeader(HEADER_CONTENT_TYPE, type);
+      }
+      return send("\r\n");
   }
 
   /**
@@ -2565,13 +2576,18 @@ public class HttpRequest {
    */
   public HttpRequest part(final String name, final String filename,
       final File part) throws HttpRequestException {
+      return part(name, filename, null, part);
+  }
+
+  public HttpRequest part(final String name, final String filename,
+      final String type, final File part) throws HttpRequestException {
     final InputStream stream;
     try {
       stream = new BufferedInputStream(new FileInputStream(part));
     } catch (IOException e) {
       throw new HttpRequestException(e);
     }
-    return part(name, filename, stream);
+    return part(name, filename, type, stream);
   }
 
   /**
@@ -2584,7 +2600,7 @@ public class HttpRequest {
    */
   public HttpRequest part(final String name, final InputStream part)
       throws HttpRequestException {
-    return part(name, null, part);
+    return part(name, null, null, part);
   }
 
   /**
@@ -2597,10 +2613,10 @@ public class HttpRequest {
    * @throws HttpRequestException
    */
   public HttpRequest part(final String name, final String filename,
-      final InputStream part) throws HttpRequestException {
+      final String type, final InputStream part) throws HttpRequestException {
     try {
       startPart();
-      writePartHeader(name, filename);
+      writePartHeader(name, filename, type);
       copy(part, output);
     } catch (IOException e) {
       throw new HttpRequestException(e);
@@ -2618,7 +2634,7 @@ public class HttpRequest {
    */
   public HttpRequest partHeader(final String name, final String value)
       throws HttpRequestException {
-    return send(name).send(": ").send(value).send("\r\n\r\n");
+    return send(name).send(": ").send(value).send("\r\n");	// so we can concat other headers.
   }
 
   /**
