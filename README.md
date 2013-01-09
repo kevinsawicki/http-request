@@ -1,3 +1,9 @@
+This is a fork from [kevinsawicki/http-request](https://github.com/kevinsawicki/http-request). I use it to interact with RESTful server, and made some improvements:
+
+* multipart post: allow sending content type part header.
+
+Below is original author's README.
+
 # Http Request
 
 A simple convenience library for using a [HttpURLConnection](http://download.oracle.com/javase/6/docs/api/java/net/HttpURLConnection.html)
