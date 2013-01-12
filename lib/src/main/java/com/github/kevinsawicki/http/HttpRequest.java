@@ -2521,9 +2521,24 @@ public class HttpRequest {
    */
   public HttpRequest part(final String name, final String filename,
       final String part) throws HttpRequestException {
+    return part(name, filename, null, part);
+  }
+
+  /**
+   * Write part of a multipart request to the request body
+   *
+   * @param name
+   * @param filename
+   * @param type
+   * @param part
+   * @return this request
+   * @throws HttpRequestException
+   */
+  public HttpRequest part(final String name, final String filename,
+      final String type, final String part) throws HttpRequestException {
     try {
       startPart();
-      writePartHeader(name, filename);
+      writePartHeader(name, filename, type);
       output.write(part);
     } catch (IOException e) {
       throw new HttpRequestException(e);
