@@ -2482,20 +2482,20 @@ public class HttpRequest {
    *
    * @param name
    * @param filename
-   * @param type
+   * @param contentType
    * @return this request
    * @throws IOException
    */
   protected HttpRequest writePartHeader(final String name,
-      final String filename, final String type) throws IOException {
+      final String filename, final String contentType) throws IOException {
     final StringBuilder partBuffer = new StringBuilder();
     partBuffer.append("form-data; name=\"").append(name);
     if (filename != null)
       partBuffer.append("\"; filename=\"").append(filename);
     partBuffer.append('"');
     partHeader("Content-Disposition", partBuffer.toString());
-    if (type != null)
-      partHeader(HEADER_CONTENT_TYPE, type);
+    if (contentType != null)
+      partHeader(HEADER_CONTENT_TYPE, contentType);
     return send("\r\n");
   }
 
@@ -2529,16 +2529,17 @@ public class HttpRequest {
    *
    * @param name
    * @param filename
-   * @param type
+   * @param contentType
+   *          value of the Content-Type part header
    * @param part
    * @return this request
    * @throws HttpRequestException
    */
   public HttpRequest part(final String name, final String filename,
-      final String type, final String part) throws HttpRequestException {
+      final String contentType, final String part) throws HttpRequestException {
     try {
       startPart();
-      writePartHeader(name, filename, type);
+      writePartHeader(name, filename, contentType);
       output.write(part);
     } catch (IOException e) {
       throw new HttpRequestException(e);
@@ -2605,20 +2606,21 @@ public class HttpRequest {
    *
    * @param name
    * @param filename
-   * @param type
+   * @param contentType
+   *          value of the Content-Type part header
    * @param part
    * @return this request
    * @throws HttpRequestException
    */
   public HttpRequest part(final String name, final String filename,
-      final String type, final File part) throws HttpRequestException {
+      final String contentType, final File part) throws HttpRequestException {
     final InputStream stream;
     try {
       stream = new BufferedInputStream(new FileInputStream(part));
     } catch (IOException e) {
       throw new HttpRequestException(e);
     }
-    return part(name, filename, type, stream);
+    return part(name, filename, contentType, stream);
   }
 
   /**
@@ -2639,16 +2641,18 @@ public class HttpRequest {
    *
    * @param name
    * @param filename
-   * @param type
+   * @param contentType
+   *          value of the Content-Type part header
    * @param part
    * @return this request
    * @throws HttpRequestException
    */
   public HttpRequest part(final String name, final String filename,
-      final String type, final InputStream part) throws HttpRequestException {
+      final String contentType, final InputStream part)
+      throws HttpRequestException {
     try {
       startPart();
-      writePartHeader(name, filename, type);
+      writePartHeader(name, filename, contentType);
       copy(part, output);
     } catch (IOException e) {
       throw new HttpRequestException(e);
