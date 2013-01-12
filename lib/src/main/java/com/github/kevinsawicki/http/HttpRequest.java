@@ -2493,12 +2493,9 @@ public class HttpRequest {
     if (filename != null)
       partBuffer.append("\"; filename=\"").append(filename);
     partBuffer.append('"');
-    if (type == null) {
-      partHeader("Content-Disposition", partBuffer.toString());
-    } else {
-      partHeader("Content-Disposition", partBuffer.toString()).partHeader(
-          HEADER_CONTENT_TYPE, type);
-    }
+    partHeader("Content-Disposition", partBuffer.toString());
+    if (type != null)
+      partHeader(HEADER_CONTENT_TYPE, type);
     return send("\r\n");
   }
 
