@@ -2477,6 +2477,15 @@ public class HttpRequest {
     return writePartHeader(name, filename, null);
   }
 
+  /**
+   * Write part header
+   *
+   * @param name
+   * @param filename
+   * @param type
+   * @return this request
+   * @throws IOException
+   */
   protected HttpRequest writePartHeader(final String name,
       final String filename, final String type) throws IOException {
     final StringBuilder partBuffer = new StringBuilder();
@@ -2579,6 +2588,16 @@ public class HttpRequest {
     return part(name, filename, null, part);
   }
 
+  /**
+   * Write part of a multipart request to the request body
+   *
+   * @param name
+   * @param filename
+   * @param type
+   * @param part
+   * @return this request
+   * @throws HttpRequestException
+   */
   public HttpRequest part(final String name, final String filename,
       final String type, final File part) throws HttpRequestException {
     final InputStream stream;
@@ -2608,6 +2627,7 @@ public class HttpRequest {
    *
    * @param name
    * @param filename
+   * @param type
    * @param part
    * @return this request
    * @throws HttpRequestException
