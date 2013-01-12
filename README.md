@@ -1,7 +1,7 @@
 # Http Request
 
 A simple convenience library for using a [HttpURLConnection](http://download.oracle.com/javase/6/docs/api/java/net/HttpURLConnection.html)
-to make requests and access the response. 
+to make requests and access the response.
 
 ## Usage
 
@@ -12,7 +12,7 @@ The http-request library is available from [Maven Central](http://search.maven.o
   <groupId>com.github.kevinsawicki</groupId>
   <artifactId>http-request</artifactId>
   <version>3.1</version>
-</dependency> 
+</dependency>
 ```
 
 Javadocs are available [here](http://kevinsawicki.github.com/http-request/apidocs/index.html).
@@ -72,6 +72,13 @@ System.out.println("Response was: " + response);
 HttpRequest.get("http://google.com").receive(System.out);
 ```
 
+### Adding query parameters
+
+```java
+HttpRequest request = HttpRequest.get("http://google.com", true, "q", "baseball gloves", "size", "100");
+System.out.println(request.toString()); // GET http://google.com?q=baseball%20gloves&size=100
+```
+
 ### Working with request/response headers
 
 ```java
@@ -79,7 +86,7 @@ String contentType = HttpRequest.get("http://google.com")
                                 .accept("application/json") //Sets request header
                                 .contentType(); //Gets response header
 System.out.println("Response content type was " + contentType);
-```                  
+```
 
 ### Perform a POST request with some data and get the status of the response
 
