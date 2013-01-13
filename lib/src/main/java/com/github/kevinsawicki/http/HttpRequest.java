@@ -225,6 +225,8 @@ public class HttpRequest {
 
   private static final String ENCODING_GZIP = "gzip";
 
+  private static final String CRLF = "\r\n";
+
   private static final String[] EMPTY_STRINGS = new String[0];
 
   private static SSLSocketFactory TRUSTED_FACTORY;
@@ -2403,7 +2405,7 @@ public class HttpRequest {
     if (output == null)
       return this;
     if (multipart)
-      output.write("\r\n--" + BOUNDARY + "--\r\n");
+      output.write(CRLF + "--" + BOUNDARY + "--" + CRLF);
     if (ignoreCloseExceptions)
       try {
         output.close();
@@ -2458,9 +2460,9 @@ public class HttpRequest {
     if (!multipart) {
       multipart = true;
       contentType(CONTENT_TYPE_MULTIPART).openOutput();
-      output.write("--" + BOUNDARY + "\r\n");
+      output.write("--" + BOUNDARY + CRLF);
     } else
-      output.write("\r\n--" + BOUNDARY + "\r\n");
+      output.write(CRLF + "--" + BOUNDARY + CRLF);
     return this;
   }
 
@@ -2496,7 +2498,7 @@ public class HttpRequest {
     partHeader("Content-Disposition", partBuffer.toString());
     if (contentType != null)
       partHeader(HEADER_CONTENT_TYPE, contentType);
-    return send("\r\n");
+    return send(CRLF);
   }
 
   /**
@@ -2670,7 +2672,7 @@ public class HttpRequest {
    */
   public HttpRequest partHeader(final String name, final String value)
       throws HttpRequestException {
-    return send(name).send(": ").send(value).send("\r\n");
+    return send(name).send(": ").send(value).send(CRLF);
   }
 
   /**
