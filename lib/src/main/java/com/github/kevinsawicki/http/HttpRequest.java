@@ -95,6 +95,21 @@ public class HttpRequest {
   public static final String CHARSET_UTF8 = "UTF-8";
 
   /**
+   * 'application/x-www-form-urlencoded' content type header value
+   */
+  public static final String CONTENT_TYPE_FORM = "application/x-www-form-urlencoded";
+
+  /**
+   * 'application/json' content type header value
+   */
+  public static final String CONTENT_TYPE_JSON = "application/json";
+
+  /**
+   * 'gzip' encoding header value
+   */
+  public static final String ENCODING_GZIP = "gzip";
+
+  /**
    * 'Accept' header name
    */
   public static final String HEADER_ACCEPT = "Accept";
@@ -218,12 +233,6 @@ public class HttpRequest {
 
   private static final String CONTENT_TYPE_MULTIPART = "multipart/form-data; boundary="
       + BOUNDARY;
-
-  private static final String CONTENT_TYPE_FORM = "application/x-www-form-urlencoded";
-
-  private static final String CONTENT_TYPE_JSON = "application/json";
-
-  private static final String ENCODING_GZIP = "gzip";
 
   private static final String CRLF = "\r\n";
 
