@@ -806,7 +806,7 @@ public class HttpRequest {
    *          name/value pairs
    * @return URL with appended query params
    */
-  public static String append(final CharSequence url, final String... params) {
+  public static String append(final CharSequence url, final Object... params) {
     final String baseUrl = url.toString();
     if (params == null || params.length == 0)
       return baseUrl;
@@ -898,7 +898,7 @@ public class HttpRequest {
    * @return request
    */
   public static HttpRequest get(final CharSequence baseUrl,
-      final boolean encode, final String... params) {
+      final boolean encode, final Object... params) {
     String url = append(baseUrl, params);
     return get(encode ? encode(url) : url);
   }
@@ -962,7 +962,7 @@ public class HttpRequest {
    * @return request
    */
   public static HttpRequest post(final CharSequence baseUrl,
-      final boolean encode, final String... params) {
+      final boolean encode, final Object... params) {
     String url = append(baseUrl, params);
     return post(encode ? encode(url) : url);
   }
@@ -1026,7 +1026,7 @@ public class HttpRequest {
    * @return request
    */
   public static HttpRequest put(final CharSequence baseUrl,
-      final boolean encode, final String... params) {
+      final boolean encode, final Object... params) {
     String url = append(baseUrl, params);
     return put(encode ? encode(url) : url);
   }
@@ -1090,7 +1090,7 @@ public class HttpRequest {
    * @return request
    */
   public static HttpRequest delete(final CharSequence baseUrl,
-      final boolean encode, final String... params) {
+      final boolean encode, final Object... params) {
     String url = append(baseUrl, params);
     return delete(encode ? encode(url) : url);
   }
@@ -1154,7 +1154,7 @@ public class HttpRequest {
    * @return request
    */
   public static HttpRequest head(final CharSequence baseUrl,
-      final boolean encode, final String... params) {
+      final boolean encode, final Object... params) {
     String url = append(baseUrl, params);
     return head(encode ? encode(url) : url);
   }

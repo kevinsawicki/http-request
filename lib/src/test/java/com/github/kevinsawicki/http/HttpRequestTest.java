@@ -2990,7 +2990,7 @@ public class HttpRequestTest extends ServerTestCase {
   @Test
   public void appendNullVaragsQueryParams() throws Exception {
     assertEquals("http://test.com/1",
-        HttpRequest.append("http://test.com/1", (String[]) null));
+        HttpRequest.append("http://test.com/1", (Object[]) null));
   }
 
   /**
@@ -3014,7 +3014,7 @@ public class HttpRequestTest extends ServerTestCase {
   @Test
   public void appendEmptyVarargsQueryParams() throws Exception {
     assertEquals("http://test.com/1",
-        HttpRequest.append("http://test.com/1", new String[0]));
+        HttpRequest.append("http://test.com/1", new Object[0]));
   }
 
   /**
