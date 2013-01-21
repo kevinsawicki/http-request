@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.github.kevinsawicki</groupId>
   <artifactId>http-request-parent</artifactId>
-  <version>3.2-SNAPSHOT</version>
+  <version>4.1-SNAPSHOT</version>
   <packaging>pom</packaging>
   <modules>
     <module>lib</module>

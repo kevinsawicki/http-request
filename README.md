@@ -11,7 +11,7 @@ The http-request library is available from [Maven Central](http://search.maven.o
 <dependency>
   <groupId>com.github.kevinsawicki</groupId>
   <artifactId>http-request</artifactId>
-  <version>3.1</version>
+  <version>4.0</version>
 </dependency>
 ```
 
@@ -75,7 +75,7 @@ HttpRequest.get("http://google.com").receive(System.out);
 ### Adding query parameters
 
 ```java
-HttpRequest request = HttpRequest.get("http://google.com", true, "q", "baseball gloves", "size", "100");
+HttpRequest request = HttpRequest.get("http://google.com", true, 'q', "baseball gloves", "size", 100);
 System.out.println(request.toString()); // GET http://google.com?q=baseball%20gloves&size=100
 ```
 
