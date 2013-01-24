@@ -1329,11 +1329,30 @@ public class HttpRequest {
    * @param url
    * @param method
    * @throws HttpRequestException
+   * @deprecated use {@link new(URI , String )} instead.
    */
+  @Deprecated
   public HttpRequest(final URL url, final String method)
       throws HttpRequestException {
     try {
       connection = (HttpURLConnection) url.openConnection();
+      connection.setRequestMethod(method);
+    } catch (IOException e) {
+      throw new HttpRequestException(e);
+    }
+  }
+
+  /**
+   * Create HTTP connection wrapper
+   *
+   * @param uri
+   * @param method
+   * @throws HttpRequestException
+   */
+  public HttpRequest(final URI uri, final String method)
+          throws HttpRequestException {
+    try {
+      connection = (HttpURLConnection) uri.toURL().openConnection();
       connection.setRequestMethod(method);
     } catch (IOException e) {
       throw new HttpRequestException(e);
