@@ -1342,7 +1342,7 @@ public class HttpRequest {
 
   @Override
   public String toString() {
-    return connection.getRequestMethod() + ' ' + connection.getURL();
+    return method() + ' ' + url();
   }
 
   /**
