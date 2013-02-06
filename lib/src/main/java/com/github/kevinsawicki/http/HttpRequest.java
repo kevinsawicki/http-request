@@ -2932,4 +2932,13 @@ public class HttpRequest {
           .setHostnameVerifier(getTrustedVerifier());
     return this;
   }
+
+  /**
+   * Get the {@link URL} of this request's connection
+   *
+   * @return request URL
+   */
+  public URL url() {
+    return connection.getURL();
+  }
 }

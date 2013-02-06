@@ -191,6 +191,7 @@ public class HttpRequestTest extends ServerTestCase {
     assertFalse(request.toString().length() == 0);
     assertEquals(request, request.disconnect());
     assertTrue(request.isBodyEmpty());
+    assertEquals(request.url().toString(), url);
   }
 
   /**
