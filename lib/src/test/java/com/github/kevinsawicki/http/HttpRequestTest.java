@@ -192,6 +192,7 @@ public class HttpRequestTest extends ServerTestCase {
     assertEquals(request, request.disconnect());
     assertTrue(request.isBodyEmpty());
     assertEquals(request.url().toString(), url);
+    assertEquals("GET", request.method());
   }
 
   /**
@@ -312,6 +313,7 @@ public class HttpRequestTest extends ServerTestCase {
     assertFalse(request.notFound());
     assertEquals("DELETE", method.get());
     assertEquals("", request.body());
+    assertEquals("DELETE", request.method());
   }
 
   /**

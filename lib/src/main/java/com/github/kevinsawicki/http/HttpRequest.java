@@ -2941,4 +2941,13 @@ public class HttpRequest {
   public URL url() {
     return connection.getURL();
   }
+
+  /**
+   * Get the HTTP method of this request
+   *
+   * @return method
+   */
+  public String method() {
+    return connection.getRequestMethod();
+  }
 }
