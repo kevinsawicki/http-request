@@ -857,9 +857,22 @@ public class HttpRequest {
    * @param url
    * @return request
    * @throws HttpRequestException
+   * @deprecated use @link{get(URI)}
    */
+  @Deprecated
   public static HttpRequest get(final URL url) throws HttpRequestException {
     return new HttpRequest(url, METHOD_GET);
+  }
+
+  /**
+   * Start a 'GET' request to the given URL
+   *
+   * @param uri
+   * @return request
+   * @throws HttpRequestException
+   */
+  public static HttpRequest get(final URI uri) throws HttpRequestException {
+    return new HttpRequest(uri, METHOD_GET);
   }
 
   /**
@@ -921,9 +934,22 @@ public class HttpRequest {
    * @param url
    * @return request
    * @throws HttpRequestException
+   * @deprecated use @link{post(URI)} instead
    */
+  @Deprecated
   public static HttpRequest post(final URL url) throws HttpRequestException {
     return new HttpRequest(url, METHOD_POST);
+  }
+
+  /**
+   * Start a 'POST' request to the given URL
+   *
+   * @param uri
+   * @return request
+   * @throws HttpRequestException
+   */
+  public static HttpRequest post(final URI uri) throws HttpRequestException {
+    return new HttpRequest(uri, METHOD_POST);
   }
 
   /**
@@ -985,9 +1011,22 @@ public class HttpRequest {
    * @param url
    * @return request
    * @throws HttpRequestException
+   * @deprecated use @link{put(URI)} instead
    */
+  @Deprecated
   public static HttpRequest put(final URL url) throws HttpRequestException {
     return new HttpRequest(url, METHOD_PUT);
+  }
+
+  /**
+   * Start a 'PUT' request to the given URL
+   *
+   * @param uri
+   * @return request
+   * @throws HttpRequestException
+   */
+  public static HttpRequest put(final URI uri) throws HttpRequestException {
+    return new HttpRequest(uri, METHOD_PUT);
   }
 
   /**
@@ -1049,9 +1088,22 @@ public class HttpRequest {
    * @param url
    * @return request
    * @throws HttpRequestException
+   * @deprecated use @link{delete(URI)} instead
    */
+  @Deprecated
   public static HttpRequest delete(final URL url) throws HttpRequestException {
     return new HttpRequest(url, METHOD_DELETE);
+  }
+
+  /**
+   * Start a 'DELETE' request to the given URL
+   *
+   * @param uri
+   * @return request
+   * @throws HttpRequestException
+   */
+  public static HttpRequest delete(final URI uri) throws HttpRequestException {
+    return new HttpRequest(uri, METHOD_DELETE);
   }
 
   /**
@@ -1113,9 +1165,22 @@ public class HttpRequest {
    * @param url
    * @return request
    * @throws HttpRequestException
+   * @deprecated use @link{delete(URI)} instead
    */
+  @Deprecated
   public static HttpRequest head(final URL url) throws HttpRequestException {
     return new HttpRequest(url, METHOD_HEAD);
+  }
+
+  /**
+   * Start a 'HEAD' request to the given URL
+   *
+   * @param uri
+   * @return request
+   * @throws HttpRequestException
+   */
+  public static HttpRequest head(final URI uri) throws HttpRequestException {
+    return new HttpRequest(uri, METHOD_HEAD);
   }
 
   /**
@@ -1177,9 +1242,22 @@ public class HttpRequest {
    * @param url
    * @return request
    * @throws HttpRequestException
+   * @deprecated use @link{options(URI)} instead
    */
+  @Deprecated
   public static HttpRequest options(final URL url) throws HttpRequestException {
     return new HttpRequest(url, METHOD_OPTIONS);
+  }
+
+  /**
+   * Start an 'OPTIONS' request to the given URL
+   *
+   * @param uri
+   * @return request
+   * @throws HttpRequestException
+   */
+  public static HttpRequest options(final URI uri) throws HttpRequestException {
+    return new HttpRequest(uri, METHOD_OPTIONS);
   }
 
   /**
@@ -1200,9 +1278,22 @@ public class HttpRequest {
    * @param url
    * @return request
    * @throws HttpRequestException
+   * @deprecated use @link{trace(URI)} instead
    */
+  @Deprecated
   public static HttpRequest trace(final URL url) throws HttpRequestException {
     return new HttpRequest(url, METHOD_TRACE);
+  }
+
+  /**
+   * Start a 'TRACE' request to the given URL
+   *
+   * @param uri
+   * @return request
+   * @throws HttpRequestException
+   */
+  public static HttpRequest trace(final URI uri) throws HttpRequestException {
+    return new HttpRequest(uri, METHOD_TRACE);
   }
 
   /**
@@ -1329,11 +1420,30 @@ public class HttpRequest {
    * @param url
    * @param method
    * @throws HttpRequestException
+   * @deprecated use {@link new(URI , String )} instead.
    */
+  @Deprecated
   public HttpRequest(final URL url, final String method)
       throws HttpRequestException {
     try {
       connection = (HttpURLConnection) url.openConnection();
+      connection.setRequestMethod(method);
+    } catch (IOException e) {
+      throw new HttpRequestException(e);
+    }
+  }
+
+  /**
+   * Create HTTP connection wrapper
+   *
+   * @param uri
+   * @param method
+   * @throws HttpRequestException
+   */
+  public HttpRequest(final URI uri, final String method)
+          throws HttpRequestException {
+    try {
+      connection = (HttpURLConnection) uri.toURL().openConnection();
       connection.setRequestMethod(method);
     } catch (IOException e) {
       throw new HttpRequestException(e);

@@ -21,64 +21,32 @@
  */
 package com.github.kevinsawicki.http;
 
-import static com.github.kevinsawicki.http.HttpRequest.CHARSET_UTF8;
-import static com.github.kevinsawicki.http.HttpRequest.delete;
-import static com.github.kevinsawicki.http.HttpRequest.encode;
-import static com.github.kevinsawicki.http.HttpRequest.get;
-import static com.github.kevinsawicki.http.HttpRequest.head;
-import static com.github.kevinsawicki.http.HttpRequest.options;
-import static com.github.kevinsawicki.http.HttpRequest.post;
-import static com.github.kevinsawicki.http.HttpRequest.put;
-import static com.github.kevinsawicki.http.HttpRequest.trace;
-import static java.net.HttpURLConnection.HTTP_BAD_REQUEST;
-import static java.net.HttpURLConnection.HTTP_CREATED;
-import static java.net.HttpURLConnection.HTTP_INTERNAL_ERROR;
-import static java.net.HttpURLConnection.HTTP_NOT_MODIFIED;
-import static java.net.HttpURLConnection.HTTP_OK;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import com.github.kevinsawicki.http.HttpRequest.*;
 
-import com.github.kevinsawicki.http.HttpRequest.HttpRequestException;
-
-import java.io.BufferedReader;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.PrintStream;
-import java.io.StringWriter;
-import java.io.UnsupportedEncodingException;
-import java.io.Writer;
-import java.net.URL;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import javax.net.ssl.HttpsURLConnection;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.*;
+import java.net.URI;
+import java.util.*;
 import java.util.Map.Entry;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.zip.GZIPOutputStream;
 
-import javax.net.ssl.HttpsURLConnection;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.util.B64Code;
 import org.junit.After;
 import org.junit.BeforeClass;
 import org.junit.Test;
+
+import static com.github.kevinsawicki.http.HttpRequest.*;
+import static java.net.HttpURLConnection.*;
+import static org.junit.Assert.*;
+
+//import java.net.URL;
 
 /**
  * Unit tests of {@link HttpRequest}
@@ -211,7 +179,7 @@ public class HttpRequestTest extends ServerTestCase {
         response.setStatus(HTTP_OK);
       }
     };
-    HttpRequest request = get(new URL(url));
+    HttpRequest request = get(new URI(url));
     assertNotNull(request.getConnection());
     int code = request.code();
     assertTrue(request.ok());
@@ -332,7 +300,7 @@ public class HttpRequestTest extends ServerTestCase {
         response.setStatus(HTTP_OK);
       }
     };
-    HttpRequest request = delete(new URL(url));
+    HttpRequest request = delete(new URI(url));
     assertNotNull(request.getConnection());
     assertTrue(request.ok());
     assertFalse(request.notFound());
@@ -380,7 +348,7 @@ public class HttpRequestTest extends ServerTestCase {
         response.setStatus(HTTP_OK);
       }
     };
-    HttpRequest request = options(new URL(url));
+    HttpRequest request = options(new URI(url));
     assertNotNull(request.getConnection());
     assertTrue(request.ok());
     assertFalse(request.notFound());
@@ -428,7 +396,7 @@ public class HttpRequestTest extends ServerTestCase {
         response.setStatus(HTTP_OK);
       }
     };
-    HttpRequest request = head(new URL(url));
+    HttpRequest request = head(new URI(url));
     assertNotNull(request.getConnection());
     assertTrue(request.ok());
     assertFalse(request.notFound());
@@ -476,7 +444,7 @@ public class HttpRequestTest extends ServerTestCase {
         response.setStatus(HTTP_OK);
       }
     };
-    HttpRequest request = put(new URL(url));
+    HttpRequest request = put(new URI(url));
     assertNotNull(request.getConnection());
     assertTrue(request.ok());
     assertFalse(request.notFound());
@@ -524,7 +492,7 @@ public class HttpRequestTest extends ServerTestCase {
         response.setStatus(HTTP_OK);
       }
     };
-    HttpRequest request = trace(new URL(url));
+    HttpRequest request = trace(new URI(url));
     assertNotNull(request.getConnection());
     assertTrue(request.ok());
     assertFalse(request.notFound());
@@ -572,7 +540,7 @@ public class HttpRequestTest extends ServerTestCase {
         response.setStatus(HTTP_CREATED);
       }
     };
-    HttpRequest request = post(new URL(url));
+    HttpRequest request = post(new URI(url));
     int code = request.code();
     assertEquals("POST", method.get());
     assertFalse(request.ok());
