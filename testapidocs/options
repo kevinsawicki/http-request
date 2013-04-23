@@ -1,5 +1,5 @@
 -classpath
-'/Users/kevin/repos/http-request/lib/target/classes:/Users/kevin/repos/http-request/lib/target/test-classes:/Users/kevin/.m2/repository/org/eclipse/jetty/jetty-continuation/8.0.3.v20111011/jetty-continuation-8.0.3.v20111011.jar:/Users/kevin/.m2/repository/org/eclipse/jetty/jetty-util/8.0.3.v20111011/jetty-util-8.0.3.v20111011.jar:/Users/kevin/.m2/repository/org/mortbay/jetty/servlet-api/3.0.20100224/servlet-api-3.0.20100224.jar:/Users/kevin/.m2/repository/org/eclipse/jetty/jetty-io/8.0.3.v20111011/jetty-io-8.0.3.v20111011.jar:/Users/kevin/.m2/repository/org/eclipse/jetty/jetty-server/8.0.3.v20111011/jetty-server-8.0.3.v20111011.jar:/Users/kevin/.m2/repository/junit/junit/4.8/junit-4.8.jar:/Users/kevin/.m2/repository/org/eclipse/jetty/jetty-http/8.0.3.v20111011/jetty-http-8.0.3.v20111011.jar'
+'/Users/kevin/repos/http-request/lib/target/classes:/Users/kevin/repos/http-request/lib/target/test-classes:/Users/kevin/.m2/repository/org/eclipse/jetty/jetty-continuation/8.0.3.v20111011/jetty-continuation-8.0.3.v20111011.jar:/Users/kevin/.m2/repository/org/hamcrest/hamcrest-core/1.1/hamcrest-core-1.1.jar:/Users/kevin/.m2/repository/org/eclipse/jetty/jetty-util/8.0.3.v20111011/jetty-util-8.0.3.v20111011.jar:/Users/kevin/.m2/repository/org/mortbay/jetty/servlet-api/3.0.20100224/servlet-api-3.0.20100224.jar:/Users/kevin/.m2/repository/org/eclipse/jetty/jetty-io/8.0.3.v20111011/jetty-io-8.0.3.v20111011.jar:/Users/kevin/.m2/repository/org/eclipse/jetty/jetty-server/8.0.3.v20111011/jetty-server-8.0.3.v20111011.jar:/Users/kevin/.m2/repository/junit/junit/4.10/junit-4.10.jar:/Users/kevin/.m2/repository/org/eclipse/jetty/jetty-http/8.0.3.v20111011/jetty-http-8.0.3.v20111011.jar'
 -encoding
 'UTF-8'
 -protected
@@ -7,7 +7,7 @@
 '/Users/kevin/repos/http-request/lib/src/test/java'
 -author
 -bottom
-'Copyright &#169; 2011-2012. All Rights Reserved.'
+'Copyright &#169; 2011-2013. All Rights Reserved.'
 -charset
 'UTF-8'
 -d
@@ -15,7 +15,7 @@
 -docencoding
 'UTF-8'
 -doctitle
-'http-request 3.0 Test API'
+'http-request 4.2-SNAPSHOT Test API'
 -link
 '../apidocs'
 -linkoffline
@@ -23,4 +23,4 @@
 -use
 -version
 -windowtitle
-'http-request 3.0 Test API'
+'http-request 4.2-SNAPSHOT Test API'

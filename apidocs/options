@@ -7,7 +7,7 @@
 '/Users/kevin/repos/http-request/lib/src/main/java'
 -author
 -bottom
-'Copyright &#169; 2011-2012. All Rights Reserved.'
+'Copyright &#169; 2011-2013. All Rights Reserved.'
 -charset
 'UTF-8'
 -d
@@ -15,10 +15,10 @@
 -docencoding
 'UTF-8'
 -doctitle
-'http-request 3.0 API'
+'http-request 4.2-SNAPSHOT API'
 -linkoffline
 'http://download.oracle.com/javase/1.5.0/docs/api' '/Users/kevin/repos/http-request/lib/target/javadoc-bundle-options'
 -use
 -version
 -windowtitle
-'http-request 3.0 API'
+'http-request 4.2-SNAPSHOT API'
