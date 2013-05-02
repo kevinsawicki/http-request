@@ -41,7 +41,6 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
-
 import com.github.kevinsawicki.http.HttpRequest.HttpRequestException;
 
 import java.io.BufferedReader;
@@ -64,6 +63,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
@@ -916,6 +916,29 @@ public class HttpRequestTest extends ServerTestCase {
     assertTrue(get(url).basic("user", "p4ssw0rd").ok());
     assertEquals("user", user.get());
     assertEquals("p4ssw0rd", password.get());
+  }
+
+  /**
+   * Make a GET request with basic proxy authentication specified
+   *
+   * @throws Exception
+   */
+  @Test
+  public void basicProxyAuthentication() throws Exception {
+    final AtomicBoolean finalHostReached = new AtomicBoolean(false);
+    handler = new RequestHandler() {
+
+      @Override
+      public void handle(Request request, HttpServletResponse response) {
+        finalHostReached.set(true);
+        response.setStatus(HTTP_OK);
+      }
+    };
+    assertTrue(get(url).useProxy("localhost", proxyPort).proxyBasic("user", "p4ssw0rd").ok());
+    assertEquals("user", proxyUser.get());
+    assertEquals("p4ssw0rd", proxyPassword.get());
+    assertEquals(true, finalHostReached.get());
+    assertEquals(1, proxyHitCount.get());
   }
 
   /**

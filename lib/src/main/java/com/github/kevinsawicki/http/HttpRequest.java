@@ -49,6 +49,9 @@ import java.io.Reader;
 import java.io.UnsupportedEncodingException;
 import java.io.Writer;
 import java.net.HttpURLConnection;
+import java.net.InetSocketAddress;
+import java.net.MalformedURLException;
+import java.net.Proxy;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -128,6 +131,11 @@ public class HttpRequest {
    * 'Authorization' header name
    */
   public static final String HEADER_AUTHORIZATION = "Authorization";
+
+  /**
+   * 'Proxy-Authorization' header name
+   */
+  public static final String HEADER_PROXY_AUTHORIZATION = "Proxy-Authorization";
 
   /**
    * 'Cache-Control' header name
@@ -1292,7 +1300,11 @@ public class HttpRequest {
     return AccessController.doPrivileged(action);
   }
 
-  private final HttpURLConnection connection;
+  private HttpURLConnection _connection = null;
+
+  private final URL url;
+
+  private final String requestMethod;
 
   private RequestOutputStream output;
 
@@ -1306,6 +1318,10 @@ public class HttpRequest {
 
   private int bufferSize = 8192;
 
+  private String httpProxyHost;
+
+  private int httpProxyPort;
+
   /**
    * Create HTTP connection wrapper
    *
@@ -1316,12 +1332,13 @@ public class HttpRequest {
   public HttpRequest(final CharSequence url, final String method)
       throws HttpRequestException {
     try {
-      connection = (HttpURLConnection) new URL(url.toString()).openConnection();
-      connection.setRequestMethod(method);
-    } catch (IOException e) {
+      this.url = new URL(url.toString());
+    } catch (MalformedURLException e) {
       throw new HttpRequestException(e);
     }
+    this.requestMethod = method;
   }
+
 
   /**
    * Create HTTP connection wrapper
@@ -1332,10 +1349,27 @@ public class HttpRequest {
    */
   public HttpRequest(final URL url, final String method)
       throws HttpRequestException {
+    this.url = url;
+    this.requestMethod = method;
+  }
+
+  private Proxy createProxy() {
+    InetSocketAddress addr = new InetSocketAddress( httpProxyHost, httpProxyPort );
+    return new Proxy( Proxy.Type.HTTP, addr );
+  }
+
+  private HttpURLConnection createConnection() {
     try {
-      connection = (HttpURLConnection) url.openConnection();
-      connection.setRequestMethod(method);
-    } catch (IOException e) {
+      HttpURLConnection connection;
+      if (httpProxyHost != null) {
+        connection = (HttpURLConnection) url.openConnection(createProxy());
+      }
+      else {
+        connection = (HttpURLConnection) url.openConnection();
+      }
+      connection.setRequestMethod(requestMethod);
+      return connection;
+    }catch (IOException e) {
       throw new HttpRequestException(e);
     }
   }
@@ -1351,7 +1385,10 @@ public class HttpRequest {
    * @return connection
    */
   public HttpURLConnection getConnection() {
-    return connection;
+    if (_connection == null) {
+      _connection = createConnection();
+    }
+    return _connection;
   }
 
   /**
@@ -1387,7 +1424,7 @@ public class HttpRequest {
   public int code() throws HttpRequestException {
     try {
       closeOutput();
-      return connection.getResponseCode();
+      return getConnection().getResponseCode();
     } catch (IOException e) {
       throw new HttpRequestException(e);
     }
@@ -1476,7 +1513,7 @@ public class HttpRequest {
   public String message() throws HttpRequestException {
     try {
       closeOutput();
-      return connection.getResponseMessage();
+      return getConnection().getResponseMessage();
     } catch (IOException e) {
       throw new HttpRequestException(e);
     }
@@ -1488,7 +1525,7 @@ public class HttpRequest {
    * @return this request
    */
   public HttpRequest disconnect() {
-    connection.disconnect();
+    getConnection().disconnect();
     return this;
   }
 
@@ -1499,7 +1536,7 @@ public class HttpRequest {
    * @return this request
    */
   public HttpRequest chunk(final int size) {
-    connection.setChunkedStreamingMode(size);
+    getConnection().setChunkedStreamingMode(size);
     return this;
   }
 
@@ -1646,15 +1683,15 @@ public class HttpRequest {
     InputStream stream;
     if (code() < HTTP_BAD_REQUEST)
       try {
-        stream = connection.getInputStream();
+        stream = getConnection().getInputStream();
       } catch (IOException e) {
         throw new HttpRequestException(e);
       }
     else {
-      stream = connection.getErrorStream();
+      stream = getConnection().getErrorStream();
       if (stream == null)
         try {
-          stream = connection.getInputStream();
+          stream = getConnection().getInputStream();
         } catch (IOException e) {
           throw new HttpRequestException(e);
         }
@@ -1829,7 +1866,7 @@ public class HttpRequest {
    * @return this request
    */
   public HttpRequest readTimeout(final int timeout) {
-    connection.setReadTimeout(timeout);
+    getConnection().setReadTimeout(timeout);
     return this;
   }
 
@@ -1840,7 +1877,7 @@ public class HttpRequest {
    * @return this request
    */
   public HttpRequest connectTimeout(final int timeout) {
-    connection.setConnectTimeout(timeout);
+    getConnection().setConnectTimeout(timeout);
     return this;
   }
 
@@ -1852,7 +1889,7 @@ public class HttpRequest {
    * @return this request
    */
   public HttpRequest header(final String name, final String value) {
-    connection.setRequestProperty(name, value);
+    getConnection().setRequestProperty(name, value);
     return this;
   }
 
@@ -1900,7 +1937,7 @@ public class HttpRequest {
    */
   public String header(final String name) throws HttpRequestException {
     closeOutputQuietly();
-    return connection.getHeaderField(name);
+    return getConnection().getHeaderField(name);
   }
 
   /**
@@ -1911,7 +1948,7 @@ public class HttpRequest {
    */
   public Map<String, List<String>> headers() throws HttpRequestException {
     closeOutputQuietly();
-    return connection.getHeaderFields();
+    return getConnection().getHeaderFields();
   }
 
   /**
@@ -1938,7 +1975,7 @@ public class HttpRequest {
   public long dateHeader(final String name, final long defaultValue)
       throws HttpRequestException {
     closeOutputQuietly();
-    return connection.getHeaderFieldDate(name, defaultValue);
+    return getConnection().getHeaderFieldDate(name, defaultValue);
   }
 
   /**
@@ -1966,7 +2003,7 @@ public class HttpRequest {
   public int intHeader(final String name, final int defaultValue)
       throws HttpRequestException {
     closeOutputQuietly();
-    return connection.getHeaderFieldInt(name, defaultValue);
+    return getConnection().getHeaderFieldInt(name, defaultValue);
   }
 
   /**
@@ -2125,7 +2162,7 @@ public class HttpRequest {
    * @return this request
    */
   public HttpRequest useCaches(final boolean useCaches) {
-    connection.setUseCaches(useCaches);
+    getConnection().setUseCaches(useCaches);
     return this;
   }
 
@@ -2242,6 +2279,16 @@ public class HttpRequest {
   }
 
   /**
+   * Set the 'Proxy-Authorization' header to given value
+   *
+   * @param value
+   * @return this request
+   */
+  public HttpRequest proxyAuthorization(final String value) {
+    return header(HEADER_PROXY_AUTHORIZATION, value);
+  }
+
+  /**
    * Set the 'Authorization' header to given values in Basic authentication
    * format
    *
@@ -2254,13 +2301,25 @@ public class HttpRequest {
   }
 
   /**
+   * Set the 'Proxy-Authorization' header to given values in Basic authentication
+   * format
+   *
+   * @param name
+   * @param password
+   * @return this request
+   */
+  public HttpRequest proxyBasic(final String name, final String password) {
+    return proxyAuthorization("Basic " + Base64.encode(name + ':' + password));
+  }
+
+  /**
    * Set the 'If-Modified-Since' request header to the given value
    *
    * @param value
    * @return this request
    */
   public HttpRequest ifModifiedSince(final long value) {
-    connection.setIfModifiedSince(value);
+    getConnection().setIfModifiedSince(value);
     return this;
   }
 
@@ -2334,7 +2393,7 @@ public class HttpRequest {
    * @return this request
    */
   public HttpRequest contentLength(final int value) {
-    connection.setFixedLengthStreamingMode(value);
+    getConnection().setFixedLengthStreamingMode(value);
     return this;
   }
 
@@ -2451,10 +2510,10 @@ public class HttpRequest {
   protected HttpRequest openOutput() throws IOException {
     if (output != null)
       return this;
-    connection.setDoOutput(true);
+    getConnection().setDoOutput(true);
     final String charset = getParam(
-        connection.getRequestProperty(HEADER_CONTENT_TYPE), PARAM_CHARSET);
-    output = new RequestOutputStream(connection.getOutputStream(), charset,
+        getConnection().getRequestProperty(HEADER_CONTENT_TYPE), PARAM_CHARSET);
+    output = new RequestOutputStream(getConnection().getOutputStream(), charset,
         bufferSize);
     return this;
   }
@@ -2911,8 +2970,8 @@ public class HttpRequest {
    * @throws HttpRequestException
    */
   public HttpRequest trustAllCerts() throws HttpRequestException {
-    if (connection instanceof HttpsURLConnection)
-      ((HttpsURLConnection) connection)
+    if (getConnection() instanceof HttpsURLConnection)
+      ((HttpsURLConnection) getConnection())
           .setSSLSocketFactory(getTrustedFactory());
     return this;
   }
@@ -2927,8 +2986,8 @@ public class HttpRequest {
    * @return this request
    */
   public HttpRequest trustAllHosts() {
-    if (connection instanceof HttpsURLConnection)
-      ((HttpsURLConnection) connection)
+    if (getConnection() instanceof HttpsURLConnection)
+      ((HttpsURLConnection) getConnection())
           .setHostnameVerifier(getTrustedVerifier());
     return this;
   }
@@ -2939,7 +2998,7 @@ public class HttpRequest {
    * @return request URL
    */
   public URL url() {
-    return connection.getURL();
+    return getConnection().getURL();
   }
 
   /**
@@ -2948,6 +3007,23 @@ public class HttpRequest {
    * @return method
    */
   public String method() {
-    return connection.getRequestMethod();
+    return getConnection().getRequestMethod();
+  }
+
+  /**
+   * Configure an HTTP proxy on this connection. Use {{@link #proxyBasic(String, String)} if
+   * this proxy requires basic authentication.
+   *
+   * @param proxyHost
+   * @param proxyPort
+   * @return this request
+   */
+  public HttpRequest useProxy(final String proxyHost, final int proxyPort) {
+    if (_connection != null) {
+      throw new IllegalStateException("Internal URLConnection is already created. Call this method earlier");
+    }
+    this.httpProxyHost = proxyHost;
+    this.httpProxyPort = proxyPort;
+    return this;
   }
 }
