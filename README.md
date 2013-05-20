@@ -168,6 +168,16 @@ request.trustAllCerts();
 request.trustAllHosts();
 ```
 
+### Configure HTTP proxy
+
+```java
+HttpRequest request = HttpRequest.get("https://google.com");
+//Configure proxy
+request.useProxy("localhost", 8080);
+//Optional proxy basic uthentication
+request.proxyBasic("username", "p4ssw0rd");
+```
+
 ## Contributors
 
 * [Kevin Sawicki](https://github.com/kevinsawicki) :: [contributions](https://github.com/kevinsawicki/http-request/commits?author=kevinsawicki)

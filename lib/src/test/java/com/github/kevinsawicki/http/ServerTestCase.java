@@ -21,9 +21,21 @@
  */
 package com.github.kevinsawicki.http;
 
+import org.eclipse.jetty.util.B64Code;
+
+import org.junit.Before;
+import org.eclipse.jetty.server.handler.HandlerList;
+import org.eclipse.jetty.servlet.ServletHolder;
+import org.eclipse.jetty.servlet.ServletHandler;
+
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
+
+import static com.github.kevinsawicki.http.HttpRequest.CHARSET_UTF8;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -119,6 +131,11 @@ public class ServerTestCase {
    * Server
    */
   protected static Server server;
+  protected static Server proxy;
+  protected static int proxyPort;
+  protected static final AtomicInteger proxyHitCount = new AtomicInteger(0);
+  protected static final AtomicReference<String> proxyUser = new AtomicReference<String>();
+  protected static final AtomicReference<String> proxyPassword = new AtomicReference<String>();
 
   /**
    * Set up server with handler
@@ -135,7 +152,51 @@ public class ServerTestCase {
     connector.setPort(0);
     server.setConnectors(new Connector[] { connector });
     server.start();
+
+    proxy = new Server();
+    Connector proxyConnector = new SelectChannelConnector();
+    proxyConnector.setPort(0);
+    proxy.setConnectors(new Connector[]{proxyConnector});
+
+    ServletHandler proxyHandler = new ServletHandler();
+
+    RequestHandler proxyCountingHandler = new RequestHandler() {
+
+      @Override
+      public void handle(Request request, HttpServletResponse response) {
+        proxyHitCount.incrementAndGet();
+        String auth = request.getHeader("Proxy-Authorization");
+        auth = auth.substring(auth.indexOf(' ') + 1);
+        try {
+          auth = B64Code.decode(auth, CHARSET_UTF8);
+        } catch (UnsupportedEncodingException e) {
+          throw new RuntimeException(e);
+        }
+        int colon = auth.indexOf(':');
+        proxyUser.set(auth.substring(0, colon));
+        proxyPassword.set(auth.substring(colon + 1));
+        request.setHandled(false);
+      }
+    };
+
+    HandlerList handlerList = new HandlerList();
+    handlerList.addHandler(proxyCountingHandler);
+    handlerList.addHandler(proxyHandler);
+    proxy.setHandler(handlerList);
+
+    ServletHolder proxyHolder = proxyHandler.addServletWithMapping("org.eclipse.jetty.servlets.ProxyServlet","/");
+    proxyHolder.setAsyncSupported(true);
+
+    proxy.start();
+
+    proxyPort = proxyConnector.getLocalPort();
+
     return "http://localhost:" + connector.getLocalPort();
+  }
+
+  @Before
+  public void clearProxyHitCount() {
+    proxyHitCount.set(0);
   }
 
   /**
@@ -148,4 +209,6 @@ public class ServerTestCase {
     if (server != null)
       server.stop();
   }
+
+
 }
