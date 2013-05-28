@@ -27,6 +27,7 @@ import static java.net.HttpURLConnection.HTTP_INTERNAL_ERROR;
 import static java.net.HttpURLConnection.HTTP_NOT_FOUND;
 import static java.net.HttpURLConnection.HTTP_NOT_MODIFIED;
 import static java.net.HttpURLConnection.HTTP_OK;
+import static java.net.Proxy.Type.HTTP;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -1354,8 +1355,7 @@ public class HttpRequest {
   }
 
   private Proxy createProxy() {
-    InetSocketAddress addr = new InetSocketAddress( httpProxyHost, httpProxyPort );
-    return new Proxy( Proxy.Type.HTTP, addr );
+    return new Proxy(HTTP, new InetSocketAddress(httpProxyHost, httpProxyPort));
   }
 
   private HttpURLConnection createConnection() {
