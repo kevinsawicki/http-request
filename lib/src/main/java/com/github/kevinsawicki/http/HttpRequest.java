@@ -2969,8 +2969,9 @@ public class HttpRequest {
    * @throws HttpRequestException
    */
   public HttpRequest trustAllCerts() throws HttpRequestException {
-    if (getConnection() instanceof HttpsURLConnection)
-      ((HttpsURLConnection) getConnection())
+    final HttpURLConnection connection = getConnection();
+    if (connection instanceof HttpsURLConnection)
+      ((HttpsURLConnection) connection)
           .setSSLSocketFactory(getTrustedFactory());
     return this;
   }
@@ -2985,8 +2986,9 @@ public class HttpRequest {
    * @return this request
    */
   public HttpRequest trustAllHosts() {
-    if (getConnection() instanceof HttpsURLConnection)
-      ((HttpsURLConnection) getConnection())
+    final HttpURLConnection connection = getConnection();
+    if (connection instanceof HttpsURLConnection)
+      ((HttpsURLConnection) connection)
           .setHostnameVerifier(getTrustedVerifier());
     return this;
   }
