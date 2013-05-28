@@ -1,5 +1,5 @@
 -classpath
-'/Users/kevin/repos/http-request/lib/target/classes:/Users/kevin/repos/http-request/lib/target/test-classes:/Users/kevin/.m2/repository/org/eclipse/jetty/jetty-continuation/8.0.3.v20111011/jetty-continuation-8.0.3.v20111011.jar:/Users/kevin/.m2/repository/org/hamcrest/hamcrest-core/1.1/hamcrest-core-1.1.jar:/Users/kevin/.m2/repository/org/eclipse/jetty/jetty-util/8.0.3.v20111011/jetty-util-8.0.3.v20111011.jar:/Users/kevin/.m2/repository/org/mortbay/jetty/servlet-api/3.0.20100224/servlet-api-3.0.20100224.jar:/Users/kevin/.m2/repository/org/eclipse/jetty/jetty-io/8.0.3.v20111011/jetty-io-8.0.3.v20111011.jar:/Users/kevin/.m2/repository/org/eclipse/jetty/jetty-server/8.0.3.v20111011/jetty-server-8.0.3.v20111011.jar:/Users/kevin/.m2/repository/junit/junit/4.10/junit-4.10.jar:/Users/kevin/.m2/repository/org/eclipse/jetty/jetty-http/8.0.3.v20111011/jetty-http-8.0.3.v20111011.jar'
+'/Users/kevin/repos/http-request/lib/target/classes:/Users/kevin/repos/http-request/lib/target/test-classes:/Users/kevin/.m2/repository/org/eclipse/jetty/jetty-security/8.1.9.v20130131/jetty-security-8.1.9.v20130131.jar:/Users/kevin/.m2/repository/org/eclipse/jetty/jetty-continuation/8.1.9.v20130131/jetty-continuation-8.1.9.v20130131.jar:/Users/kevin/.m2/repository/org/eclipse/jetty/jetty-servlets/8.1.9.v20130131/jetty-servlets-8.1.9.v20130131.jar:/Users/kevin/.m2/repository/org/eclipse/jetty/orbit/javax.servlet/3.0.0.v201112011016/javax.servlet-3.0.0.v201112011016.jar:/Users/kevin/.m2/repository/org/eclipse/jetty/jetty-client/8.1.9.v20130131/jetty-client-8.1.9.v20130131.jar:/Users/kevin/.m2/repository/org/hamcrest/hamcrest-core/1.1/hamcrest-core-1.1.jar:/Users/kevin/.m2/repository/org/eclipse/jetty/jetty-util/8.1.9.v20130131/jetty-util-8.1.9.v20130131.jar:/Users/kevin/.m2/repository/org/eclipse/jetty/jetty-servlet/8.1.9.v20130131/jetty-servlet-8.1.9.v20130131.jar:/Users/kevin/.m2/repository/org/eclipse/jetty/jetty-io/8.1.9.v20130131/jetty-io-8.1.9.v20130131.jar:/Users/kevin/.m2/repository/org/eclipse/jetty/jetty-server/8.1.9.v20130131/jetty-server-8.1.9.v20130131.jar:/Users/kevin/.m2/repository/junit/junit/4.10/junit-4.10.jar:/Users/kevin/.m2/repository/org/eclipse/jetty/jetty-http/8.1.9.v20130131/jetty-http-8.1.9.v20130131.jar'
 -encoding
 'UTF-8'
 -protected
@@ -15,7 +15,7 @@
 -docencoding
 'UTF-8'
 -doctitle
-'http-request 4.2-SNAPSHOT Test API'
+'http-request 5.1-SNAPSHOT Test API'
 -link
 '../apidocs'
 -linkoffline
@@ -23,4 +23,4 @@
 -use
 -version
 -windowtitle
-'http-request 4.2-SNAPSHOT Test API'
+'http-request 5.1-SNAPSHOT Test API'

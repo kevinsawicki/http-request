@@ -43,7 +43,7 @@ to make requests and access the response.</p>
 <div class="highlight"><pre><span class="nt">&lt;dependency&gt;</span>
   <span class="nt">&lt;groupId&gt;</span>com.github.kevinsawicki<span class="nt">&lt;/groupId&gt;</span>
   <span class="nt">&lt;artifactId&gt;</span>http-request<span class="nt">&lt;/artifactId&gt;</span>
-  <span class="nt">&lt;version&gt;</span>5.0<span class="nt">&lt;/version&gt;</span>
+  <span class="nt">&lt;version&gt;</span>4.1<span class="nt">&lt;/version&gt;</span>
 <span class="nt">&lt;/dependency&gt;</span>
 </pre></div>
 
@@ -187,15 +187,6 @@ You can access the underlying exception by catching <code>HttpRequestException</
 <span class="n">request</span><span class="o">.</span><span class="na">trustAllHosts</span><span class="o">();</span>
 </pre></div>
 
-<h3>Configure HTTP proxy</h3>
-
-<div class="highlight"><pre><span class="n">HttpRequest</span> <span class="n">request</span> <span class="o">=</span> <span class="n">HttpRequest</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="s">"https://google.com"</span><span class="o">);</span>
-<span class="c1">//Configure proxy</span>
-<span class="n">request</span><span class="o">.</span><span class="na">useProxy</span><span class="o">(</span><span class="s">"localhost"</span><span class="o">,</span> <span class="mi">8080</span><span class="o">);</span>
-<span class="c1">//Optional proxy basic uthentication</span>
-<span class="n">request</span><span class="o">.</span><span class="na">proxyBasic</span><span class="o">(</span><span class="s">"username"</span><span class="o">,</span> <span class="s">"p4ssw0rd"</span><span class="o">);</span>
-</pre></div>
-
 <h2>Contributors</h2>
 
 <ul>
@@ -214,9 +205,6 @@ You can access the underlying exception by catching <code>HttpRequestException</
 <li>
 <a href="https://github.com/michael-wang">Michael Wang</a> :: <a href="https://github.com/kevinsawicki/http-request/commits?author=michael-wang">contributions</a>
 </li>
-<li>
-<a href="https://github.com/henryju">Julien HENRY</a> :: <a href="https://github.com/kevinsawicki/http-request/commits?author=henryju">contributions</a>
-</li>
 </ul>
       </section>
     </div>
@@ -229,7 +217,19 @@ You can access the underlying exception by catching <code>HttpRequestException</
       </footer>
     </div>
 
-    
+  <script type="text/javascript">
+    var _gauges = _gauges || [];
+    (function() {
+      var t   = document.createElement('script');
+      t.type  = 'text/javascript';
+      t.async = true;
+      t.id    = 'gauges-tracker';
+      t.setAttribute('data-site-id', '50539a18613f5d16cb0000b6');
+      t.src = '//secure.gaug.es/track.js';
+      var s = document.getElementsByTagName('script')[0];
+      s.parentNode.insertBefore(t, s);
+    })();
+  </script>
 
   </body>
 </html>

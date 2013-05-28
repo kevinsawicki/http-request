@@ -1,42 +1,42 @@
-<?xml version="1.0" encoding="UTF-8"?><!-- EMMA v2.1.5320 (stable) report, generated Tue Apr 23 14:02:10 PDT 2013 -->
+<?xml version="1.0" encoding="UTF-8"?><!-- EMMA v2.1.5320 (stable) report, generated Tue May 28 08:31:48 PDT 2013 -->
 
 <report>
   <stats>
     <packages value="1"/>
     <classes value="17"/>
-    <methods value="194"/>
+    <methods value="199"/>
     <srcfiles value="1"/>
-    <srclines value="618"/>
+    <srclines value="620"/>
   </stats>
   <data>
     <all name="all classes">
       <coverage type="class, %" value="88%  (15/17)"/>
-      <coverage type="method, %" value="93%  (180/194)"/>
-      <coverage type="block, %" value="86%  (2661/3086)"/>
-      <coverage type="line, %" value="82%  (508.2/618)"/>
+      <coverage type="method, %" value="93%  (185/199)"/>
+      <coverage type="block, %" value="86%  (2741/3173)"/>
+      <coverage type="line, %" value="83%  (512/620)"/>
 
       <package name="com.github.kevinsawicki.http">
         <coverage type="class, %" value="88%  (15/17)"/>
-        <coverage type="method, %" value="93%  (180/194)"/>
-        <coverage type="block, %" value="86%  (2661/3086)"/>
-        <coverage type="line, %" value="82%  (508.2/618)"/>
+        <coverage type="method, %" value="93%  (185/199)"/>
+        <coverage type="block, %" value="86%  (2741/3173)"/>
+        <coverage type="line, %" value="83%  (512/620)"/>
 
         <srcfile name="HttpRequest.java">
           <coverage type="class, %" value="88%  (15/17)"/>
-          <coverage type="method, %" value="93%  (180/194)"/>
-          <coverage type="block, %" value="86%  (2661/3086)"/>
-          <coverage type="line, %" value="82%  (508.2/618)"/>
+          <coverage type="method, %" value="93%  (185/199)"/>
+          <coverage type="block, %" value="86%  (2741/3173)"/>
+          <coverage type="line, %" value="83%  (512/620)"/>
 
           <class name="HttpRequest$3">
             <coverage type="class, %" value="0%   (0/1)"/>
             <coverage type="method, %" value="0%   (0/2)"/>
             <coverage type="block, %" value="0%   (0/15)"/>
-            <coverage type="line, %" value="0%   (0/3)"/>
+            <coverage type="line, %" value="0%   (0/2)"/>
 
             <method name="HttpRequest$3 (String, String): void">
               <coverage type="method, %" value="0%   (0/1)"/>
               <coverage type="block, %" value="0%   (0/9)"/>
-              <coverage type="line, %" value="0%   (0/2)"/>
+              <coverage type="line, %" value="0%   (0/1)"/>
             </method>
             <method name="run (): String">
               <coverage type="method, %" value="0%   (0/1)"/>
@@ -48,12 +48,12 @@
             <coverage type="class, %" value="0%   (0/1)"/>
             <coverage type="method, %" value="0%   (0/2)"/>
             <coverage type="block, %" value="0%   (0/10)"/>
-            <coverage type="line, %" value="0%   (0/3)"/>
+            <coverage type="line, %" value="0%   (0/2)"/>
 
             <method name="HttpRequest$4 (String): void">
               <coverage type="method, %" value="0%   (0/1)"/>
               <coverage type="block, %" value="0%   (0/6)"/>
-              <coverage type="line, %" value="0%   (0/2)"/>
+              <coverage type="line, %" value="0%   (0/1)"/>
             </method>
             <method name="run (): String">
               <coverage type="method, %" value="0%   (0/1)"/>
@@ -65,7 +65,7 @@
             <coverage type="class, %" value="100% (1/1)"/>
             <coverage type="method, %" value="25%  (1/4)"/>
             <coverage type="block, %" value="38%  (3/8)"/>
-            <coverage type="line, %" value="40%  (2/5)"/>
+            <coverage type="line, %" value="25%  (1/4)"/>
 
             <method name="checkClientTrusted (X509Certificate [], String): void">
               <coverage type="method, %" value="0%   (0/1)"/>
@@ -85,7 +85,7 @@
             <method name="HttpRequest$1 (): void">
               <coverage type="method, %" value="100% (1/1)"/>
               <coverage type="block, %" value="100% (3/3)"/>
-              <coverage type="line, %" value="100% (2/2)"/>
+              <coverage type="line, %" value="100% (1/1)"/>
             </method>
           </class>
           <class name="HttpRequest$Operation">
@@ -108,8 +108,8 @@
           <class name="HttpRequest$Base64">
             <coverage type="class, %" value="100% (1/1)"/>
             <coverage type="method, %" value="86%  (6/7)"/>
-            <coverage type="block, %" value="80%  (482/601)"/>
-            <coverage type="line, %" value="68%  (48.9/72)"/>
+            <coverage type="block, %" value="80%  (482/603)"/>
+            <coverage type="line, %" value="65%  (35.9/55)"/>
 
             <method name="HttpRequest$Base64 (): void">
               <coverage type="method, %" value="0%   (0/1)"/>
@@ -118,8 +118,8 @@
             </method>
             <method name="encodeBytesToBytes (byte [], int, int): byte []">
               <coverage type="method, %" value="100% (1/1)"/>
-              <coverage type="block, %" value="54%  (74/137)"/>
-              <coverage type="line, %" value="59%  (16/27)"/>
+              <coverage type="block, %" value="53%  (74/139)"/>
+              <coverage type="line, %" value="69%  (16/23)"/>
             </method>
             <method name="encodeBytes (byte [], int, int): String">
               <coverage type="method, %" value="100% (1/1)"/>
@@ -129,17 +129,17 @@
             <method name="encode (String): String">
               <coverage type="method, %" value="100% (1/1)"/>
               <coverage type="block, %" value="67%  (8/12)"/>
-              <coverage type="line, %" value="50%  (2/4)"/>
+              <coverage type="line, %" value="60%  (3/5)"/>
             </method>
             <method name="encode3to4 (byte [], int, int, byte [], int): byte []">
               <coverage type="method, %" value="100% (1/1)"/>
               <coverage type="block, %" value="74%  (123/166)"/>
-              <coverage type="line, %" value="71%  (15/21)"/>
+              <coverage type="line, %" value="68%  (13/19)"/>
             </method>
             <method name="&lt;static initializer&gt;">
               <coverage type="method, %" value="100% (1/1)"/>
               <coverage type="block, %" value="100% (260/260)"/>
-              <coverage type="line, %" value="100% (13/13)"/>
+              <coverage type="line, %" value="100% (1/1)"/>
             </method>
             <method name="encodeBytes (byte []): String">
               <coverage type="method, %" value="100% (1/1)"/>
@@ -149,9 +149,9 @@
           </class>
           <class name="HttpRequest">
             <coverage type="class, %" value="100% (1/1)"/>
-            <coverage type="method, %" value="96%  (148/154)"/>
-            <coverage type="block, %" value="88%  (1881/2144)"/>
-            <coverage type="line, %" value="84%  (403.9/481)"/>
+            <coverage type="method, %" value="96%  (153/159)"/>
+            <coverage type="block, %" value="88%  (1961/2229)"/>
+            <coverage type="line, %" value="84%  (420.6/500)"/>
 
             <method name="keepAlive (boolean): void">
               <coverage type="method, %" value="0%   (0/1)"/>
@@ -161,7 +161,7 @@
             <method name="nonProxyHosts (String []): void">
               <coverage type="method, %" value="0%   (0/1)"/>
               <coverage type="block, %" value="0%   (0/46)"/>
-              <coverage type="line, %" value="0%   (0/9)"/>
+              <coverage type="line, %" value="0%   (0/10)"/>
             </method>
             <method name="proxyHost (String): void">
               <coverage type="method, %" value="0%   (0/1)"/>
@@ -206,7 +206,7 @@
             <method name="stream (): InputStream">
               <coverage type="method, %" value="100% (1/1)"/>
               <coverage type="block, %" value="57%  (30/53)"/>
-              <coverage type="line, %" value="50%  (7/14)"/>
+              <coverage type="line, %" value="50%  (8/16)"/>
             </method>
             <method name="reader (String): InputStreamReader">
               <coverage type="method, %" value="100% (1/1)"/>
@@ -216,32 +216,37 @@
             <method name="getTrustedFactory (): SSLSocketFactory">
               <coverage type="method, %" value="100% (1/1)"/>
               <coverage type="block, %" value="64%  (27/42)"/>
-              <coverage type="line, %" value="55%  (6/11)"/>
+              <coverage type="line, %" value="64%  (7/11)"/>
             </method>
             <method name="send (CharSequence): HttpRequest">
               <coverage type="method, %" value="100% (1/1)"/>
               <coverage type="block, %" value="67%  (12/18)"/>
-              <coverage type="line, %" value="60%  (3/5)"/>
+              <coverage type="line, %" value="67%  (4/6)"/>
             </method>
             <method name="send (InputStream): HttpRequest">
               <coverage type="method, %" value="100% (1/1)"/>
               <coverage type="block, %" value="67%  (12/18)"/>
-              <coverage type="line, %" value="60%  (3/5)"/>
+              <coverage type="line, %" value="67%  (4/6)"/>
             </method>
             <method name="bytes (): byte []">
               <coverage type="method, %" value="100% (1/1)"/>
               <coverage type="block, %" value="68%  (13/19)"/>
-              <coverage type="line, %" value="60%  (3/5)"/>
+              <coverage type="line, %" value="67%  (4/6)"/>
             </method>
             <method name="send (File): HttpRequest">
               <coverage type="method, %" value="100% (1/1)"/>
               <coverage type="block, %" value="68%  (13/19)"/>
-              <coverage type="line, %" value="50%  (2/4)"/>
+              <coverage type="line, %" value="60%  (3/5)"/>
             </method>
             <method name="writer (): OutputStreamWriter">
               <coverage type="method, %" value="100% (1/1)"/>
               <coverage type="block, %" value="68%  (13/19)"/>
               <coverage type="line, %" value="50%  (2/4)"/>
+            </method>
+            <method name="useProxy (String, int): HttpRequest">
+              <coverage type="method, %" value="100% (1/1)"/>
+              <coverage type="block, %" value="69%  (11/16)"/>
+              <coverage type="line, %" value="80%  (4/5)"/>
             </method>
             <method name="body (String): String">
               <coverage type="method, %" value="100% (1/1)"/>
@@ -251,27 +256,27 @@
             <method name="part (String, String, String, File): HttpRequest">
               <coverage type="method, %" value="100% (1/1)"/>
               <coverage type="block, %" value="73%  (16/22)"/>
-              <coverage type="line, %" value="50%  (2/4)"/>
+              <coverage type="line, %" value="60%  (3/5)"/>
             </method>
             <method name="part (String, String, String, String): HttpRequest">
               <coverage type="method, %" value="100% (1/1)"/>
               <coverage type="block, %" value="74%  (17/23)"/>
-              <coverage type="line, %" value="67%  (4/6)"/>
+              <coverage type="line, %" value="71%  (5/7)"/>
             </method>
             <method name="part (String, String, String, InputStream): HttpRequest">
               <coverage type="method, %" value="100% (1/1)"/>
               <coverage type="block, %" value="75%  (18/24)"/>
-              <coverage type="line, %" value="67%  (4/6)"/>
+              <coverage type="line, %" value="71%  (5/7)"/>
             </method>
             <method name="encode (CharSequence): String">
               <coverage type="method, %" value="100% (1/1)"/>
               <coverage type="block, %" value="76%  (47/62)"/>
               <coverage type="line, %" value="69%  (9/13)"/>
             </method>
-            <method name="HttpRequest (URL, String): void">
+            <method name="createConnection (): HttpURLConnection">
               <coverage type="method, %" value="100% (1/1)"/>
               <coverage type="block, %" value="79%  (22/28)"/>
-              <coverage type="line, %" value="78%  (7/9)"/>
+              <coverage type="line, %" value="71%  (5/7)"/>
             </method>
             <method name="receive (File): HttpRequest">
               <coverage type="method, %" value="100% (1/1)"/>
@@ -281,12 +286,12 @@
             <method name="send (Reader): HttpRequest">
               <coverage type="method, %" value="100% (1/1)"/>
               <coverage type="block, %" value="80%  (24/30)"/>
-              <coverage type="line, %" value="71%  (5/7)"/>
+              <coverage type="line, %" value="67%  (4/6)"/>
             </method>
             <method name="form (Object, Object, String): HttpRequest">
               <coverage type="method, %" value="100% (1/1)"/>
               <coverage type="block, %" value="90%  (54/60)"/>
-              <coverage type="line, %" value="87%  (13/15)"/>
+              <coverage type="line, %" value="88%  (14/16)"/>
             </method>
             <method name="part (String, String, Number): HttpRequest">
               <coverage type="method, %" value="100% (1/1)"/>
@@ -301,17 +306,22 @@
             <method name="closeOutput (): HttpRequest">
               <coverage type="method, %" value="100% (1/1)"/>
               <coverage type="block, %" value="93%  (28/30)"/>
-              <coverage type="line, %" value="90%  (9/10)"/>
+              <coverage type="line, %" value="88%  (9.7/11)"/>
             </method>
             <method name="&lt;static initializer&gt;">
               <coverage type="method, %" value="100% (1/1)"/>
               <coverage type="block, %" value="100% (4/4)"/>
-              <coverage type="line, %" value="100% (2/2)"/>
+              <coverage type="line, %" value="100% (1/1)"/>
             </method>
             <method name="HttpRequest (CharSequence, String): void">
               <coverage type="method, %" value="100% (1/1)"/>
               <coverage type="block, %" value="100% (32/32)"/>
-              <coverage type="line, %" value="100% (9/9)"/>
+              <coverage type="line, %" value="100% (11/11)"/>
+            </method>
+            <method name="HttpRequest (URL, String): void">
+              <coverage type="method, %" value="100% (1/1)"/>
+              <coverage type="block, %" value="100% (21/21)"/>
+              <coverage type="line, %" value="100% (8/8)"/>
             </method>
             <method name="accept (String): HttpRequest">
               <coverage type="method, %" value="100% (1/1)"/>
@@ -338,12 +348,12 @@
               <coverage type="block, %" value="100% (4/4)"/>
               <coverage type="line, %" value="100% (1/1)"/>
             </method>
-            <method name="access$0 (String): String">
+            <method name="access$000 (String): String">
               <coverage type="method, %" value="100% (1/1)"/>
               <coverage type="block, %" value="100% (3/3)"/>
               <coverage type="line, %" value="100% (1/1)"/>
             </method>
-            <method name="access$1 (HttpRequest): int">
+            <method name="access$100 (HttpRequest): int">
               <coverage type="method, %" value="100% (1/1)"/>
               <coverage type="block, %" value="100% (3/3)"/>
               <coverage type="line, %" value="100% (1/1)"/>
@@ -366,7 +376,7 @@
             <method name="append (CharSequence, Object []): String">
               <coverage type="method, %" value="100% (1/1)"/>
               <coverage type="block, %" value="100% (90/90)"/>
-              <coverage type="line, %" value="100% (22/22)"/>
+              <coverage type="line, %" value="100% (21/21)"/>
             </method>
             <method name="authorization (String): HttpRequest">
               <coverage type="method, %" value="100% (1/1)"/>
@@ -380,7 +390,7 @@
             </method>
             <method name="basic (String, String): HttpRequest">
               <coverage type="method, %" value="100% (1/1)"/>
-              <coverage type="block, %" value="100% (20/20)"/>
+              <coverage type="block, %" value="100% (21/21)"/>
               <coverage type="line, %" value="100% (1/1)"/>
             </method>
             <method name="body (): String">
@@ -481,12 +491,17 @@
             <method name="copy (InputStream, OutputStream): HttpRequest">
               <coverage type="method, %" value="100% (1/1)"/>
               <coverage type="block, %" value="100% (12/12)"/>
-              <coverage type="line, %" value="100% (2/2)"/>
+              <coverage type="line, %" value="100% (1/1)"/>
             </method>
             <method name="copy (Reader, Writer): HttpRequest">
               <coverage type="method, %" value="100% (1/1)"/>
               <coverage type="block, %" value="100% (12/12)"/>
-              <coverage type="line, %" value="100% (2/2)"/>
+              <coverage type="line, %" value="100% (1/1)"/>
+            </method>
+            <method name="createProxy (): Proxy">
+              <coverage type="method, %" value="100% (1/1)"/>
+              <coverage type="block, %" value="100% (12/12)"/>
+              <coverage type="line, %" value="100% (1/1)"/>
             </method>
             <method name="created (): boolean">
               <coverage type="method, %" value="100% (1/1)"/>
@@ -590,13 +605,13 @@
             </method>
             <method name="getConnection (): HttpURLConnection">
               <coverage type="method, %" value="100% (1/1)"/>
-              <coverage type="block, %" value="100% (3/3)"/>
-              <coverage type="line, %" value="100% (1/1)"/>
+              <coverage type="block, %" value="100% (10/10)"/>
+              <coverage type="line, %" value="100% (3/3)"/>
             </method>
             <method name="getParam (String, String): String">
               <coverage type="method, %" value="100% (1/1)"/>
               <coverage type="block, %" value="100% (109/109)"/>
-              <coverage type="line, %" value="100% (25/25)"/>
+              <coverage type="line, %" value="100% (24/24)"/>
             </method>
             <method name="getParams (String): Map">
               <coverage type="method, %" value="100% (1/1)"/>
@@ -731,7 +746,7 @@
             <method name="openOutput (): HttpRequest">
               <coverage type="method, %" value="100% (1/1)"/>
               <coverage type="block, %" value="100% (30/30)"/>
-              <coverage type="line, %" value="100% (8/8)"/>
+              <coverage type="line, %" value="100% (6/6)"/>
             </method>
             <method name="options (CharSequence): HttpRequest">
               <coverage type="method, %" value="100% (1/1)"/>
@@ -808,6 +823,16 @@
               <coverage type="block, %" value="100% (6/6)"/>
               <coverage type="line, %" value="100% (1/1)"/>
             </method>
+            <method name="proxyAuthorization (String): HttpRequest">
+              <coverage type="method, %" value="100% (1/1)"/>
+              <coverage type="block, %" value="100% (5/5)"/>
+              <coverage type="line, %" value="100% (1/1)"/>
+            </method>
+            <method name="proxyBasic (String, String): HttpRequest">
+              <coverage type="method, %" value="100% (1/1)"/>
+              <coverage type="block, %" value="100% (21/21)"/>
+              <coverage type="line, %" value="100% (1/1)"/>
+            </method>
             <method name="put (CharSequence): HttpRequest">
               <coverage type="method, %" value="100% (1/1)"/>
               <coverage type="block, %" value="100% (6/6)"/>
@@ -841,7 +866,7 @@
             <method name="receive (Appendable): HttpRequest">
               <coverage type="method, %" value="100% (1/1)"/>
               <coverage type="block, %" value="100% (15/15)"/>
-              <coverage type="line, %" value="100% (3/3)"/>
+              <coverage type="line, %" value="100% (2/2)"/>
             </method>
             <method name="receive (PrintStream): HttpRequest">
               <coverage type="method, %" value="100% (1/1)"/>
@@ -851,7 +876,7 @@
             <method name="receive (Writer): HttpRequest">
               <coverage type="method, %" value="100% (1/1)"/>
               <coverage type="block, %" value="100% (15/15)"/>
-              <coverage type="line, %" value="100% (3/3)"/>
+              <coverage type="line, %" value="100% (2/2)"/>
             </method>
             <method name="send (byte []): HttpRequest">
               <coverage type="method, %" value="100% (1/1)"/>
@@ -890,12 +915,12 @@
             </method>
             <method name="trustAllCerts (): HttpRequest">
               <coverage type="method, %" value="100% (1/1)"/>
-              <coverage type="block, %" value="100% (11/11)"/>
+              <coverage type="block, %" value="100% (12/12)"/>
               <coverage type="line, %" value="100% (4/4)"/>
             </method>
             <method name="trustAllHosts (): HttpRequest">
               <coverage type="method, %" value="100% (1/1)"/>
-              <coverage type="block, %" value="100% (11/11)"/>
+              <coverage type="block, %" value="100% (12/12)"/>
               <coverage type="line, %" value="100% (4/4)"/>
             </method>
             <method name="uncompress (boolean): HttpRequest">
@@ -928,12 +953,12 @@
             <coverage type="class, %" value="100% (1/1)"/>
             <coverage type="method, %" value="100% (2/2)"/>
             <coverage type="block, %" value="100% (21/21)"/>
-            <coverage type="line, %" value="100% (3/3)"/>
+            <coverage type="line, %" value="100% (2/2)"/>
 
             <method name="HttpRequest$10 (HttpRequest, Flushable, Reader, Writer): void">
               <coverage type="method, %" value="100% (1/1)"/>
               <coverage type="block, %" value="100% (13/13)"/>
-              <coverage type="line, %" value="100% (2/2)"/>
+              <coverage type="line, %" value="100% (1/1)"/>
             </method>
             <method name="run (): HttpRequest">
               <coverage type="method, %" value="100% (1/1)"/>
@@ -945,12 +970,12 @@
             <coverage type="class, %" value="100% (1/1)"/>
             <coverage type="method, %" value="100% (2/2)"/>
             <coverage type="block, %" value="100% (5/5)"/>
-            <coverage type="line, %" value="100% (3/3)"/>
+            <coverage type="line, %" value="100% (2/2)"/>
 
             <method name="HttpRequest$2 (): void">
               <coverage type="method, %" value="100% (1/1)"/>
               <coverage type="block, %" value="100% (3/3)"/>
-              <coverage type="line, %" value="100% (2/2)"/>
+              <coverage type="line, %" value="100% (1/1)"/>
             </method>
             <method name="verify (String, SSLSession): boolean">
               <coverage type="method, %" value="100% (1/1)"/>
@@ -962,12 +987,12 @@
             <coverage type="class, %" value="100% (1/1)"/>
             <coverage type="method, %" value="100% (2/2)"/>
             <coverage type="block, %" value="100% (17/17)"/>
-            <coverage type="line, %" value="100% (3/3)"/>
+            <coverage type="line, %" value="100% (2/2)"/>
 
             <method name="HttpRequest$5 (HttpRequest, Closeable, boolean, OutputStream): void">
               <coverage type="method, %" value="100% (1/1)"/>
               <coverage type="block, %" value="100% (11/11)"/>
-              <coverage type="line, %" value="100% (2/2)"/>
+              <coverage type="line, %" value="100% (1/1)"/>
             </method>
             <method name="run (): HttpRequest">
               <coverage type="method, %" value="100% (1/1)"/>
@@ -979,12 +1004,12 @@
             <coverage type="class, %" value="100% (1/1)"/>
             <coverage type="method, %" value="100% (2/2)"/>
             <coverage type="block, %" value="100% (44/44)"/>
-            <coverage type="line, %" value="100% (8/8)"/>
+            <coverage type="line, %" value="100% (7/7)"/>
 
             <method name="HttpRequest$6 (HttpRequest, Closeable, boolean, BufferedReader, Appendable): void">
               <coverage type="method, %" value="100% (1/1)"/>
               <coverage type="block, %" value="100% (14/14)"/>
-              <coverage type="line, %" value="100% (2/2)"/>
+              <coverage type="line, %" value="100% (1/1)"/>
             </method>
             <method name="run (): HttpRequest">
               <coverage type="method, %" value="100% (1/1)"/>
@@ -996,12 +1021,12 @@
             <coverage type="class, %" value="100% (1/1)"/>
             <coverage type="method, %" value="100% (2/2)"/>
             <coverage type="block, %" value="100% (22/22)"/>
-            <coverage type="line, %" value="100% (3/3)"/>
+            <coverage type="line, %" value="100% (2/2)"/>
 
             <method name="HttpRequest$7 (HttpRequest, Closeable, boolean, BufferedReader, Writer): void">
               <coverage type="method, %" value="100% (1/1)"/>
               <coverage type="block, %" value="100% (14/14)"/>
-              <coverage type="line, %" value="100% (2/2)"/>
+              <coverage type="line, %" value="100% (1/1)"/>
             </method>
             <method name="run (): HttpRequest">
               <coverage type="method, %" value="100% (1/1)"/>
@@ -1013,12 +1038,12 @@
             <coverage type="class, %" value="100% (1/1)"/>
             <coverage type="method, %" value="100% (2/2)"/>
             <coverage type="block, %" value="100% (37/37)"/>
-            <coverage type="line, %" value="100% (6/6)"/>
+            <coverage type="line, %" value="100% (5/5)"/>
 
             <method name="HttpRequest$8 (HttpRequest, Closeable, boolean, InputStream, OutputStream): void">
               <coverage type="method, %" value="100% (1/1)"/>
               <coverage type="block, %" value="100% (14/14)"/>
-              <coverage type="line, %" value="100% (2/2)"/>
+              <coverage type="line, %" value="100% (1/1)"/>
             </method>
             <method name="run (): HttpRequest">
               <coverage type="method, %" value="100% (1/1)"/>
@@ -1030,12 +1055,12 @@
             <coverage type="class, %" value="100% (1/1)"/>
             <coverage type="method, %" value="100% (2/2)"/>
             <coverage type="block, %" value="100% (37/37)"/>
-            <coverage type="line, %" value="100% (6/6)"/>
+            <coverage type="line, %" value="100% (5/5)"/>
 
             <method name="HttpRequest$9 (HttpRequest, Closeable, boolean, Reader, Writer): void">
               <coverage type="method, %" value="100% (1/1)"/>
               <coverage type="block, %" value="100% (14/14)"/>
-              <coverage type="line, %" value="100% (2/2)"/>
+              <coverage type="line, %" value="100% (1/1)"/>
             </method>
             <method name="run (): HttpRequest">
               <coverage type="method, %" value="100% (1/1)"/>
@@ -1047,7 +1072,7 @@
             <coverage type="class, %" value="100% (1/1)"/>
             <coverage type="method, %" value="100% (2/2)"/>
             <coverage type="block, %" value="100% (30/30)"/>
-            <coverage type="line, %" value="100% (11/11)"/>
+            <coverage type="line, %" value="100% (12/12)"/>
 
             <method name="HttpRequest$CloseOperation (Closeable, boolean): void">
               <coverage type="method, %" value="100% (1/1)"/>
@@ -1057,7 +1082,7 @@
             <method name="done (): void">
               <coverage type="method, %" value="100% (1/1)"/>
               <coverage type="block, %" value="100% (21/21)"/>
-              <coverage type="line, %" value="100% (7/7)"/>
+              <coverage type="line, %" value="100% (8/8)"/>
             </method>
           </class>
           <class name="HttpRequest$FlushOperation">
@@ -1105,7 +1130,7 @@
               <coverage type="block, %" value="100% (11/11)"/>
               <coverage type="line, %" value="100% (3/3)"/>
             </method>
-            <method name="access$0 (HttpRequest$RequestOutputStream): CharsetEncoder">
+            <method name="access$200 (HttpRequest$RequestOutputStream): CharsetEncoder">
               <coverage type="method, %" value="100% (1/1)"/>
               <coverage type="block, %" value="100% (3/3)"/>
               <coverage type="line, %" value="100% (1/1)"/>
