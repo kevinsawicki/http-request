@@ -1360,13 +1360,11 @@ public class HttpRequest {
 
   private HttpURLConnection createConnection() {
     try {
-      HttpURLConnection connection;
-      if (httpProxyHost != null) {
+      final HttpURLConnection connection;
+      if (httpProxyHost != null)
         connection = (HttpURLConnection) url.openConnection(createProxy());
-      }
-      else {
+      else
         connection = (HttpURLConnection) url.openConnection();
-      }
       connection.setRequestMethod(requestMethod);
       return connection;
     }catch (IOException e) {
