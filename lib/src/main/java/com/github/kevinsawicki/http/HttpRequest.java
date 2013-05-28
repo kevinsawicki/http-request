@@ -1301,7 +1301,7 @@ public class HttpRequest {
     return AccessController.doPrivileged(action);
   }
 
-  private HttpURLConnection _connection = null;
+  private HttpURLConnection connection = null;
 
   private final URL url;
 
@@ -1383,9 +1383,9 @@ public class HttpRequest {
    * @return connection
    */
   public HttpURLConnection getConnection() {
-    if (_connection == null)
-      _connection = createConnection();
-    return _connection;
+    if (connection == null)
+      connection = createConnection();
+    return connection;
   }
 
   /**
@@ -3018,7 +3018,7 @@ public class HttpRequest {
    * @return this request
    */
   public HttpRequest useProxy(final String proxyHost, final int proxyPort) {
-    if (_connection != null)
+    if (connection != null)
       throw new IllegalStateException("Internal URLConnection is already created. Call this method earlier");
     this.httpProxyHost = proxyHost;
     this.httpProxyPort = proxyPort;
