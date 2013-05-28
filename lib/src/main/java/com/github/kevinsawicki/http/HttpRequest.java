@@ -1385,9 +1385,8 @@ public class HttpRequest {
    * @return connection
    */
   public HttpURLConnection getConnection() {
-    if (_connection == null) {
+    if (_connection == null)
       _connection = createConnection();
-    }
     return _connection;
   }
 
@@ -3019,9 +3018,8 @@ public class HttpRequest {
    * @return this request
    */
   public HttpRequest useProxy(final String proxyHost, final int proxyPort) {
-    if (_connection != null) {
+    if (_connection != null)
       throw new IllegalStateException("Internal URLConnection is already created. Call this method earlier");
-    }
     this.httpProxyHost = proxyHost;
     this.httpProxyPort = proxyPort;
     return this;
