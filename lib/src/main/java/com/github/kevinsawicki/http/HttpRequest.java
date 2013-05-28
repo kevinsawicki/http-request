@@ -1217,7 +1217,7 @@ public class HttpRequest {
   /**
    * Set the 'http.keepAlive' property to the given value.
    * <p>
-   * This setting will apply to requests.
+   * This setting will apply to all requests.
    *
    * @param keepAlive
    */
@@ -1229,7 +1229,7 @@ public class HttpRequest {
    * Set the 'http.proxyHost' & 'https.proxyHost' properties to the given host
    * value.
    * <p>
-   * This setting will apply to requests.
+   * This setting will apply to all requests.
    *
    * @param host
    */
@@ -1242,7 +1242,7 @@ public class HttpRequest {
    * Set the 'http.proxyPort' & 'https.proxyPort' properties to the given port
    * number.
    * <p>
-   * This setting will apply to requests.
+   * This setting will apply to all requests.
    *
    * @param port
    */
@@ -1257,7 +1257,7 @@ public class HttpRequest {
    * <p>
    * Hosts will be separated by a '|' character.
    * <p>
-   * This setting will apply to requests.
+   * This setting will apply to all requests.
    *
    * @param hosts
    */
