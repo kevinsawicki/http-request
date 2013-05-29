@@ -178,6 +178,12 @@ request.useProxy("localhost", 8080);
 request.proxyBasic("username", "p4ssw0rd");
 ```
 
+### Follow redirects
+
+```java
+int code = HttpRequest.get("http://google.com").followRedirects(true).code();
+```
+
 ## Contributors
 
 * [Kevin Sawicki](https://github.com/kevinsawicki) :: [contributions](https://github.com/kevinsawicki/http-request/commits?author=kevinsawicki)
