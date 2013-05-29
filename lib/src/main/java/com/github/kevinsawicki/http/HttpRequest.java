@@ -3044,6 +3044,7 @@ public class HttpRequest {
    * the response.
    *
    * @param followRedirects - true fo follow redirects, false to not.
+   * @return this request
    */
   public HttpRequest followRedirects(final boolean followRedirects) {
     getConnection().setFollowRedirects(followRedirects);
