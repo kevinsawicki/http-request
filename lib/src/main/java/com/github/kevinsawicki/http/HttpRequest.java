@@ -74,6 +74,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.Callable;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.zip.GZIPInputStream;
 
 import javax.net.ssl.HostnameVerifier;
@@ -1631,6 +1632,19 @@ public class HttpRequest {
    */
   public String body() throws HttpRequestException {
     return body(charset());
+  }
+
+  /**
+   * Get the response body as a {@link String} and set it as the value of the
+   * given reference.
+   *
+   * @param output
+   * @return this request
+   * @throws HttpRequestException
+   */
+  public HttpRequest body(final AtomicReference<String> output) throws HttpRequestException {
+    output.set(body());
+    return this;
   }
 
   /**
