@@ -3024,4 +3024,15 @@ public class HttpRequest {
     this.httpProxyPort = proxyPort;
     return this;
   }
+
+  /**
+   * Set whether or not the underlying connection should follow redirects in
+   * the response.
+   *
+   * @param followRedirects - true fo follow redirects, false to not.
+   */
+  public HttpRequest followRedirects(final boolean followRedirects) {
+    getConnection().setFollowRedirects(followRedirects);
+    return this;
+  }
 }
