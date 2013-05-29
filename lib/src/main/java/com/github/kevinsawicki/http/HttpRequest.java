@@ -1648,6 +1648,21 @@ public class HttpRequest {
   }
 
   /**
+   * Get the response body as a {@link String} and set it as the value of the
+   * given reference.
+   *
+   * @param output
+   * @param charset
+   * @return this request
+   * @throws HttpRequestException
+   */
+  public HttpRequest body(final AtomicReference<String> output, final String charset) throws HttpRequestException {
+    output.set(body(charset));
+    return this;
+  }
+
+
+  /**
    * Is the response body empty?
    *
    * @return true if the Content-Length response header is 0, false otherwise
