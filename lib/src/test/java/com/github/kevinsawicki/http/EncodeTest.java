@@ -85,6 +85,15 @@ public class EncodeTest {
 
     assertEquals("http://google.com/a?b=%E2%98%90",
         HttpRequest.encode("http://google.com/a?b=\u2610"));
+
+    assertEquals("http://google.com/a?b=c%2Bd&e=f%2Bg",
+        HttpRequest.encode("http://google.com/a?b=c+d&e=f+g"));
+
+    assertEquals("http://google.com/+",
+        HttpRequest.encode("http://google.com/+"));
+
+    assertEquals("http://google.com/+?a=b%2Bc",
+        HttpRequest.encode("http://google.com/+?a=b+c"));
   }
 
   /**

@@ -753,8 +753,13 @@ public class HttpRequest {
       host = host + ':' + Integer.toString(port);
 
     try {
-      return new URI(parsed.getProtocol(), host, parsed.getPath(),
+      String encoded = new URI(parsed.getProtocol(), host, parsed.getPath(),
           parsed.getQuery(), null).toASCIIString();
+      int paramsStart = encoded.indexOf('?');
+      if (paramsStart > 0 && paramsStart + 1 < encoded.length())
+        encoded = encoded.substring(0, paramsStart + 1)
+                  + encoded.substring(paramsStart + 1).replace("+", "%2B");
+      return encoded;
     } catch (URISyntaxException e) {
       IOException io = new IOException("Parsing URI failed");
       io.initCause(e);
