@@ -135,11 +135,6 @@ public class HttpRequest {
   public static final String HEADER_AUTHORIZATION = "Authorization";
 
   /**
-   * 'Proxy-Authorization' header name
-   */
-  public static final String HEADER_PROXY_AUTHORIZATION = "Proxy-Authorization";
-
-  /**
    * 'Cache-Control' header name
    */
   public static final String HEADER_CACHE_CONTROL = "Cache-Control";
@@ -190,6 +185,16 @@ public class HttpRequest {
   public static final String HEADER_LOCATION = "Location";
 
   /**
+   * 'Proxy-Authorization' header name
+   */
+  public static final String HEADER_PROXY_AUTHORIZATION = "Proxy-Authorization";
+
+  /**
+   * 'Referer' header name
+   */
+  public static final String HEADER_REFERER = "Referer";
+
+  /**
    * 'Server' header name
    */
   public static final String HEADER_SERVER = "Server";
@@ -198,11 +203,6 @@ public class HttpRequest {
    * 'User-Agent' header name
    */
   public static final String HEADER_USER_AGENT = "User-Agent";
-
-  /**
-   * 'Referer' header name
-   */
-  public static final String HEADER_REFERER = "Referer";
 
   /**
    * 'DELETE' request method
