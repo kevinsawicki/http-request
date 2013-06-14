@@ -2184,21 +2184,21 @@ public class HttpRequest {
   /**
    * Set the 'User-Agent' header to given value
    *
-   * @param value
+   * @param userAgent
    * @return this request
    */
-  public HttpRequest userAgent(final String value) {
-    return header(HEADER_USER_AGENT, value);
+  public HttpRequest userAgent(final String userAgent) {
+    return header(HEADER_USER_AGENT, userAgent);
   }
 
   /**
    * Set the 'Referer' header to given value
    *
-   * @param value
+   * @param referer
    * @return this request
    */
-  public HttpRequest referer(final String value) {
-    return header(HEADER_REFERER, value);
+  public HttpRequest referer(final String referer) {
+    return header(HEADER_REFERER, referer);
   }
 
   /**
@@ -2215,11 +2215,11 @@ public class HttpRequest {
   /**
    * Set the 'Accept-Encoding' header to given value
    *
-   * @param value
+   * @param acceptEncoding
    * @return this request
    */
-  public HttpRequest acceptEncoding(final String value) {
-    return header(HEADER_ACCEPT_ENCODING, value);
+  public HttpRequest acceptEncoding(final String acceptEncoding) {
+    return header(HEADER_ACCEPT_ENCODING, acceptEncoding);
   }
 
   /**
@@ -2235,11 +2235,11 @@ public class HttpRequest {
   /**
    * Set the 'Accept-Charset' header to given value
    *
-   * @param value
+   * @param acceptCharset
    * @return this request
    */
-  public HttpRequest acceptCharset(final String value) {
-    return header(HEADER_ACCEPT_CHARSET, value);
+  public HttpRequest acceptCharset(final String acceptCharset) {
+    return header(HEADER_ACCEPT_CHARSET, acceptCharset);
   }
 
   /**
@@ -2317,21 +2317,21 @@ public class HttpRequest {
   /**
    * Set the 'Authorization' header to given value
    *
-   * @param value
+   * @param authorization
    * @return this request
    */
-  public HttpRequest authorization(final String value) {
-    return header(HEADER_AUTHORIZATION, value);
+  public HttpRequest authorization(final String authorization) {
+    return header(HEADER_AUTHORIZATION, authorization);
   }
 
   /**
    * Set the 'Proxy-Authorization' header to given value
    *
-   * @param value
+   * @param proxyAuthorization
    * @return this request
    */
-  public HttpRequest proxyAuthorization(final String value) {
-    return header(HEADER_PROXY_AUTHORIZATION, value);
+  public HttpRequest proxyAuthorization(final String proxyAuthorization) {
+    return header(HEADER_PROXY_AUTHORIZATION, proxyAuthorization);
   }
 
   /**
@@ -2361,47 +2361,47 @@ public class HttpRequest {
   /**
    * Set the 'If-Modified-Since' request header to the given value
    *
-   * @param value
+   * @param ifModifiedSince
    * @return this request
    */
-  public HttpRequest ifModifiedSince(final long value) {
-    getConnection().setIfModifiedSince(value);
+  public HttpRequest ifModifiedSince(final long ifModifiedSince) {
+    getConnection().setIfModifiedSince(ifModifiedSince);
     return this;
   }
 
   /**
    * Set the 'If-None-Match' request header to the given value
    *
-   * @param value
+   * @param ifNoneMatch
    * @return this request
    */
-  public HttpRequest ifNoneMatch(final String value) {
-    return header(HEADER_IF_NONE_MATCH, value);
+  public HttpRequest ifNoneMatch(final String ifNoneMatch) {
+    return header(HEADER_IF_NONE_MATCH, ifNoneMatch);
   }
 
   /**
    * Set the 'Content-Type' request header to the given value
    *
-   * @param value
+   * @param contentType
    * @return this request
    */
-  public HttpRequest contentType(final String value) {
-    return contentType(value, null);
+  public HttpRequest contentType(final String contentType) {
+    return contentType(contentType, null);
   }
 
   /**
    * Set the 'Content-Type' request header to the given value and charset
    *
-   * @param value
+   * @param contentType
    * @param charset
    * @return this request
    */
-  public HttpRequest contentType(final String value, final String charset) {
+  public HttpRequest contentType(final String contentType, final String charset) {
     if (charset != null && charset.length() > 0) {
       final String separator = "; " + PARAM_CHARSET + '=';
-      return header(HEADER_CONTENT_TYPE, value + separator + charset);
+      return header(HEADER_CONTENT_TYPE, contentType + separator + charset);
     } else
-      return header(HEADER_CONTENT_TYPE, value);
+      return header(HEADER_CONTENT_TYPE, contentType);
   }
 
   /**
@@ -2425,32 +2425,32 @@ public class HttpRequest {
   /**
    * Set the 'Content-Length' request header to the given value
    *
-   * @param value
+   * @param contentLength
    * @return this request
    */
-  public HttpRequest contentLength(final String value) {
-    return contentLength(Integer.parseInt(value));
+  public HttpRequest contentLength(final String contentLength) {
+    return contentLength(Integer.parseInt(contentLength));
   }
 
   /**
    * Set the 'Content-Length' request header to the given value
    *
-   * @param value
+   * @param contentLength
    * @return this request
    */
-  public HttpRequest contentLength(final int value) {
-    getConnection().setFixedLengthStreamingMode(value);
+  public HttpRequest contentLength(final int contentLength) {
+    getConnection().setFixedLengthStreamingMode(contentLength);
     return this;
   }
 
   /**
    * Set the 'Accept' header to given value
    *
-   * @param value
+   * @param accept
    * @return this request
    */
-  public HttpRequest accept(final String value) {
-    return header(HEADER_ACCEPT, value);
+  public HttpRequest accept(final String accept) {
+    return header(HEADER_ACCEPT, accept);
   }
 
   /**
