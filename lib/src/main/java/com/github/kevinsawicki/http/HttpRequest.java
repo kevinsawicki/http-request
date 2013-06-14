@@ -200,6 +200,11 @@ public class HttpRequest {
   public static final String HEADER_USER_AGENT = "User-Agent";
 
   /**
+   * 'Referer' header name
+   */
+  public static final String HEADER_REFERER = "Referer";
+
+  /**
    * 'DELETE' request method
    */
   public static final String METHOD_DELETE = "DELETE";
@@ -2184,6 +2189,16 @@ public class HttpRequest {
    */
   public HttpRequest userAgent(final String value) {
     return header(HEADER_USER_AGENT, value);
+  }
+
+  /**
+   * Set the 'Referer' header to given value
+   *
+   * @param value
+   * @return this request
+   */
+  public HttpRequest referer(final String value) {
+    return header(HEADER_REFERER, value);
   }
 
   /**
