@@ -42,6 +42,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import com.github.kevinsawicki.http.HttpRequest.HttpRequestException;
+import com.github.kevinsawicki.http.HttpRequest.ConnectionFactory;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
@@ -55,6 +56,8 @@ import java.io.PrintStream;
 import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
 import java.io.Writer;
+import java.net.HttpURLConnection;
+import java.net.Proxy;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.Collections;
@@ -3351,4 +3354,52 @@ public class HttpRequestTest extends ServerTestCase {
     assertEquals(9876, request.send("hello").intHeader("Width"));
     assertEquals("hello", body.get());
   }
+
+  /**
+   * Verify custom connection factory
+   */
+  @Test
+  public void customConnectionFactory() throws Exception {
+    handler = new RequestHandler() {
+
+      @Override
+      public void handle(Request request, HttpServletResponse response) {
+        response.setStatus(HTTP_OK);
+      }
+    };
+
+    ConnectionFactory factory = new ConnectionFactory() {
+
+      public HttpURLConnection create(URL otherUrl) throws IOException {
+        return (HttpURLConnection) new URL(url).openConnection();
+      }
+
+      public HttpURLConnection create(URL url, Proxy proxy) throws IOException {
+        throw new IOException();
+      }
+    };
+
+    HttpRequest.setConnectionFactory(factory);
+    int code = get("http://not/a/real/url").code();
+    assertEquals(200, code);
+  }
+
+  /**
+   * Verify setting a null connection factory restores to the default one
+   */
+  @Test
+  public void nullConnectionFactory() throws Exception {
+    handler = new RequestHandler() {
+
+      @Override
+      public void handle(Request request, HttpServletResponse response) {
+        response.setStatus(HTTP_OK);
+      }
+    };
+
+    HttpRequest.setConnectionFactory(null);
+    int code = get(url).code();
+    assertEquals(200, code);
+  }
+
 }

@@ -366,16 +366,16 @@ public class HttpRequest {
     };
   }
 
-  private static ConnectionFactory connectionFactory = ConnectionFactory.DEFAULT;
+  private static ConnectionFactory CONNECTION_FACTORY = ConnectionFactory.DEFAULT;
 
   /**
    * Specify the {@link ConnectionFactory} used to create new requests.
    */
-  public static void setConnectionFactory(ConnectionFactory connectionFactory) {
-    if (connectionFactory == null) {
-      throw new NullPointerException("Connection factory must not be null.");
-    }
-    HttpRequest.connectionFactory = connectionFactory;
+  public static void setConnectionFactory(final ConnectionFactory connectionFactory) {
+    if (connectionFactory == null)
+      CONNECTION_FACTORY = ConnectionFactory.DEFAULT;
+    else
+      CONNECTION_FACTORY = connectionFactory;
   }
 
   /**
@@ -1398,7 +1398,6 @@ public class HttpRequest {
     this.requestMethod = method;
   }
 
-
   /**
    * Create HTTP connection wrapper
    *
@@ -1420,9 +1419,9 @@ public class HttpRequest {
     try {
       final HttpURLConnection connection;
       if (httpProxyHost != null)
-        connection = connectionFactory.create(url, createProxy());
+        connection = CONNECTION_FACTORY.create(url, createProxy());
       else
-        connection = connectionFactory.create(url);
+        connection = CONNECTION_FACTORY.create(url);
       connection.setRequestMethod(requestMethod);
       return connection;
     } catch (IOException e) {
