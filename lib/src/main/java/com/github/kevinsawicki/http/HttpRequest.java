@@ -3068,7 +3068,8 @@ public class HttpRequest {
    */
   public HttpRequest useProxy(final String proxyHost, final int proxyPort) {
     if (connection != null)
-      throw new IllegalStateException("Internal URLConnection is already created. Call this method earlier");
+      throw new IllegalStateException("The connection has already been created. This method must be called before reading or writing to the request.");
+
     this.httpProxyHost = proxyHost;
     this.httpProxyPort = proxyPort;
     return this;
