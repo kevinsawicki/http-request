@@ -3401,5 +3401,4 @@ public class HttpRequestTest extends ServerTestCase {
     int code = get(url).code();
     assertEquals(200, code);
   }
-
 }
