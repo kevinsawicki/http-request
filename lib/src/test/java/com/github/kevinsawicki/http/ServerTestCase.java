@@ -184,7 +184,7 @@ public class ServerTestCase {
     handlerList.addHandler(proxyHandler);
     proxy.setHandler(handlerList);
 
-    ServletHolder proxyHolder = proxyHandler.addServletWithMapping("org.eclipse.jetty.servlets.ProxyServlet","/");
+    ServletHolder proxyHolder = proxyHandler.addServletWithMapping("org.eclipse.jetty.servlets.ProxyServlet", "/");
     proxyHolder.setAsyncSupported(true);
 
     proxy.start();
