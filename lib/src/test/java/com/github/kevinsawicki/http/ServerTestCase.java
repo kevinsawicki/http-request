@@ -208,5 +208,7 @@ public class ServerTestCase {
   public static void tearDown() throws Exception {
     if (server != null)
       server.stop();
+    if (proxy != null)
+      proxy.stop();
   }
 }
