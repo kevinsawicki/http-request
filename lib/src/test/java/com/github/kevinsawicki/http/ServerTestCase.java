@@ -156,7 +156,7 @@ public class ServerTestCase {
     proxy = new Server();
     Connector proxyConnector = new SelectChannelConnector();
     proxyConnector.setPort(0);
-    proxy.setConnectors(new Connector[]{proxyConnector});
+    proxy.setConnectors(new Connector[] { proxyConnector });
 
     ServletHandler proxyHandler = new ServletHandler();
 
