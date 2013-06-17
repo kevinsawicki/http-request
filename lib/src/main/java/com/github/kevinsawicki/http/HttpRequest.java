@@ -332,6 +332,53 @@ public class HttpRequest {
   }
 
   /**
+   * Creates {@link HttpURLConnection HTTP connections} for
+   * {@link URL urls}.
+   */
+  public interface ConnectionFactory {
+    /**
+     * Open an {@link HttpURLConnection} for the specified {@link URL}.
+     *
+     * @throws IOException
+     */
+    HttpURLConnection create(URL url) throws IOException;
+
+    /**
+     * Open an {@link HttpURLConnection} for the specified {@link URL}
+     * and {@link Proxy}.
+     *
+     * @throws IOException
+     */
+    HttpURLConnection create(URL url, Proxy proxy) throws IOException;
+
+    /**
+     * A {@link ConnectionFactory} which uses the built-in
+     * {@link URL#openConnection()}
+     */
+    ConnectionFactory DEFAULT = new ConnectionFactory() {
+      public HttpURLConnection create(URL url) throws IOException {
+        return (HttpURLConnection) url.openConnection();
+      }
+
+      public HttpURLConnection create(URL url, Proxy proxy) throws IOException {
+        return (HttpURLConnection) url.openConnection(proxy);
+      }
+    };
+  }
+
+  private static ConnectionFactory connectionFactory = ConnectionFactory.DEFAULT;
+
+  /**
+   * Specify the {@link ConnectionFactory} used to create new requests.
+   */
+  public static void setConnectionFactory(ConnectionFactory connectionFactory) {
+    if (connectionFactory == null) {
+      throw new NullPointerException("Connection factory must not be null.");
+    }
+    HttpRequest.connectionFactory = connectionFactory;
+  }
+
+  /**
    * <p>
    * Encodes and decodes to and from Base64 notation.
    * </p>
@@ -1293,7 +1340,7 @@ public class HttpRequest {
    * @param value
    * @return previous value
    */
-  private static final String setProperty(final String name, final String value) {
+  private static String setProperty(final String name, final String value) {
     final PrivilegedAction<String> action;
     if (value != null)
       action = new PrivilegedAction<String>() {
@@ -1337,8 +1384,8 @@ public class HttpRequest {
   /**
    * Create HTTP connection wrapper
    *
-   * @param url
-   * @param method
+   * @param url Remote resource URL.
+   * @param method HTTP request method (e.g., "GET", "POST").
    * @throws HttpRequestException
    */
   public HttpRequest(final CharSequence url, final String method)
@@ -1355,8 +1402,8 @@ public class HttpRequest {
   /**
    * Create HTTP connection wrapper
    *
-   * @param url
-   * @param method
+   * @param url Remote resource URL.
+   * @param method HTTP request method (e.g., "GET", "POST").
    * @throws HttpRequestException
    */
   public HttpRequest(final URL url, final String method)
@@ -1373,12 +1420,12 @@ public class HttpRequest {
     try {
       final HttpURLConnection connection;
       if (httpProxyHost != null)
-        connection = (HttpURLConnection) url.openConnection(createProxy());
+        connection = connectionFactory.create(url, createProxy());
       else
-        connection = (HttpURLConnection) url.openConnection();
+        connection = connectionFactory.create(url);
       connection.setRequestMethod(requestMethod);
       return connection;
-    }catch (IOException e) {
+    } catch (IOException e) {
       throw new HttpRequestException(e);
     }
   }
