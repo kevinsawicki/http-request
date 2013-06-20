@@ -10,7 +10,7 @@
 
   <groupId>com.github.kevinsawicki</groupId>
   <artifactId>http-request</artifactId>
-  <version>5.4</version>
+  <version>5.5-SNAPSHOT</version>
   <url>https://github.com/kevinsawicki/http-request</url>
   <description>Library for making HTTP requests</description>
   <inceptionYear>2011</inceptionYear>
