@@ -184,6 +184,27 @@ request.proxyBasic("username", "p4ssw0rd");
 int code = HttpRequest.get("http://google.com").followRedirects(true).code();
 ```
 
+### Custom connection factory
+
+```java
+HttpRequest.setConnectionFactory(new ConnectionFactory() {
+
+  public HttpURLConnection create(URL url) throws IOException {
+    if (!"https".equals(url.getProtocol())) {
+      throw new IOException("Only secure requests are allowed");
+    }
+    return (HttpURLConnection) url.openConnection();
+  }
+
+  public HttpURLConnection create(URL url, Proxy proxy) throws IOException {
+    if (!"https".equals(url.getProtocol())) {
+      throw new IOException("Only secure requests are allowed");
+    }
+    return (HttpURLConnection) url.openConnection(proxy);
+  }
+});
+```
+
 ## Contributors
 
 * [Kevin Sawicki](https://github.com/kevinsawicki) :: [contributions](https://github.com/kevinsawicki/http-request/commits?author=kevinsawicki)
