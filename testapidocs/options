@@ -15,7 +15,7 @@
 -docencoding
 'UTF-8'
 -doctitle
-'http-request 5.1-SNAPSHOT Test API'
+'http-request 5.5-SNAPSHOT Test API'
 -link
 '../apidocs'
 -linkoffline
@@ -23,4 +23,4 @@
 -use
 -version
 -windowtitle
-'http-request 5.1-SNAPSHOT Test API'
+'http-request 5.5-SNAPSHOT Test API'

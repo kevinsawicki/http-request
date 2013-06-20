@@ -15,10 +15,10 @@
 -docencoding
 'UTF-8'
 -doctitle
-'http-request 5.1-SNAPSHOT API'
+'http-request 5.5-SNAPSHOT API'
 -linkoffline
 'http://download.oracle.com/javase/1.5.0/docs/api' '/Users/kevin/repos/http-request/lib/target/javadoc-bundle-options'
 -use
 -version
 -windowtitle
-'http-request 5.1-SNAPSHOT API'
+'http-request 5.5-SNAPSHOT API'
