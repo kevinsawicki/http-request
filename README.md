@@ -186,6 +186,9 @@ int code = HttpRequest.get("http://google.com").followRedirects(true).code();
 
 ### Custom connection factory
 
+Looking to use this library with [OkHttp](https://github.com/square/okhttp)?
+Read [here](https://gist.github.com/JakeWharton/5797571).
+
 ```java
 HttpRequest.setConnectionFactory(new ConnectionFactory() {
 
