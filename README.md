@@ -174,7 +174,7 @@ request.trustAllHosts();
 HttpRequest request = HttpRequest.get("https://google.com");
 //Configure proxy
 request.useProxy("localhost", 8080);
-//Optional proxy basic uthentication
+//Optional proxy basic authentication
 request.proxyBasic("username", "p4ssw0rd");
 ```
 
