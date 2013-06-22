@@ -193,16 +193,14 @@ Read [here](https://gist.github.com/JakeWharton/5797571).
 HttpRequest.setConnectionFactory(new ConnectionFactory() {
 
   public HttpURLConnection create(URL url) throws IOException {
-    if (!"https".equals(url.getProtocol())) {
+    if (!"https".equals(url.getProtocol()))
       throw new IOException("Only secure requests are allowed");
-    }
     return (HttpURLConnection) url.openConnection();
   }
 
   public HttpURLConnection create(URL url, Proxy proxy) throws IOException {
-    if (!"https".equals(url.getProtocol())) {
+    if (!"https".equals(url.getProtocol()))
       throw new IOException("Only secure requests are allowed");
-    }
     return (HttpURLConnection) url.openConnection(proxy);
   }
 });
