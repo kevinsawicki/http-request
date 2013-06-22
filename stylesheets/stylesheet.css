@@ -1,5 +1,5 @@
 /*******************************************************************************
-Slate Theme for Github Pages
+Slate Theme for GitHub Pages
 by Jason Costello, @jsncostello
 *******************************************************************************/
 
@@ -45,10 +45,6 @@ blockquote, q {
 table {
   border-collapse: collapse;
   border-spacing: 0;
-}
-
-a:focus {
-  outline: none;
 }
 
 /*******************************************************************************
