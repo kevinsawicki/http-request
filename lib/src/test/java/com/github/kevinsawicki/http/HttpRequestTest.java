@@ -81,7 +81,9 @@ import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.util.B64Code;
 import org.junit.After;
 import org.junit.BeforeClass;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 
 /**
  * Unit tests of {@link HttpRequest}
@@ -125,11 +127,15 @@ public class HttpRequestTest extends ServerTestCase {
     handler = null;
   }
 
+  @Rule
+  public ExpectedException thrown = ExpectedException.none();
+
   /**
    * Create request with malformed URL
    */
-  @Test(expected = HttpRequestException.class)
+  @Test
   public void malformedStringUrl() {
+    thrown.expect(HttpRequestException.class);
     get("\\m/");
   }
 
@@ -149,8 +155,9 @@ public class HttpRequestTest extends ServerTestCase {
   /**
    * Set request buffer size to negative value
    */
-  @Test(expected = IllegalArgumentException.class)
+  @Test
   public void negativeBufferSize() {
+    thrown.expect(IllegalArgumentException.class);
     get("http://localhost").bufferSize(-1);
   }
 
@@ -801,6 +808,41 @@ public class HttpRequestTest extends ServerTestCase {
     int code = post(url).form(new HashMap<String, String>()).code();
     assertEquals(HTTP_OK, code);
     assertEquals("", body.get());
+  }
+
+  /**
+   * java.net.HttpURLConnection throws IllegalStateException with message "Already connected"
+   * when writing request body before headers.
+   */
+  @Test
+  public void postFormBeforeHeaders() throws Exception {
+    thrown.expect(IllegalStateException.class);
+    thrown.expectMessage("Headers must be declared before form data");
+    Map<String, String> data = new LinkedHashMap<String, String>();
+    data.put("name", "user");
+    data.put("number", "100");
+    post(url).form(data).header("FOO", "BAR").code();
+  }
+
+  /**
+   * @see #postFormBeforeHeaders()
+   */
+  @Test
+  public void postFormAfterHeaders() throws Exception {
+    final AtomicReference<String> body = new AtomicReference<String>();
+    handler = new RequestHandler() {
+
+      @Override
+      public void handle(Request request, HttpServletResponse response) {
+        body.set(new String(read()));
+        response.setStatus(HTTP_OK);
+      }
+    };
+    Map<String, String> data = new LinkedHashMap<String, String>();
+    data.put("name", "user");
+    data.put("number", "100");
+    int code = post(url).header("FOO", "BAR").form(data).code();
+    assertEquals(HTTP_OK, code);
   }
 
   /**
@@ -3143,8 +3185,9 @@ public class HttpRequestTest extends ServerTestCase {
   /**
    * Try to append with wrong number of arguments
    */
-  @Test(expected = IllegalArgumentException.class)
+  @Test
   public void appendOddNumberOfParams() {
+    thrown.expect(IllegalArgumentException.class);
     HttpRequest.append("http://test.com", "1");
   }
 
