@@ -3129,7 +3129,7 @@ public class HttpRequest {
    * @return this request
    */
   public HttpRequest followRedirects(final boolean followRedirects) {
-    getConnection().setFollowRedirects(followRedirects);
+    getConnection().setInstanceFollowRedirects(followRedirects);
     return this;
   }
 }
