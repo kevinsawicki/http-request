@@ -1775,7 +1775,10 @@ public class HttpRequest {
         try {
           stream = getConnection().getInputStream();
         } catch (IOException e) {
-          throw new HttpRequestException(e);
+          if (contentLength() > 0)
+            throw new HttpRequestException(e);
+          else
+            stream = new ByteArrayInputStream(new byte[0]);
         }
     }
 

@@ -3401,4 +3401,60 @@ public class HttpRequestTest extends ServerTestCase {
     int code = get(url).code();
     assertEquals(200, code);
   }
+
+  /**
+   * Verify reading response body for empty 200
+   *
+   * @throws Exception
+   */
+  @Test
+  public void streamOfEmptyOkResponse() throws Exception {
+    handler = new RequestHandler() {
+
+      @Override
+      public void handle(Request request, HttpServletResponse response) {
+        response.setStatus(200);
+      }
+    };
+    assertEquals("", get(url).body());
+  }
+
+  /**
+   * Verify reading response body for empty 400
+   *
+   * @throws Exception
+   */
+  @Test
+  public void bodyOfEmptyErrorResponse() throws Exception {
+    handler = new RequestHandler() {
+
+      @Override
+      public void handle(Request request, HttpServletResponse response) {
+        response.setStatus(HTTP_BAD_REQUEST);
+      }
+    };
+    assertEquals("", get(url).body());
+  }
+
+  /**
+   * Verify reading response body for non-empty 400
+   *
+   * @throws Exception
+   */
+  @Test
+  public void bodyOfNonEmptyErrorResponse() throws Exception {
+    handler = new RequestHandler() {
+
+      @Override
+      public void handle(Request request, HttpServletResponse response) {
+        response.setStatus(HTTP_BAD_REQUEST);
+        try {
+          response.getWriter().write("error");
+        } catch (IOException ignored) {
+          // Ignored
+        }
+      }
+    };
+    assertEquals("error", get(url).body());
+  }
 }
