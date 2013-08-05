@@ -379,6 +379,21 @@ public class HttpRequest {
   }
 
   /**
+   * Callback that is called on upload and download progress
+   */
+  public interface ProgressCallback {
+
+    /**
+     * onProgress is invoked periodically during a request transfer
+     *
+     * @param transferred The number of bytes already transferred
+     * @param total The total number of bytes in this request or -1 if the length
+     *              is unknown.
+     */
+    void onProgress(int transferred, int total);
+  }
+
+  /**
    * <p>
    * Encodes and decodes to and from Base64 notation.
    * </p>
@@ -1389,6 +1404,10 @@ public class HttpRequest {
   private boolean uncompress = false;
 
   private int bufferSize = 8192;
+
+  private int totalSize = 0;
+
+  private int totalWritten = 0;
 
   private String httpProxyHost;
 
@@ -2540,8 +2559,11 @@ public class HttpRequest {
       public HttpRequest run() throws IOException {
         final byte[] buffer = new byte[bufferSize];
         int read;
-        while ((read = input.read(buffer)) != -1)
+        while ((read = input.read(buffer)) != -1) {
           output.write(buffer, 0, read);
+          totalWritten += read;
+          progress.onProgress(totalWritten, totalSize);
+        }
         return HttpRequest.this;
       }
     }.call();
@@ -2563,12 +2585,35 @@ public class HttpRequest {
       public HttpRequest run() throws IOException {
         final char[] buffer = new char[bufferSize];
         int read;
-        while ((read = input.read(buffer)) != -1)
+        while ((read = input.read(buffer)) != -1) {
           output.write(buffer, 0, read);
+          totalWritten += read;
+          progress.onProgress(totalWritten, -1);
+        }
         return HttpRequest.this;
       }
     }.call();
   }
+
+  private static final ProgressCallback NULL_PROGRESS_CALLBACK = new ProgressCallback() {
+    public void onProgress(int totalWritten, int total) { }
+  };
+
+  private ProgressCallback progress = NULL_PROGRESS_CALLBACK;
+
+  /**
+   * Set ProgressCallback for this request
+   *
+   * @param callback
+   * @return this request
+   */
+  public HttpRequest progress(final ProgressCallback callback) {
+    if (callback != null) {
+      progress = callback;
+    }
+    return this;
+  }
+
 
   /**
    * Close output stream
@@ -2795,6 +2840,7 @@ public class HttpRequest {
     final InputStream stream;
     try {
       stream = new BufferedInputStream(new FileInputStream(part));
+      totalSize += part.length();
     } catch (IOException e) {
       throw new HttpRequestException(e);
     }
@@ -2862,6 +2908,7 @@ public class HttpRequest {
     final InputStream stream;
     try {
       stream = new BufferedInputStream(new FileInputStream(input));
+      totalSize += input.length();
     } catch (FileNotFoundException e) {
       throw new HttpRequestException(e);
     }
