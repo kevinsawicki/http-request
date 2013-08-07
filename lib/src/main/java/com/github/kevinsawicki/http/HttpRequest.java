@@ -253,9 +253,16 @@ public class HttpRequest {
 
   private static final String[] EMPTY_STRINGS = new String[0];
 
-  private static SSLSocketFactory TRUSTED_FACTORY;
+  private static final ThreadLocal<SSLSocketFactory> trustedFactory = new ThreadLocal<SSLSocketFactory>();
 
-  private static HostnameVerifier TRUSTED_VERIFIER;
+  private static class VerifierHolder {
+    private static final HostnameVerifier TRUSTED_VERIFIER = new HostnameVerifier() {
+
+      public boolean verify(String hostname, SSLSession session) {
+        return true;
+      }
+    };
+  }
 
   private static String getValidCharset(final String charset) {
     if (charset != null && charset.length() > 0)
@@ -266,7 +273,7 @@ public class HttpRequest {
 
   private static SSLSocketFactory getTrustedFactory()
       throws HttpRequestException {
-    if (TRUSTED_FACTORY == null) {
+    if (trustedFactory.get() == null) {
       final TrustManager[] trustAllCerts = new TrustManager[] { new X509TrustManager() {
 
         public X509Certificate[] getAcceptedIssuers() {
@@ -284,7 +291,7 @@ public class HttpRequest {
       try {
         SSLContext context = SSLContext.getInstance("TLS");
         context.init(null, trustAllCerts, new SecureRandom());
-        TRUSTED_FACTORY = context.getSocketFactory();
+        trustedFactory.set(context.getSocketFactory());
       } catch (GeneralSecurityException e) {
         IOException ioException = new IOException(
             "Security exception configuring SSL context");
@@ -293,19 +300,11 @@ public class HttpRequest {
       }
     }
 
-    return TRUSTED_FACTORY;
+    return trustedFactory.get();
   }
 
   private static HostnameVerifier getTrustedVerifier() {
-    if (TRUSTED_VERIFIER == null)
-      TRUSTED_VERIFIER = new HostnameVerifier() {
-
-        public boolean verify(String hostname, SSLSession session) {
-          return true;
-        }
-      };
-
-    return TRUSTED_VERIFIER;
+    return VerifierHolder.TRUSTED_VERIFIER;
   }
 
   private static StringBuilder addPathSeparator(final String baseUrl,
@@ -366,16 +365,16 @@ public class HttpRequest {
     };
   }
 
-  private static ConnectionFactory CONNECTION_FACTORY = ConnectionFactory.DEFAULT;
+  private static volatile ConnectionFactory connectionFactory = ConnectionFactory.DEFAULT;
 
   /**
    * Specify the {@link ConnectionFactory} used to create new requests.
    */
   public static void setConnectionFactory(final ConnectionFactory connectionFactory) {
     if (connectionFactory == null)
-      CONNECTION_FACTORY = ConnectionFactory.DEFAULT;
+      HttpRequest.connectionFactory = ConnectionFactory.DEFAULT;
     else
-      CONNECTION_FACTORY = connectionFactory;
+      HttpRequest.connectionFactory = connectionFactory;
   }
 
   /**
@@ -1419,9 +1418,9 @@ public class HttpRequest {
     try {
       final HttpURLConnection connection;
       if (httpProxyHost != null)
-        connection = CONNECTION_FACTORY.create(url, createProxy());
+        connection = connectionFactory.create(url, createProxy());
       else
-        connection = CONNECTION_FACTORY.create(url);
+        connection = connectionFactory.create(url);
       connection.setRequestMethod(requestMethod);
       return connection;
     } catch (IOException e) {
