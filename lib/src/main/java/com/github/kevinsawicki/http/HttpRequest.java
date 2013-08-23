@@ -614,9 +614,11 @@ public class HttpRequest {
     private static final long serialVersionUID = -1170466989781746231L;
 
     /**
+     * Create a new HttpRequestException with the given cause
+     *
      * @param cause
      */
-    protected HttpRequestException(final IOException cause) {
+    public HttpRequestException(final IOException cause) {
       super(cause);
     }
 
