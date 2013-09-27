@@ -1286,6 +1286,18 @@ public class HttpRequest {
   }
 
   /**
+   * Set the 'http.maxConnections' property to the given value.
+   * <p>
+   * This setting will apply to all requests.
+   *
+   * @param maxConnections
+   */
+  public static void maxConnections(final int maxConnections) {
+	final String maxConnectionsValue = Integer.toString(maxConnections);
+	setProperty("http.maxConnections", maxConnectionsValue);
+  }
+
+  /**
    * Set the 'http.proxyHost' & 'https.proxyHost' properties to the given host
    * value.
    * <p>
