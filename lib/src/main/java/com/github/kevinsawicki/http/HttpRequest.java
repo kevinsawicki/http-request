@@ -1293,8 +1293,7 @@ public class HttpRequest {
    * @param maxConnections
    */
   public static void maxConnections(final int maxConnections) {
-    final String maxConnectionsValue = Integer.toString(maxConnections);
-    setProperty("http.maxConnections", maxConnectionsValue);
+    setProperty("http.maxConnections", Integer.toString(maxConnections));
   }
 
   /**
