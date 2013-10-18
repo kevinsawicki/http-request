@@ -2608,9 +2608,10 @@ public class HttpRequest {
    * @return this request
    */
   public HttpRequest progress(final ProgressCallback callback) {
-    if (callback != null) {
+    if (callback == null)
+      progress = NULL_PROGRESS_CALLBACK;
+    else
       progress = callback;
-    }
     return this;
   }
 
