@@ -2624,6 +2624,7 @@ public class HttpRequest {
    * @throws IOException
    */
   protected HttpRequest closeOutput() throws IOException {
+    progress(null);
     if (output == null)
       return this;
     if (multipart)
