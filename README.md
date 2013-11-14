@@ -42,7 +42,7 @@ requests.
 
 ### What are the dependencies?
 
-None.  The goal of this library is to be a single class class with some inner static
+**None**.  The goal of this library is to be a single class class with some inner static
 classes.  The test project does require [Jetty](http://eclipse.org/jetty/) in order
 to test requests against an actual HTTP server implementation.
 
@@ -52,6 +52,50 @@ The `HttpRequest` class does not throw any checked exceptions, instead all low-l
 exceptions are wrapped up in a `HttpRequestException` which extends `RuntimeException`.
 You can access the underlying exception by catching `HttpRequestException` and calling
 `getCause()` which will always return the original `IOException`.
+
+### Are requests asynchronous?
+
+**No**.  The underlying `HttpUrlConnection` object that each `HttpRequest`
+object wraps has a synchronous API and therefore all methods on `HttpRequest`
+are also synchronous.
+
+Therefore it is important to not use an `HttpRequest` object on the main thread
+of your application.
+
+Here is a simple Android example of using it from an
+[AsyncTask](http://developer.android.com/reference/android/os/AsyncTask.html):
+
+```java
+private class DownloadTask extends AsyncTask<String, Long, File> {
+  protected File doInBackground(String... urls) {
+    try {
+      HttpRequest request =  HttpRequest.get(url[0]);
+      File file = null;
+      if (request.ok()) {
+        file = File.create('download', '.tmp');
+        request.receive(file);
+        publishProgress(file.length());
+      }
+      return file;
+    } catch (HttpRequestException exception) {
+      return null;
+    }
+  }
+
+  protected void onProgressUpdate(Long... progress) {
+    Log.d("MyApp", "Downloaded bytes: " + progress[0]);
+  }
+
+  protected void onPostExecute(File file) {
+    if (file != null)
+      Log.d("MyApp", "Downloaded file to: " + file.getAbsolutePath());
+    else
+      Log.d("MyApp", "Download failed");
+  }
+}
+
+new DownloadTask().execute("http://google.com");
+```
 
 ## Examples
 
