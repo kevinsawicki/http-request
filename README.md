@@ -3,6 +3,8 @@
 A simple convenience library for using a [HttpURLConnection](http://download.oracle.com/javase/6/docs/api/java/net/HttpURLConnection.html)
 to make requests and access the response.
 
+This library is available under the [MIT License](http://www.opensource.org/licenses/mit-license.php).
+
 ## Usage
 
 The http-request library is available from [Maven Central](http://search.maven.org/#search%7Cgav%7C1%7Cg%3A%22com.github.kevinsawicki%22%20AND%20a%3A%22http-request%22).
