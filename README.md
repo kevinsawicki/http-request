@@ -170,7 +170,7 @@ request.trustAllCerts();
 request.trustAllHosts();
 ```
 
-### Configure HTTP proxy
+### Configuring an HTTP proxy
 
 ```java
 HttpRequest request = HttpRequest.get("https://google.com");
@@ -180,7 +180,7 @@ request.useProxy("localhost", 8080);
 request.proxyBasic("username", "p4ssw0rd");
 ```
 
-### Follow redirects
+### Following redirects
 
 ```java
 int code = HttpRequest.get("http://google.com").followRedirects(true).code();
