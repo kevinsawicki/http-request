@@ -72,7 +72,7 @@ private class DownloadTask extends AsyncTask<String, Long, File> {
       HttpRequest request =  HttpRequest.get(url[0]);
       File file = null;
       if (request.ok()) {
-        file = File.create('download', '.tmp');
+        file = File.create("download", ".tmp");
         request.receive(file);
         publishProgress(file.length());
       }
