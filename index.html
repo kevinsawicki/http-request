@@ -89,7 +89,7 @@ requests.</p>
 <h3>
 <a name="what-are-the-dependencies" class="anchor" href="#what-are-the-dependencies"><span class="octicon octicon-link"></span></a>What are the dependencies?</h3>
 
-<p>None.  The goal of this library is to be a single class class with some inner static
+<p><strong>None</strong>.  The goal of this library is to be a single class class with some inner static
 classes.  The test project does require <a href="http://eclipse.org/jetty/">Jetty</a> in order
 to test requests against an actual HTTP server implementation.</p>
 
@@ -100,6 +100,50 @@ to test requests against an actual HTTP server implementation.</p>
 exceptions are wrapped up in a <code>HttpRequestException</code> which extends <code>RuntimeException</code>.
 You can access the underlying exception by catching <code>HttpRequestException</code> and calling
 <code>getCause()</code> which will always return the original <code>IOException</code>.</p>
+
+<h3>
+<a name="are-requests-asynchronous" class="anchor" href="#are-requests-asynchronous"><span class="octicon octicon-link"></span></a>Are requests asynchronous?</h3>
+
+<p><strong>No</strong>.  The underlying <code>HttpUrlConnection</code> object that each <code>HttpRequest</code>
+object wraps has a synchronous API and therefore all methods on <code>HttpRequest</code>
+are also synchronous.</p>
+
+<p>Therefore it is important to not use an <code>HttpRequest</code> object on the main thread
+of your application.</p>
+
+<p>Here is a simple Android example of using it from an
+<a href="http://developer.android.com/reference/android/os/AsyncTask.html">AsyncTask</a>:</p>
+
+<div class="highlight highlight-java"><pre><span class="kd">private</span> <span class="kd">class</span> <span class="nc">DownloadTask</span> <span class="kd">extends</span> <span class="n">AsyncTask</span><span class="o">&lt;</span><span class="n">String</span><span class="o">,</span> <span class="n">Long</span><span class="o">,</span> <span class="n">File</span><span class="o">&gt;</span> <span class="o">{</span>
+  <span class="kd">protected</span> <span class="n">File</span> <span class="nf">doInBackground</span><span class="o">(</span><span class="n">String</span><span class="o">...</span> <span class="n">urls</span><span class="o">)</span> <span class="o">{</span>
+    <span class="k">try</span> <span class="o">{</span>
+      <span class="n">HttpRequest</span> <span class="n">request</span> <span class="o">=</span>  <span class="n">HttpRequest</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">url</span><span class="o">[</span><span class="mi">0</span><span class="o">]);</span>
+      <span class="n">File</span> <span class="n">file</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
+      <span class="k">if</span> <span class="o">(</span><span class="n">request</span><span class="o">.</span><span class="na">ok</span><span class="o">())</span> <span class="o">{</span>
+        <span class="n">file</span> <span class="o">=</span> <span class="n">File</span><span class="o">.</span><span class="na">create</span><span class="o">(</span><span class="s">"download"</span><span class="o">,</span> <span class="s">".tmp"</span><span class="o">);</span>
+        <span class="n">request</span><span class="o">.</span><span class="na">receive</span><span class="o">(</span><span class="n">file</span><span class="o">);</span>
+        <span class="n">publishProgress</span><span class="o">(</span><span class="n">file</span><span class="o">.</span><span class="na">length</span><span class="o">());</span>
+      <span class="o">}</span>
+      <span class="k">return</span> <span class="n">file</span><span class="o">;</span>
+    <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">HttpRequestException</span> <span class="n">exception</span><span class="o">)</span> <span class="o">{</span>
+      <span class="k">return</span> <span class="kc">null</span><span class="o">;</span>
+    <span class="o">}</span>
+  <span class="o">}</span>
+
+  <span class="kd">protected</span> <span class="kt">void</span> <span class="nf">onProgressUpdate</span><span class="o">(</span><span class="n">Long</span><span class="o">...</span> <span class="n">progress</span><span class="o">)</span> <span class="o">{</span>
+    <span class="n">Log</span><span class="o">.</span><span class="na">d</span><span class="o">(</span><span class="s">"MyApp"</span><span class="o">,</span> <span class="s">"Downloaded bytes: "</span> <span class="o">+</span> <span class="n">progress</span><span class="o">[</span><span class="mi">0</span><span class="o">]);</span>
+  <span class="o">}</span>
+
+  <span class="kd">protected</span> <span class="kt">void</span> <span class="nf">onPostExecute</span><span class="o">(</span><span class="n">File</span> <span class="n">file</span><span class="o">)</span> <span class="o">{</span>
+    <span class="k">if</span> <span class="o">(</span><span class="n">file</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span>
+      <span class="n">Log</span><span class="o">.</span><span class="na">d</span><span class="o">(</span><span class="s">"MyApp"</span><span class="o">,</span> <span class="s">"Downloaded file to: "</span> <span class="o">+</span> <span class="n">file</span><span class="o">.</span><span class="na">getAbsolutePath</span><span class="o">());</span>
+    <span class="k">else</span>
+      <span class="n">Log</span><span class="o">.</span><span class="na">d</span><span class="o">(</span><span class="s">"MyApp"</span><span class="o">,</span> <span class="s">"Download failed"</span><span class="o">);</span>
+  <span class="o">}</span>
+<span class="o">}</span>
+
+<span class="k">new</span> <span class="nf">DownloadTask</span><span class="o">().</span><span class="na">execute</span><span class="o">(</span><span class="s">"http://google.com"</span><span class="o">);</span>
+</pre></div>
 
 <h2>
 <a name="examples" class="anchor" href="#examples"><span class="octicon octicon-link"></span></a>Examples</h2>
@@ -221,7 +265,7 @@ You can access the underlying exception by catching <code>HttpRequestException</
 </pre></div>
 
 <h3>
-<a name="configure-http-proxy" class="anchor" href="#configure-http-proxy"><span class="octicon octicon-link"></span></a>Configure HTTP proxy</h3>
+<a name="configuring-an-http-proxy" class="anchor" href="#configuring-an-http-proxy"><span class="octicon octicon-link"></span></a>Configuring an HTTP proxy</h3>
 
 <div class="highlight highlight-java"><pre><span class="n">HttpRequest</span> <span class="n">request</span> <span class="o">=</span> <span class="n">HttpRequest</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="s">"https://google.com"</span><span class="o">);</span>
 <span class="c1">//Configure proxy</span>
@@ -231,7 +275,7 @@ You can access the underlying exception by catching <code>HttpRequestException</
 </pre></div>
 
 <h3>
-<a name="follow-redirects" class="anchor" href="#follow-redirects"><span class="octicon octicon-link"></span></a>Follow redirects</h3>
+<a name="following-redirects" class="anchor" href="#following-redirects"><span class="octicon octicon-link"></span></a>Following redirects</h3>
 
 <div class="highlight highlight-java"><pre><span class="kt">int</span> <span class="n">code</span> <span class="o">=</span> <span class="n">HttpRequest</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="s">"http://google.com"</span><span class="o">).</span><span class="na">followRedirects</span><span class="o">(</span><span class="kc">true</span><span class="o">).</span><span class="na">code</span><span class="o">();</span>
 </pre></div>
