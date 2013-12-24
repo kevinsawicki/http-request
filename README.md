@@ -69,7 +69,7 @@ Here is a simple Android example of using it from an
 private class DownloadTask extends AsyncTask<String, Long, File> {
   protected File doInBackground(String... urls) {
     try {
-      HttpRequest request =  HttpRequest.get(url[0]);
+      HttpRequest request =  HttpRequest.get(urls[0]);
       File file = null;
       if (request.ok()) {
         file = File.createTempFile("download", ".tmp");
