@@ -48,6 +48,7 @@ import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -3456,5 +3457,147 @@ public class HttpRequestTest extends ServerTestCase {
       }
     };
     assertEquals("error", get(url).body());
+  }
+
+  /**
+   * Verify progress callback when sending a file
+   *
+   * @throws Exception
+   */
+  @Test
+  public void progressCallbackSend() throws Exception {
+    final AtomicReference<String> body = new AtomicReference<String>();
+    handler = new RequestHandler() {
+
+      @Override
+      public void handle(Request request, HttpServletResponse response) {
+        body.set(new String(read()));
+        response.setStatus(HTTP_OK);
+      }
+    };
+    File file = File.createTempFile("post", ".txt");
+    new FileWriter(file).append("hello").close();
+    HttpRequest.ProgressCallback progress = new HttpRequest.ProgressCallback() {
+      int tx = 1;
+
+      public void onProgress(int transferred, int total) {
+        assertEquals("hello".length(), total);
+        assertEquals(tx++, transferred);
+      }
+    };
+    post(url).bufferSize(1).progress(progress).send(file);
+  }
+
+  /**
+   * Verify progress callback when sending from an InputStream
+   *
+   * @throws Exception
+   */
+  @Test
+  public void progressCallbackSendInputStream() throws Exception {
+    final AtomicReference<String> body = new AtomicReference<String>();
+    handler = new RequestHandler() {
+
+      @Override
+      public void handle(Request request, HttpServletResponse response) {
+        body.set(new String(read()));
+        response.setStatus(HTTP_OK);
+      }
+    };
+    File file = File.createTempFile("post", ".txt");
+    new FileWriter(file).append("hello").close();
+    InputStream input = new FileInputStream(file);
+    HttpRequest.ProgressCallback progress = new HttpRequest.ProgressCallback() {
+      int tx = 1;
+
+      public void onProgress(int transferred, int total) {
+        assertEquals(0, total);
+        assertEquals(tx++, transferred);
+      }
+    };
+    post(url).bufferSize(1).progress(progress).send(input);
+  }
+
+  /**
+   * Verify progress callback when sending from a Reader
+   *
+   * @throws Exception
+   */
+  @Test
+  public void progressCallbackSendReader() throws Exception {
+    final AtomicReference<String> body = new AtomicReference<String>();
+    handler = new RequestHandler() {
+
+      @Override
+      public void handle(Request request, HttpServletResponse response) {
+        body.set(new String(read()));
+        response.setStatus(HTTP_OK);
+      }
+    };
+    HttpRequest.ProgressCallback progress = new HttpRequest.ProgressCallback() {
+      int tx = 1;
+
+      public void onProgress(int transferred, int total) {
+        assertEquals(-1, total);
+        assertEquals(tx++, transferred);
+      }
+    };
+    File file = File.createTempFile("post", ".txt");
+    new FileWriter(file).append("hello").close();
+    post(url).progress(progress).bufferSize(1).send(new FileReader(file));
+  }
+
+  /**
+   * Verify progress callback when receiving to a Writer
+   *
+   * @throws Exception
+   */
+  @Test
+  public void progressCallbackReceive() throws Exception {
+    handler = new RequestHandler() {
+
+      @Override
+      public void handle(Request request, HttpServletResponse response) {
+        response.setStatus(HTTP_OK);
+        try {
+          response.getWriter().print("content");
+        } catch (IOException e) {
+          fail();
+        }
+      }
+    };
+    HttpRequest.ProgressCallback progress = new HttpRequest.ProgressCallback() {
+      int tx = 1;
+
+      public void onProgress(int transferred, int total) {
+        assertEquals(-1, total);
+        assertEquals(tx++, transferred);
+      }
+    };
+    StringWriter writer = new StringWriter();
+    post(url).progress(progress).bufferSize(1).receive(writer);
+  }
+
+  /**
+   * Verify progress callback doesn't cause an exception when it's null
+   *
+   * @throws Exception
+   */
+  @Test
+  public void nullProgressCallback() throws Exception {
+    final AtomicReference<String> body = new AtomicReference<String>();
+    handler = new RequestHandler() {
+
+      @Override
+      public void handle(Request request, HttpServletResponse response) {
+        body.set(new String(read()));
+        response.setStatus(HTTP_OK);
+      }
+    };
+    File file = File.createTempFile("post", ".txt");
+    new FileWriter(file).append("hello").close();
+    int code = post(url).progress(null).send(file).code();
+    assertEquals(HTTP_OK, code);
+    assertEquals("hello", body.get());
   }
 }
