@@ -3486,7 +3486,7 @@ public class HttpRequestTest extends ServerTestCase {
         assertEquals(tx.incrementAndGet(), transferred);
       }
     };
-    post(url).bufferSize(1).progress(progress).send(file);
+    post(url).bufferSize(1).progress(progress).send(file).code();
     assertEquals(file.length(), tx.get());
   }
 
@@ -3516,7 +3516,7 @@ public class HttpRequestTest extends ServerTestCase {
         assertEquals(tx.incrementAndGet(), transferred);
       }
     };
-    post(url).bufferSize(1).progress(progress).send(input);
+    post(url).bufferSize(1).progress(progress).send(input).code();
     assertEquals(file.length(), tx.get());
   }
 
@@ -3546,7 +3546,7 @@ public class HttpRequestTest extends ServerTestCase {
     };
     File file = File.createTempFile("post", ".txt");
     new FileWriter(file).append("hello").close();
-    post(url).progress(progress).bufferSize(1).send(new FileReader(file));
+    post(url).progress(progress).bufferSize(1).send(new FileReader(file)).code();
     assertEquals(file.length(), tx.get());
   }
 
