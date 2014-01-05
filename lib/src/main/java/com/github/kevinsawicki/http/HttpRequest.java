@@ -1418,6 +1418,8 @@ public class HttpRequest {
 
   private int httpProxyPort;
 
+  private ProgressCallback progress = ProgressCallback.DEFAULT;
+
   /**
    * Create HTTP connection wrapper
    *
@@ -2599,8 +2601,6 @@ public class HttpRequest {
       }
     }.call();
   }
-
-  private ProgressCallback progress = ProgressCallback.DEFAULT;
 
   /**
    * Set ProgressCallback for this request
