@@ -382,7 +382,6 @@ public class HttpRequest {
    * Callback interface for reporting upload progress for a request.
    */
   public interface UploadProgress {
-
     /**
      * Callback invoked as data is uploaded by the request.
      *
@@ -390,10 +389,10 @@ public class HttpRequest {
      * @param total The total number of bytes that will be uploaded or -1 if
      *              the length is unknown.
      */
-    void onUpload(int uploaded, int total);
+    void onUpload(long uploaded, long total);
 
     UploadProgress DEFAULT = new UploadProgress() {
-      public void onUpload(int uploaded, int total) {
+      public void onUpload(long uploaded, long total) {
       }
     };
   }
@@ -1410,9 +1409,9 @@ public class HttpRequest {
 
   private int bufferSize = 8192;
 
-  private int totalSize = 0;
+  private long totalSize = 0;
 
-  private int totalWritten = 0;
+  private long totalWritten = 0;
 
   private String httpProxyHost;
 

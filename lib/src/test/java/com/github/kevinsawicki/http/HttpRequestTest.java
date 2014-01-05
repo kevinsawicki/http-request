@@ -3479,9 +3479,9 @@ public class HttpRequestTest extends ServerTestCase {
     final File file = File.createTempFile("post", ".txt");
     new FileWriter(file).append("hello").close();
 
-    final AtomicInteger tx = new AtomicInteger(0);
+    final AtomicLong tx = new AtomicLong(0);
     UploadProgress progress = new UploadProgress() {
-      public void onUpload(int transferred, int total) {
+      public void onUpload(long transferred, long total) {
         assertEquals(file.length(), total);
         assertEquals(tx.incrementAndGet(), transferred);
       }
@@ -3509,9 +3509,9 @@ public class HttpRequestTest extends ServerTestCase {
     File file = File.createTempFile("post", ".txt");
     new FileWriter(file).append("hello").close();
     InputStream input = new FileInputStream(file);
-    final AtomicInteger tx = new AtomicInteger(0);
+    final AtomicLong tx = new AtomicLong(0);
     UploadProgress progress = new UploadProgress() {
-      public void onUpload(int transferred, int total) {
+      public void onUpload(long transferred, long total) {
         assertEquals(0, total);
         assertEquals(tx.incrementAndGet(), transferred);
       }
@@ -3538,9 +3538,9 @@ public class HttpRequestTest extends ServerTestCase {
     };
 
     final byte[] bytes = "hello".getBytes(CHARSET_UTF8);
-    final AtomicInteger tx = new AtomicInteger(0);
+    final AtomicLong tx = new AtomicLong(0);
     UploadProgress progress = new UploadProgress() {
-      public void onUpload(int transferred, int total) {
+      public void onUpload(long transferred, long total) {
         assertEquals(bytes.length, total);
         assertEquals(tx.incrementAndGet(), transferred);
       }
@@ -3566,9 +3566,9 @@ public class HttpRequestTest extends ServerTestCase {
       }
     };
 
-    final AtomicInteger tx = new AtomicInteger(0);
+    final AtomicLong tx = new AtomicLong(0);
     UploadProgress progress = new UploadProgress() {
-      public void onUpload(int transferred, int total) {
+      public void onUpload(long transferred, long total) {
         assertEquals(-1, total);
         assertEquals(tx.incrementAndGet(), transferred);
       }
