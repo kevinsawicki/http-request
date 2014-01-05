@@ -2603,7 +2603,7 @@ public class HttpRequest {
   }
 
   /**
-   * Set the UploadProgress for this request
+   * Set the UploadProgress callback for this request
    *
    * @param callback
    * @return this request
@@ -2615,7 +2615,6 @@ public class HttpRequest {
       progress = callback;
     return this;
   }
-
 
   /**
    * Close output stream
