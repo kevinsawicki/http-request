@@ -391,6 +391,11 @@ public class HttpRequest {
      *              length is unknown.
      */
     void onProgress(int transferred, int total);
+
+    ProgressCallback DEFAULT = new ProgressCallback() {
+      public void onProgress(int totalWritten, int total) {
+      }
+    };
   }
 
   /**
@@ -2595,11 +2600,7 @@ public class HttpRequest {
     }.call();
   }
 
-  private static final ProgressCallback NULL_PROGRESS_CALLBACK = new ProgressCallback() {
-    public void onProgress(int totalWritten, int total) { }
-  };
-
-  private ProgressCallback progress = NULL_PROGRESS_CALLBACK;
+  private ProgressCallback progress = ProgressCallback.DEFAULT;
 
   /**
    * Set ProgressCallback for this request
@@ -2609,7 +2610,7 @@ public class HttpRequest {
    */
   public HttpRequest progress(final ProgressCallback callback) {
     if (callback == null)
-      progress = NULL_PROGRESS_CALLBACK;
+      progress = ProgressCallback.DEFAULT;
     else
       progress = callback;
     return this;
