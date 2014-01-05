@@ -2925,6 +2925,8 @@ public class HttpRequest {
    * @throws HttpRequestException
    */
   public HttpRequest send(final byte[] input) throws HttpRequestException {
+    if (input != null)
+      totalSize += input.length;
     return send(new ByteArrayInputStream(input));
   }
 
