@@ -43,6 +43,7 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import com.github.kevinsawicki.http.HttpRequest.HttpRequestException;
 import com.github.kevinsawicki.http.HttpRequest.ConnectionFactory;
+import com.github.kevinsawicki.http.HttpRequest.ProgressCallback;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
@@ -3479,7 +3480,7 @@ public class HttpRequestTest extends ServerTestCase {
     new FileWriter(file).append("hello").close();
 
     final AtomicInteger tx = new AtomicInteger(0);
-    HttpRequest.ProgressCallback progress = new HttpRequest.ProgressCallback() {
+    ProgressCallback progress = new ProgressCallback() {
       public void onProgress(int transferred, int total) {
         assertEquals(file.length(), total);
         assertEquals(tx.incrementAndGet(), transferred);
@@ -3509,7 +3510,7 @@ public class HttpRequestTest extends ServerTestCase {
     new FileWriter(file).append("hello").close();
     InputStream input = new FileInputStream(file);
     final AtomicInteger tx = new AtomicInteger(0);
-    HttpRequest.ProgressCallback progress = new HttpRequest.ProgressCallback() {
+    ProgressCallback progress = new ProgressCallback() {
       public void onProgress(int transferred, int total) {
         assertEquals(0, total);
         assertEquals(tx.incrementAndGet(), transferred);
@@ -3537,7 +3538,7 @@ public class HttpRequestTest extends ServerTestCase {
     };
 
     final AtomicInteger tx = new AtomicInteger(0);
-    HttpRequest.ProgressCallback progress = new HttpRequest.ProgressCallback() {
+    ProgressCallback progress = new ProgressCallback() {
       public void onProgress(int transferred, int total) {
         assertEquals(-1, total);
         assertEquals(tx.incrementAndGet(), transferred);
@@ -3568,7 +3569,7 @@ public class HttpRequestTest extends ServerTestCase {
         }
       }
     };
-    HttpRequest.ProgressCallback progress = new HttpRequest.ProgressCallback() {
+    ProgressCallback progress = new ProgressCallback() {
       int tx = 1;
 
       public void onProgress(int transferred, int total) {
