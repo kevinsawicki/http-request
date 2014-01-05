@@ -1409,7 +1409,7 @@ public class HttpRequest {
 
   private int bufferSize = 8192;
 
-  private long totalSize = 0;
+  private long totalSize = -1;
 
   private long totalWritten = 0;
 
@@ -2615,6 +2615,13 @@ public class HttpRequest {
     return this;
   }
 
+  private HttpRequest incrementTotalSize(final long size) {
+    if (totalSize == -1)
+      totalSize = 0;
+    totalSize += size;
+    return this;
+  }
+
   /**
    * Close output stream
    *
@@ -2841,7 +2848,7 @@ public class HttpRequest {
     final InputStream stream;
     try {
       stream = new BufferedInputStream(new FileInputStream(part));
-      totalSize += part.length();
+      incrementTotalSize(part.length());
     } catch (IOException e) {
       throw new HttpRequestException(e);
     }
@@ -2909,7 +2916,7 @@ public class HttpRequest {
     final InputStream stream;
     try {
       stream = new BufferedInputStream(new FileInputStream(input));
-      totalSize += input.length();
+      incrementTotalSize(input.length());
     } catch (FileNotFoundException e) {
       throw new HttpRequestException(e);
     }
@@ -2925,7 +2932,7 @@ public class HttpRequest {
    */
   public HttpRequest send(final byte[] input) throws HttpRequestException {
     if (input != null)
-      totalSize += input.length;
+      incrementTotalSize(input.length);
     return send(new ByteArrayInputStream(input));
   }
 

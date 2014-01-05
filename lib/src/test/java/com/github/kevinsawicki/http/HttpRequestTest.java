@@ -3512,7 +3512,7 @@ public class HttpRequestTest extends ServerTestCase {
     final AtomicLong tx = new AtomicLong(0);
     UploadProgress progress = new UploadProgress() {
       public void onUpload(long transferred, long total) {
-        assertEquals(0, total);
+        assertEquals(-1, total);
         assertEquals(tx.incrementAndGet(), transferred);
       }
     };
