@@ -3475,17 +3475,18 @@ public class HttpRequestTest extends ServerTestCase {
         response.setStatus(HTTP_OK);
       }
     };
-    File file = File.createTempFile("post", ".txt");
+    final File file = File.createTempFile("post", ".txt");
     new FileWriter(file).append("hello").close();
-    HttpRequest.ProgressCallback progress = new HttpRequest.ProgressCallback() {
-      int tx = 1;
 
+    final AtomicInteger tx = new AtomicInteger(0);
+    HttpRequest.ProgressCallback progress = new HttpRequest.ProgressCallback() {
       public void onProgress(int transferred, int total) {
-        assertEquals("hello".length(), total);
-        assertEquals(tx++, transferred);
+        assertEquals(file.length(), total);
+        assertEquals(tx.incrementAndGet(), transferred);
       }
     };
     post(url).bufferSize(1).progress(progress).send(file);
+    assertEquals(file.length(), tx.get());
   }
 
   /**
@@ -3507,15 +3508,15 @@ public class HttpRequestTest extends ServerTestCase {
     File file = File.createTempFile("post", ".txt");
     new FileWriter(file).append("hello").close();
     InputStream input = new FileInputStream(file);
+    final AtomicInteger tx = new AtomicInteger(0);
     HttpRequest.ProgressCallback progress = new HttpRequest.ProgressCallback() {
-      int tx = 1;
-
       public void onProgress(int transferred, int total) {
         assertEquals(0, total);
-        assertEquals(tx++, transferred);
+        assertEquals(tx.incrementAndGet(), transferred);
       }
     };
     post(url).bufferSize(1).progress(progress).send(input);
+    assertEquals(file.length(), tx.get());
   }
 
   /**
@@ -3534,17 +3535,18 @@ public class HttpRequestTest extends ServerTestCase {
         response.setStatus(HTTP_OK);
       }
     };
-    HttpRequest.ProgressCallback progress = new HttpRequest.ProgressCallback() {
-      int tx = 1;
 
+    final AtomicInteger tx = new AtomicInteger(0);
+    HttpRequest.ProgressCallback progress = new HttpRequest.ProgressCallback() {
       public void onProgress(int transferred, int total) {
         assertEquals(-1, total);
-        assertEquals(tx++, transferred);
+        assertEquals(tx.incrementAndGet(), transferred);
       }
     };
     File file = File.createTempFile("post", ".txt");
     new FileWriter(file).append("hello").close();
     post(url).progress(progress).bufferSize(1).send(new FileReader(file));
+    assertEquals(file.length(), tx.get());
   }
 
   /**
