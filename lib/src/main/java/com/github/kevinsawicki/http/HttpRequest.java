@@ -381,7 +381,7 @@ public class HttpRequest {
   /**
    * Callback interface for reporting upload progress for a request.
    */
-  public interface UploadProgressCallback {
+  public interface UploadProgress {
 
     /**
      * Callback invoked as data is uploaded by the request.
@@ -392,7 +392,7 @@ public class HttpRequest {
      */
     void onUpload(int uploaded, int total);
 
-    UploadProgressCallback DEFAULT = new UploadProgressCallback() {
+    UploadProgress DEFAULT = new UploadProgress() {
       public void onUpload(int uploaded, int total) {
       }
     };
@@ -1418,7 +1418,7 @@ public class HttpRequest {
 
   private int httpProxyPort;
 
-  private UploadProgressCallback progress = UploadProgressCallback.DEFAULT;
+  private UploadProgress progress = UploadProgress.DEFAULT;
 
   /**
    * Create HTTP connection wrapper
@@ -2603,14 +2603,14 @@ public class HttpRequest {
   }
 
   /**
-   * Set the UploadProgressCallback for this request
+   * Set the UploadProgress for this request
    *
    * @param callback
    * @return this request
    */
-  public HttpRequest progress(final UploadProgressCallback callback) {
+  public HttpRequest progress(final UploadProgress callback) {
     if (callback == null)
-      progress = UploadProgressCallback.DEFAULT;
+      progress = UploadProgress.DEFAULT;
     else
       progress = callback;
     return this;
