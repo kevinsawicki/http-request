@@ -387,8 +387,8 @@ public class HttpRequest {
      * onProgress is invoked periodically during a request transfer
      *
      * @param transferred The number of bytes already transferred
-     * @param total The total number of bytes in this request or -1 if the length
-     *              is unknown.
+     * @param total The total number of bytes in this request or -1 if the
+     *              length is unknown.
      */
     void onProgress(int transferred, int total);
   }
