@@ -43,7 +43,7 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import com.github.kevinsawicki.http.HttpRequest.HttpRequestException;
 import com.github.kevinsawicki.http.HttpRequest.ConnectionFactory;
-import com.github.kevinsawicki.http.HttpRequest.ProgressCallback;
+import com.github.kevinsawicki.http.HttpRequest.UploadProgressCallback;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
@@ -3466,7 +3466,7 @@ public class HttpRequestTest extends ServerTestCase {
    * @throws Exception
    */
   @Test
-  public void progressCallbackSend() throws Exception {
+  public void uploadProgressCallbackSend() throws Exception {
     final AtomicReference<String> body = new AtomicReference<String>();
     handler = new RequestHandler() {
 
@@ -3480,8 +3480,8 @@ public class HttpRequestTest extends ServerTestCase {
     new FileWriter(file).append("hello").close();
 
     final AtomicInteger tx = new AtomicInteger(0);
-    ProgressCallback progress = new ProgressCallback() {
-      public void onProgress(int transferred, int total) {
+    UploadProgressCallback progress = new UploadProgressCallback() {
+      public void onUpload(int transferred, int total) {
         assertEquals(file.length(), total);
         assertEquals(tx.incrementAndGet(), transferred);
       }
@@ -3496,7 +3496,7 @@ public class HttpRequestTest extends ServerTestCase {
    * @throws Exception
    */
   @Test
-  public void progressCallbackSendInputStream() throws Exception {
+  public void uploadProgressCallbackSendInputStream() throws Exception {
     final AtomicReference<String> body = new AtomicReference<String>();
     handler = new RequestHandler() {
 
@@ -3510,8 +3510,8 @@ public class HttpRequestTest extends ServerTestCase {
     new FileWriter(file).append("hello").close();
     InputStream input = new FileInputStream(file);
     final AtomicInteger tx = new AtomicInteger(0);
-    ProgressCallback progress = new ProgressCallback() {
-      public void onProgress(int transferred, int total) {
+    UploadProgressCallback progress = new UploadProgressCallback() {
+      public void onUpload(int transferred, int total) {
         assertEquals(0, total);
         assertEquals(tx.incrementAndGet(), transferred);
       }
@@ -3526,7 +3526,7 @@ public class HttpRequestTest extends ServerTestCase {
    * @throws Exception
    */
   @Test
-  public void progressCallbackSendReader() throws Exception {
+  public void uploadProgressCallbackSendReader() throws Exception {
     final AtomicReference<String> body = new AtomicReference<String>();
     handler = new RequestHandler() {
 
@@ -3538,8 +3538,8 @@ public class HttpRequestTest extends ServerTestCase {
     };
 
     final AtomicInteger tx = new AtomicInteger(0);
-    ProgressCallback progress = new ProgressCallback() {
-      public void onProgress(int transferred, int total) {
+    UploadProgressCallback progress = new UploadProgressCallback() {
+      public void onUpload(int transferred, int total) {
         assertEquals(-1, total);
         assertEquals(tx.incrementAndGet(), transferred);
       }
@@ -3551,43 +3551,12 @@ public class HttpRequestTest extends ServerTestCase {
   }
 
   /**
-   * Verify progress callback when receiving to a Writer
-   *
-   * @throws Exception
-   */
-  @Test
-  public void progressCallbackReceive() throws Exception {
-    handler = new RequestHandler() {
-
-      @Override
-      public void handle(Request request, HttpServletResponse response) {
-        response.setStatus(HTTP_OK);
-        try {
-          response.getWriter().print("content");
-        } catch (IOException e) {
-          fail();
-        }
-      }
-    };
-    ProgressCallback progress = new ProgressCallback() {
-      int tx = 1;
-
-      public void onProgress(int transferred, int total) {
-        assertEquals(-1, total);
-        assertEquals(tx++, transferred);
-      }
-    };
-    StringWriter writer = new StringWriter();
-    post(url).progress(progress).bufferSize(1).receive(writer);
-  }
-
-  /**
    * Verify progress callback doesn't cause an exception when it's null
    *
    * @throws Exception
    */
   @Test
-  public void nullProgressCallback() throws Exception {
+  public void nullUploadProgressCallback() throws Exception {
     final AtomicReference<String> body = new AtomicReference<String>();
     handler = new RequestHandler() {
 

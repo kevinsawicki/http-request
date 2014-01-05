@@ -379,21 +379,21 @@ public class HttpRequest {
   }
 
   /**
-   * Callback that is called on upload and download progress
+   * Callback interface for reporting upload progress for a request.
    */
-  public interface ProgressCallback {
+  public interface UploadProgressCallback {
 
     /**
-     * onProgress is invoked periodically during a request transfer
+     * Callback invoked as data is uploaded by the request.
      *
-     * @param transferred The number of bytes already transferred
-     * @param total The total number of bytes in this request or -1 if the
-     *              length is unknown.
+     * @param uploaded The number of bytes already uploaded
+     * @param total The total number of bytes that will be uploaded or -1 if
+     *              the length is unknown.
      */
-    void onProgress(int transferred, int total);
+    void onUpload(int uploaded, int total);
 
-    ProgressCallback DEFAULT = new ProgressCallback() {
-      public void onProgress(int totalWritten, int total) {
+    UploadProgressCallback DEFAULT = new UploadProgressCallback() {
+      public void onUpload(int uploaded, int total) {
       }
     };
   }
@@ -1418,7 +1418,7 @@ public class HttpRequest {
 
   private int httpProxyPort;
 
-  private ProgressCallback progress = ProgressCallback.DEFAULT;
+  private UploadProgressCallback progress = UploadProgressCallback.DEFAULT;
 
   /**
    * Create HTTP connection wrapper
@@ -2569,7 +2569,7 @@ public class HttpRequest {
         while ((read = input.read(buffer)) != -1) {
           output.write(buffer, 0, read);
           totalWritten += read;
-          progress.onProgress(totalWritten, totalSize);
+          progress.onUpload(totalWritten, totalSize);
         }
         return HttpRequest.this;
       }
@@ -2595,7 +2595,7 @@ public class HttpRequest {
         while ((read = input.read(buffer)) != -1) {
           output.write(buffer, 0, read);
           totalWritten += read;
-          progress.onProgress(totalWritten, -1);
+          progress.onUpload(totalWritten, -1);
         }
         return HttpRequest.this;
       }
@@ -2603,14 +2603,14 @@ public class HttpRequest {
   }
 
   /**
-   * Set ProgressCallback for this request
+   * Set the UploadProgressCallback for this request
    *
    * @param callback
    * @return this request
    */
-  public HttpRequest progress(final ProgressCallback callback) {
+  public HttpRequest progress(final UploadProgressCallback callback) {
     if (callback == null)
-      progress = ProgressCallback.DEFAULT;
+      progress = UploadProgressCallback.DEFAULT;
     else
       progress = callback;
     return this;
