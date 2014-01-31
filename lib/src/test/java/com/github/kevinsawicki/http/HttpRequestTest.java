@@ -33,6 +33,7 @@ import static com.github.kevinsawicki.http.HttpRequest.trace;
 import static java.net.HttpURLConnection.HTTP_BAD_REQUEST;
 import static java.net.HttpURLConnection.HTTP_CREATED;
 import static java.net.HttpURLConnection.HTTP_INTERNAL_ERROR;
+import static java.net.HttpURLConnection.HTTP_NO_CONTENT;
 import static java.net.HttpURLConnection.HTTP_NOT_MODIFIED;
 import static java.net.HttpURLConnection.HTTP_OK;
 import static org.junit.Assert.assertEquals;
@@ -221,12 +222,44 @@ public class HttpRequestTest extends ServerTestCase {
     int code = request.code();
     assertTrue(request.ok());
     assertFalse(request.created());
+    assertFalse(request.noContent());
     assertFalse(request.badRequest());
     assertFalse(request.serverError());
     assertFalse(request.notFound());
     assertEquals("GET", method.get());
     assertEquals("OK", request.message());
     assertEquals(HTTP_OK, code);
+    assertEquals("", request.body());
+  }
+
+  /**
+   * Make a GET request with an empty body response
+   *
+   * @throws Exception
+   */
+  @Test
+  public void getNoContent() throws Exception {
+    final AtomicReference<String> method = new AtomicReference<String>();
+    handler = new RequestHandler() {
+
+      @Override
+      public void handle(Request request, HttpServletResponse response) {
+        method.set(request.getMethod());
+        response.setStatus(HTTP_NO_CONTENT);
+      }
+    };
+    HttpRequest request = get(new URL(url));
+    assertNotNull(request.getConnection());
+    int code = request.code();
+    assertFalse(request.ok());
+    assertFalse(request.created());
+    assertTrue(request.noContent());
+    assertFalse(request.badRequest());
+    assertFalse(request.serverError());
+    assertFalse(request.notFound());
+    assertEquals("GET", method.get());
+    assertEquals("No Content", request.message());
+    assertEquals(HTTP_NO_CONTENT, code);
     assertEquals("", request.body());
   }
 

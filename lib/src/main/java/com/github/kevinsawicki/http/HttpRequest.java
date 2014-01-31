@@ -24,6 +24,7 @@ package com.github.kevinsawicki.http;
 import static java.net.HttpURLConnection.HTTP_BAD_REQUEST;
 import static java.net.HttpURLConnection.HTTP_CREATED;
 import static java.net.HttpURLConnection.HTTP_INTERNAL_ERROR;
+import static java.net.HttpURLConnection.HTTP_NO_CONTENT;
 import static java.net.HttpURLConnection.HTTP_NOT_FOUND;
 import static java.net.HttpURLConnection.HTTP_NOT_MODIFIED;
 import static java.net.HttpURLConnection.HTTP_OK;
@@ -1554,6 +1555,16 @@ public class HttpRequest {
    */
   public boolean created() throws HttpRequestException {
     return HTTP_CREATED == code();
+  }
+
+  /**
+   * Is the response code a 204 No Content?
+   *
+   * @return true if 204, false otherwise
+   * @throws HttpRequestException
+   */
+  public boolean noContent() {
+    return HTTP_NO_CONTENT == code();
   }
 
   /**
