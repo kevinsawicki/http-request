@@ -1563,7 +1563,7 @@ public class HttpRequest {
    * @return true if 204, false otherwise
    * @throws HttpRequestException
    */
-  public boolean noContent() {
+  public boolean noContent() throws HttpRequestException {
     return HTTP_NO_CONTENT == code();
   }
 
