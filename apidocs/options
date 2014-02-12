@@ -1,24 +1,24 @@
 -classpath
-'/Users/kevin/repos/http-request/lib/target/classes'
+'/Users/kevin/github/http-request/lib/target/classes'
 -encoding
 'UTF-8'
 -protected
 -sourcepath
-'/Users/kevin/repos/http-request/lib/src/main/java'
+'/Users/kevin/github/http-request/lib/src/main/java'
 -author
 -bottom
-'Copyright &#169; 2011-2013. All Rights Reserved.'
+'Copyright &#169; 2011-2014. All Rights Reserved.'
 -charset
 'UTF-8'
 -d
-'/Users/kevin/repos/http-request/lib/target/site/apidocs'
+'/Users/kevin/github/http-request/lib/target/site/apidocs'
 -docencoding
 'UTF-8'
 -doctitle
-'http-request 5.5-SNAPSHOT API'
+'http-request 5.6 API'
 -linkoffline
-'http://download.oracle.com/javase/1.5.0/docs/api' '/Users/kevin/repos/http-request/lib/target/javadoc-bundle-options'
+'http://download.oracle.com/javase/1.5.0/docs/api' '/Users/kevin/github/http-request/lib/target/javadoc-bundle-options'
 -use
 -version
 -windowtitle
-'http-request 5.5-SNAPSHOT API'
+'http-request 5.6 API'

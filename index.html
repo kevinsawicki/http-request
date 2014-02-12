@@ -1,62 +1,51 @@
-<!doctype html>
+<!DOCTYPE html>
 <html>
-  <head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="chrome=1">
-    <title>http-request by kevinsawicki</title>
-    <link rel="stylesheet" href="stylesheets/styles.css">
-    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
-    <script src="javascripts/main.js"></script>
-    <!--[if lt IE 9]>
-      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
-    <![endif]-->
-    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
 
+  <head>
+    <meta charset='utf-8' />
+    <meta http-equiv="X-UA-Compatible" content="chrome=1" />
+    <meta name="description" content="http-request : Java HTTP Request Library" />
+
+    <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
+
+    <title>http-request</title>
   </head>
+
   <body>
 
-      <header>
-        <h1>http-request</h1>
-        <p>Java HTTP Request Library</p>
-      </header>
+    <!-- HEADER -->
+    <div id="header_wrap" class="outer">
+        <header class="inner">
+          <a id="forkme_banner" href="https://github.com/kevinsawicki/http-request">View on GitHub</a>
 
-      <div id="banner">
-        <span id="logo"></span>
+          <h1 id="project_title">http-request</h1>
+          <h2 id="project_tagline">Java HTTP Request Library</h2>
 
-        <a href="https://github.com/kevinsawicki/http-request" class="button fork"><strong>View On GitHub</strong></a>
-        <div class="downloads">
-          <span>Downloads:</span>
-          <ul>
-            <li><a href="https://github.com/kevinsawicki/http-request/zipball/master" class="button">ZIP</a></li>
-            <li><a href="https://github.com/kevinsawicki/http-request/tarball/master" class="button">TAR</a></li>
-          </ul>
-        </div>
-      </div><!-- end banner -->
+            <section id="downloads">
+              <a class="zip_download_link" href="https://github.com/kevinsawicki/http-request/zipball/master">Download this project as a .zip file</a>
+              <a class="tar_download_link" href="https://github.com/kevinsawicki/http-request/tarball/master">Download this project as a tar.gz file</a>
+            </section>
+        </header>
+    </div>
 
-    <div class="wrapper">
-      <nav>
-        <ul></ul>
-      </nav>
-      <section>
+    <!-- MAIN CONTENT -->
+    <div id="main_content_wrap" class="outer">
+      <section id="main_content" class="inner">
         <h1>
-<a name="http-request-" class="anchor" href="#http-request-"><span class="octicon octicon-link"></span></a>Http Request <a href="https://travis-ci.org/kevinsawicki/http-request"><img src="https://travis-ci.org/kevinsawicki/http-request.png" alt="Build Status"></a>
-</h1>
+<a name="http-request" class="anchor" href="#http-request"><span class="octicon octicon-link"></span></a>Http Request</h1>
 
 <p>A simple convenience library for using a <a href="http://download.oracle.com/javase/6/docs/api/java/net/HttpURLConnection.html">HttpURLConnection</a>
 to make requests and access the response.</p>
-
-<p>This library is available under the <a href="http://www.opensource.org/licenses/mit-license.php">MIT License</a>.</p>
 
 <h2>
 <a name="usage" class="anchor" href="#usage"><span class="octicon octicon-link"></span></a>Usage</h2>
 
 <p>The http-request library is available from <a href="http://search.maven.org/#search%7Cgav%7C1%7Cg%3A%22com.github.kevinsawicki%22%20AND%20a%3A%22http-request%22">Maven Central</a>.</p>
 
-<div class="highlight highlight-xml"><pre><span class="nt">&lt;dependency&gt;</span>
+<div class="highlight"><pre><span class="nt">&lt;dependency&gt;</span>
   <span class="nt">&lt;groupId&gt;</span>com.github.kevinsawicki<span class="nt">&lt;/groupId&gt;</span>
   <span class="nt">&lt;artifactId&gt;</span>http-request<span class="nt">&lt;/artifactId&gt;</span>
-  <span class="nt">&lt;version&gt;</span>5.5<span class="nt">&lt;/version&gt;</span>
+  <span class="nt">&lt;version&gt;</span>5.4<span class="nt">&lt;/version&gt;</span>
 <span class="nt">&lt;/dependency&gt;</span>
 </pre></div>
 
@@ -89,7 +78,7 @@ requests.</p>
 <h3>
 <a name="what-are-the-dependencies" class="anchor" href="#what-are-the-dependencies"><span class="octicon octicon-link"></span></a>What are the dependencies?</h3>
 
-<p><strong>None</strong>.  The goal of this library is to be a single class class with some inner static
+<p>None.  The goal of this library is to be a single class class with some inner static
 classes.  The test project does require <a href="http://eclipse.org/jetty/">Jetty</a> in order
 to test requests against an actual HTTP server implementation.</p>
 
@@ -101,83 +90,39 @@ exceptions are wrapped up in a <code>HttpRequestException</code> which extends <
 You can access the underlying exception by catching <code>HttpRequestException</code> and calling
 <code>getCause()</code> which will always return the original <code>IOException</code>.</p>
 
-<h3>
-<a name="are-requests-asynchronous" class="anchor" href="#are-requests-asynchronous"><span class="octicon octicon-link"></span></a>Are requests asynchronous?</h3>
-
-<p><strong>No</strong>.  The underlying <code>HttpUrlConnection</code> object that each <code>HttpRequest</code>
-object wraps has a synchronous API and therefore all methods on <code>HttpRequest</code>
-are also synchronous.</p>
-
-<p>Therefore it is important to not use an <code>HttpRequest</code> object on the main thread
-of your application.</p>
-
-<p>Here is a simple Android example of using it from an
-<a href="http://developer.android.com/reference/android/os/AsyncTask.html">AsyncTask</a>:</p>
-
-<div class="highlight highlight-java"><pre><span class="kd">private</span> <span class="kd">class</span> <span class="nc">DownloadTask</span> <span class="kd">extends</span> <span class="n">AsyncTask</span><span class="o">&lt;</span><span class="n">String</span><span class="o">,</span> <span class="n">Long</span><span class="o">,</span> <span class="n">File</span><span class="o">&gt;</span> <span class="o">{</span>
-  <span class="kd">protected</span> <span class="n">File</span> <span class="nf">doInBackground</span><span class="o">(</span><span class="n">String</span><span class="o">...</span> <span class="n">urls</span><span class="o">)</span> <span class="o">{</span>
-    <span class="k">try</span> <span class="o">{</span>
-      <span class="n">HttpRequest</span> <span class="n">request</span> <span class="o">=</span>  <span class="n">HttpRequest</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">urls</span><span class="o">[</span><span class="mi">0</span><span class="o">]);</span>
-      <span class="n">File</span> <span class="n">file</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
-      <span class="k">if</span> <span class="o">(</span><span class="n">request</span><span class="o">.</span><span class="na">ok</span><span class="o">())</span> <span class="o">{</span>
-        <span class="n">file</span> <span class="o">=</span> <span class="n">File</span><span class="o">.</span><span class="na">create</span><span class="o">(</span><span class="s">"download"</span><span class="o">,</span> <span class="s">".tmp"</span><span class="o">);</span>
-        <span class="n">request</span><span class="o">.</span><span class="na">receive</span><span class="o">(</span><span class="n">file</span><span class="o">);</span>
-        <span class="n">publishProgress</span><span class="o">(</span><span class="n">file</span><span class="o">.</span><span class="na">length</span><span class="o">());</span>
-      <span class="o">}</span>
-      <span class="k">return</span> <span class="n">file</span><span class="o">;</span>
-    <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">HttpRequestException</span> <span class="n">exception</span><span class="o">)</span> <span class="o">{</span>
-      <span class="k">return</span> <span class="kc">null</span><span class="o">;</span>
-    <span class="o">}</span>
-  <span class="o">}</span>
-
-  <span class="kd">protected</span> <span class="kt">void</span> <span class="nf">onProgressUpdate</span><span class="o">(</span><span class="n">Long</span><span class="o">...</span> <span class="n">progress</span><span class="o">)</span> <span class="o">{</span>
-    <span class="n">Log</span><span class="o">.</span><span class="na">d</span><span class="o">(</span><span class="s">"MyApp"</span><span class="o">,</span> <span class="s">"Downloaded bytes: "</span> <span class="o">+</span> <span class="n">progress</span><span class="o">[</span><span class="mi">0</span><span class="o">]);</span>
-  <span class="o">}</span>
-
-  <span class="kd">protected</span> <span class="kt">void</span> <span class="nf">onPostExecute</span><span class="o">(</span><span class="n">File</span> <span class="n">file</span><span class="o">)</span> <span class="o">{</span>
-    <span class="k">if</span> <span class="o">(</span><span class="n">file</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span>
-      <span class="n">Log</span><span class="o">.</span><span class="na">d</span><span class="o">(</span><span class="s">"MyApp"</span><span class="o">,</span> <span class="s">"Downloaded file to: "</span> <span class="o">+</span> <span class="n">file</span><span class="o">.</span><span class="na">getAbsolutePath</span><span class="o">());</span>
-    <span class="k">else</span>
-      <span class="n">Log</span><span class="o">.</span><span class="na">d</span><span class="o">(</span><span class="s">"MyApp"</span><span class="o">,</span> <span class="s">"Download failed"</span><span class="o">);</span>
-  <span class="o">}</span>
-<span class="o">}</span>
-
-<span class="k">new</span> <span class="nf">DownloadTask</span><span class="o">().</span><span class="na">execute</span><span class="o">(</span><span class="s">"http://google.com"</span><span class="o">);</span>
-</pre></div>
-
 <h2>
 <a name="examples" class="anchor" href="#examples"><span class="octicon octicon-link"></span></a>Examples</h2>
 
 <h3>
 <a name="perform-a-get-request-and-get-the-status-of-the-response" class="anchor" href="#perform-a-get-request-and-get-the-status-of-the-response"><span class="octicon octicon-link"></span></a>Perform a GET request and get the status of the response</h3>
 
-<div class="highlight highlight-java"><pre><span class="kt">int</span> <span class="n">response</span> <span class="o">=</span> <span class="n">HttpRequest</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="s">"http://google.com"</span><span class="o">).</span><span class="na">code</span><span class="o">();</span>
+<div class="highlight"><pre><span class="kt">int</span> <span class="n">response</span> <span class="o">=</span> <span class="n">HttpRequest</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="s">"http://google.com"</span><span class="o">).</span><span class="na">code</span><span class="o">();</span>
 </pre></div>
 
 <h3>
 <a name="perform-a-get-request-and-get-the-body-of-the-response" class="anchor" href="#perform-a-get-request-and-get-the-body-of-the-response"><span class="octicon octicon-link"></span></a>Perform a GET request and get the body of the response</h3>
 
-<div class="highlight highlight-java"><pre><span class="n">String</span> <span class="n">response</span> <span class="o">=</span> <span class="n">HttpRequest</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="s">"http://google.com"</span><span class="o">).</span><span class="na">body</span><span class="o">();</span>
+<div class="highlight"><pre><span class="n">String</span> <span class="n">response</span> <span class="o">=</span> <span class="n">HttpRequest</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="s">"http://google.com"</span><span class="o">).</span><span class="na">body</span><span class="o">();</span>
 <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"Response was: "</span> <span class="o">+</span> <span class="n">response</span><span class="o">);</span>
 </pre></div>
 
 <h3>
 <a name="print-the-response-of-a-get-request-to-standard-out" class="anchor" href="#print-the-response-of-a-get-request-to-standard-out"><span class="octicon octicon-link"></span></a>Print the response of a GET request to standard out</h3>
 
-<div class="highlight highlight-java"><pre><span class="n">HttpRequest</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="s">"http://google.com"</span><span class="o">).</span><span class="na">receive</span><span class="o">(</span><span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">);</span>
+<div class="highlight"><pre><span class="n">HttpRequest</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="s">"http://google.com"</span><span class="o">).</span><span class="na">receive</span><span class="o">(</span><span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">);</span>
 </pre></div>
 
 <h3>
 <a name="adding-query-parameters" class="anchor" href="#adding-query-parameters"><span class="octicon octicon-link"></span></a>Adding query parameters</h3>
 
-<div class="highlight highlight-java"><pre><span class="n">HttpRequest</span> <span class="n">request</span> <span class="o">=</span> <span class="n">HttpRequest</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="s">"http://google.com"</span><span class="o">,</span> <span class="kc">true</span><span class="o">,</span> <span class="sc">'q'</span><span class="o">,</span> <span class="s">"baseball gloves"</span><span class="o">,</span> <span class="s">"size"</span><span class="o">,</span> <span class="mi">100</span><span class="o">);</span>
+<div class="highlight"><pre><span class="n">HttpRequest</span> <span class="n">request</span> <span class="o">=</span> <span class="n">HttpRequest</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="s">"http://google.com"</span><span class="o">,</span> <span class="kc">true</span><span class="o">,</span> <span class="sc">'q'</span><span class="o">,</span> <span class="s">"baseball gloves"</span><span class="o">,</span> <span class="s">"size"</span><span class="o">,</span> <span class="mi">100</span><span class="o">);</span>
 <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">request</span><span class="o">.</span><span class="na">toString</span><span class="o">());</span> <span class="c1">// GET http://google.com?q=baseball%20gloves&amp;size=100</span>
 </pre></div>
 
 <h3>
 <a name="working-with-requestresponse-headers" class="anchor" href="#working-with-requestresponse-headers"><span class="octicon octicon-link"></span></a>Working with request/response headers</h3>
 
-<div class="highlight highlight-java"><pre><span class="n">String</span> <span class="n">contentType</span> <span class="o">=</span> <span class="n">HttpRequest</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="s">"http://google.com"</span><span class="o">)</span>
+<div class="highlight"><pre><span class="n">String</span> <span class="n">contentType</span> <span class="o">=</span> <span class="n">HttpRequest</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="s">"http://google.com"</span><span class="o">)</span>
                                 <span class="o">.</span><span class="na">accept</span><span class="o">(</span><span class="s">"application/json"</span><span class="o">)</span> <span class="c1">//Sets request header</span>
                                 <span class="o">.</span><span class="na">contentType</span><span class="o">();</span> <span class="c1">//Gets response header</span>
 <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"Response content type was "</span> <span class="o">+</span> <span class="n">contentType</span><span class="o">);</span>
@@ -186,19 +131,19 @@ of your application.</p>
 <h3>
 <a name="perform-a-post-request-with-some-data-and-get-the-status-of-the-response" class="anchor" href="#perform-a-post-request-with-some-data-and-get-the-status-of-the-response"><span class="octicon octicon-link"></span></a>Perform a POST request with some data and get the status of the response</h3>
 
-<div class="highlight highlight-java"><pre><span class="kt">int</span> <span class="n">response</span> <span class="o">=</span> <span class="n">HttpRequest</span><span class="o">.</span><span class="na">post</span><span class="o">(</span><span class="s">"http://google.com"</span><span class="o">).</span><span class="na">send</span><span class="o">(</span><span class="s">"name=kevin"</span><span class="o">).</span><span class="na">code</span><span class="o">();</span>
+<div class="highlight"><pre><span class="kt">int</span> <span class="n">response</span> <span class="o">=</span> <span class="n">HttpRequest</span><span class="o">.</span><span class="na">post</span><span class="o">(</span><span class="s">"http://google.com"</span><span class="o">).</span><span class="na">send</span><span class="o">(</span><span class="s">"name=kevin"</span><span class="o">).</span><span class="na">code</span><span class="o">();</span>
 </pre></div>
 
 <h3>
 <a name="authenticate-using-basic-authentication" class="anchor" href="#authenticate-using-basic-authentication"><span class="octicon octicon-link"></span></a>Authenticate using Basic authentication</h3>
 
-<div class="highlight highlight-java"><pre><span class="kt">int</span> <span class="n">response</span> <span class="o">=</span> <span class="n">HttpRequest</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="s">"http://google.com"</span><span class="o">).</span><span class="na">basic</span><span class="o">(</span><span class="s">"username"</span><span class="o">,</span> <span class="s">"p4ssw0rd"</span><span class="o">).</span><span class="na">code</span><span class="o">();</span>
+<div class="highlight"><pre><span class="kt">int</span> <span class="n">response</span> <span class="o">=</span> <span class="n">HttpRequest</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="s">"http://google.com"</span><span class="o">).</span><span class="na">basic</span><span class="o">(</span><span class="s">"username"</span><span class="o">,</span> <span class="s">"p4ssw0rd"</span><span class="o">).</span><span class="na">code</span><span class="o">();</span>
 </pre></div>
 
 <h3>
 <a name="perform-a-multipart-post-request" class="anchor" href="#perform-a-multipart-post-request"><span class="octicon octicon-link"></span></a>Perform a multipart POST request</h3>
 
-<div class="highlight highlight-java"><pre><span class="n">HttpRequest</span> <span class="n">request</span> <span class="o">=</span> <span class="n">HttpRequest</span><span class="o">.</span><span class="na">post</span><span class="o">(</span><span class="s">"http://google.com"</span><span class="o">);</span>
+<div class="highlight"><pre><span class="n">HttpRequest</span> <span class="n">request</span> <span class="o">=</span> <span class="n">HttpRequest</span><span class="o">.</span><span class="na">post</span><span class="o">(</span><span class="s">"http://google.com"</span><span class="o">);</span>
 <span class="n">request</span><span class="o">.</span><span class="na">part</span><span class="o">(</span><span class="s">"status[body]"</span><span class="o">,</span> <span class="s">"Making a multipart request"</span><span class="o">);</span>
 <span class="n">request</span><span class="o">.</span><span class="na">part</span><span class="o">(</span><span class="s">"status[image]"</span><span class="o">,</span> <span class="k">new</span> <span class="n">File</span><span class="o">(</span><span class="s">"/home/kevin/Pictures/ide.png"</span><span class="o">));</span>
 <span class="k">if</span> <span class="o">(</span><span class="n">request</span><span class="o">.</span><span class="na">ok</span><span class="o">())</span>
@@ -208,7 +153,7 @@ of your application.</p>
 <h3>
 <a name="perform-a-post-request-with-form-data" class="anchor" href="#perform-a-post-request-with-form-data"><span class="octicon octicon-link"></span></a>Perform a POST request with form data</h3>
 
-<div class="highlight highlight-java"><pre><span class="n">Map</span><span class="o">&lt;</span><span class="n">String</span><span class="o">,</span> <span class="n">String</span><span class="o">&gt;</span> <span class="n">data</span> <span class="o">=</span> <span class="k">new</span> <span class="n">HashMap</span><span class="o">&lt;</span><span class="n">String</span><span class="o">,</span> <span class="n">String</span><span class="o">&gt;();</span>
+<div class="highlight"><pre><span class="n">Map</span><span class="o">&lt;</span><span class="n">String</span><span class="o">,</span> <span class="n">String</span><span class="o">&gt;</span> <span class="n">data</span> <span class="o">=</span> <span class="k">new</span> <span class="n">HashMap</span><span class="o">&lt;</span><span class="n">String</span><span class="o">,</span> <span class="n">String</span><span class="o">&gt;();</span>
 <span class="n">data</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="s">"user"</span><span class="o">,</span> <span class="s">"A User"</span><span class="o">);</span>
 <span class="n">data</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="s">"state"</span><span class="o">,</span> <span class="s">"CA"</span><span class="o">);</span>
 <span class="k">if</span> <span class="o">(</span><span class="n">HttpRequest</span><span class="o">.</span><span class="na">post</span><span class="o">(</span><span class="s">"http://google.com"</span><span class="o">).</span><span class="na">form</span><span class="o">(</span><span class="n">data</span><span class="o">).</span><span class="na">created</span><span class="o">())</span>
@@ -218,21 +163,21 @@ of your application.</p>
 <h3>
 <a name="copy-body-of-response-to-a-file" class="anchor" href="#copy-body-of-response-to-a-file"><span class="octicon octicon-link"></span></a>Copy body of response to a file</h3>
 
-<div class="highlight highlight-java"><pre><span class="n">File</span> <span class="n">output</span> <span class="o">=</span> <span class="k">new</span> <span class="n">File</span><span class="o">(</span><span class="s">"/output/request.out"</span><span class="o">);</span>
+<div class="highlight"><pre><span class="n">File</span> <span class="n">output</span> <span class="o">=</span> <span class="k">new</span> <span class="n">File</span><span class="o">(</span><span class="s">"/output/request.out"</span><span class="o">);</span>
 <span class="n">HttpRequest</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="s">"http://google.com"</span><span class="o">).</span><span class="na">receive</span><span class="o">(</span><span class="n">output</span><span class="o">);</span>
 </pre></div>
 
 <h3>
 <a name="post-contents-of-a-file" class="anchor" href="#post-contents-of-a-file"><span class="octicon octicon-link"></span></a>Post contents of a file</h3>
 
-<div class="highlight highlight-java"><pre><span class="n">File</span> <span class="n">input</span> <span class="o">=</span> <span class="k">new</span> <span class="n">File</span><span class="o">(</span><span class="s">"/input/data.txt"</span><span class="o">);</span>
+<div class="highlight"><pre><span class="n">File</span> <span class="n">input</span> <span class="o">=</span> <span class="k">new</span> <span class="n">File</span><span class="o">(</span><span class="s">"/input/data.txt"</span><span class="o">);</span>
 <span class="kt">int</span> <span class="n">response</span> <span class="o">=</span> <span class="n">HttpRequest</span><span class="o">.</span><span class="na">post</span><span class="o">(</span><span class="s">"http://google.com"</span><span class="o">).</span><span class="na">send</span><span class="o">(</span><span class="n">input</span><span class="o">).</span><span class="na">code</span><span class="o">();</span>
 </pre></div>
 
 <h3>
 <a name="using-entity-tags-for-caching" class="anchor" href="#using-entity-tags-for-caching"><span class="octicon octicon-link"></span></a>Using entity tags for caching</h3>
 
-<div class="highlight highlight-java"><pre><span class="n">File</span> <span class="n">latest</span> <span class="o">=</span> <span class="k">new</span> <span class="n">File</span><span class="o">(</span><span class="s">"/data/cache.json"</span><span class="o">);</span>
+<div class="highlight"><pre><span class="n">File</span> <span class="n">latest</span> <span class="o">=</span> <span class="k">new</span> <span class="n">File</span><span class="o">(</span><span class="s">"/data/cache.json"</span><span class="o">);</span>
 <span class="n">HttpRequest</span> <span class="n">request</span> <span class="o">=</span> <span class="n">HttpRequest</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="s">"http://google.com"</span><span class="o">);</span>
 <span class="c1">//Copy response to file</span>
 <span class="n">request</span><span class="o">.</span><span class="na">receive</span><span class="o">(</span><span class="n">latest</span><span class="o">);</span>
@@ -247,7 +192,7 @@ of your application.</p>
 <h3>
 <a name="using-gzip-compression" class="anchor" href="#using-gzip-compression"><span class="octicon octicon-link"></span></a>Using gzip compression</h3>
 
-<div class="highlight highlight-java"><pre><span class="n">HttpRequest</span> <span class="n">request</span> <span class="o">=</span> <span class="n">HttpRequest</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="s">"http://google.com"</span><span class="o">);</span>
+<div class="highlight"><pre><span class="n">HttpRequest</span> <span class="n">request</span> <span class="o">=</span> <span class="n">HttpRequest</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="s">"http://google.com"</span><span class="o">);</span>
 <span class="c1">//Tell server to gzip response and automatically uncompress</span>
 <span class="n">request</span><span class="o">.</span><span class="na">acceptGzipEncoding</span><span class="o">().</span><span class="na">uncompress</span><span class="o">(</span><span class="kc">true</span><span class="o">);</span>
 <span class="n">String</span> <span class="n">uncompressed</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="na">body</span><span class="o">();</span>
@@ -257,7 +202,7 @@ of your application.</p>
 <h3>
 <a name="ignoring-security-when-using-https" class="anchor" href="#ignoring-security-when-using-https"><span class="octicon octicon-link"></span></a>Ignoring security when using HTTPS</h3>
 
-<div class="highlight highlight-java"><pre><span class="n">HttpRequest</span> <span class="n">request</span> <span class="o">=</span> <span class="n">HttpRequest</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="s">"https://google.com"</span><span class="o">);</span>
+<div class="highlight"><pre><span class="n">HttpRequest</span> <span class="n">request</span> <span class="o">=</span> <span class="n">HttpRequest</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="s">"https://google.com"</span><span class="o">);</span>
 <span class="c1">//Accept all certificates</span>
 <span class="n">request</span><span class="o">.</span><span class="na">trustAllCerts</span><span class="o">();</span>
 <span class="c1">//Accept all hostnames</span>
@@ -265,38 +210,37 @@ of your application.</p>
 </pre></div>
 
 <h3>
-<a name="configuring-an-http-proxy" class="anchor" href="#configuring-an-http-proxy"><span class="octicon octicon-link"></span></a>Configuring an HTTP proxy</h3>
+<a name="configure-http-proxy" class="anchor" href="#configure-http-proxy"><span class="octicon octicon-link"></span></a>Configure HTTP proxy</h3>
 
-<div class="highlight highlight-java"><pre><span class="n">HttpRequest</span> <span class="n">request</span> <span class="o">=</span> <span class="n">HttpRequest</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="s">"https://google.com"</span><span class="o">);</span>
+<div class="highlight"><pre><span class="n">HttpRequest</span> <span class="n">request</span> <span class="o">=</span> <span class="n">HttpRequest</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="s">"https://google.com"</span><span class="o">);</span>
 <span class="c1">//Configure proxy</span>
 <span class="n">request</span><span class="o">.</span><span class="na">useProxy</span><span class="o">(</span><span class="s">"localhost"</span><span class="o">,</span> <span class="mi">8080</span><span class="o">);</span>
-<span class="c1">//Optional proxy basic authentication</span>
+<span class="c1">//Optional proxy basic uthentication</span>
 <span class="n">request</span><span class="o">.</span><span class="na">proxyBasic</span><span class="o">(</span><span class="s">"username"</span><span class="o">,</span> <span class="s">"p4ssw0rd"</span><span class="o">);</span>
 </pre></div>
 
 <h3>
-<a name="following-redirects" class="anchor" href="#following-redirects"><span class="octicon octicon-link"></span></a>Following redirects</h3>
+<a name="follow-redirects" class="anchor" href="#follow-redirects"><span class="octicon octicon-link"></span></a>Follow redirects</h3>
 
-<div class="highlight highlight-java"><pre><span class="kt">int</span> <span class="n">code</span> <span class="o">=</span> <span class="n">HttpRequest</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="s">"http://google.com"</span><span class="o">).</span><span class="na">followRedirects</span><span class="o">(</span><span class="kc">true</span><span class="o">).</span><span class="na">code</span><span class="o">();</span>
+<div class="highlight"><pre><span class="kt">int</span> <span class="n">code</span> <span class="o">=</span> <span class="n">HttpRequest</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="s">"http://google.com"</span><span class="o">).</span><span class="na">followRedirects</span><span class="o">(</span><span class="kc">true</span><span class="o">).</span><span class="na">code</span><span class="o">();</span>
 </pre></div>
 
 <h3>
 <a name="custom-connection-factory" class="anchor" href="#custom-connection-factory"><span class="octicon octicon-link"></span></a>Custom connection factory</h3>
 
-<p>Looking to use this library with <a href="https://github.com/square/okhttp">OkHttp</a>?
-Read <a href="https://gist.github.com/JakeWharton/5797571">here</a>.</p>
-
-<div class="highlight highlight-java"><pre><span class="n">HttpRequest</span><span class="o">.</span><span class="na">setConnectionFactory</span><span class="o">(</span><span class="k">new</span> <span class="n">ConnectionFactory</span><span class="o">()</span> <span class="o">{</span>
+<div class="highlight"><pre><span class="n">HttpRequest</span><span class="o">.</span><span class="na">setConnectionFactory</span><span class="o">(</span><span class="k">new</span> <span class="n">ConnectionFactory</span><span class="o">()</span> <span class="o">{</span>
 
   <span class="kd">public</span> <span class="n">HttpURLConnection</span> <span class="nf">create</span><span class="o">(</span><span class="n">URL</span> <span class="n">url</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">IOException</span> <span class="o">{</span>
-    <span class="k">if</span> <span class="o">(!</span><span class="s">"https"</span><span class="o">.</span><span class="na">equals</span><span class="o">(</span><span class="n">url</span><span class="o">.</span><span class="na">getProtocol</span><span class="o">()))</span>
+    <span class="k">if</span> <span class="o">(!</span><span class="s">"https"</span><span class="o">.</span><span class="na">equals</span><span class="o">(</span><span class="n">url</span><span class="o">.</span><span class="na">getProtocol</span><span class="o">()))</span> <span class="o">{</span>
       <span class="k">throw</span> <span class="k">new</span> <span class="nf">IOException</span><span class="o">(</span><span class="s">"Only secure requests are allowed"</span><span class="o">);</span>
+    <span class="o">}</span>
     <span class="k">return</span> <span class="o">(</span><span class="n">HttpURLConnection</span><span class="o">)</span> <span class="n">url</span><span class="o">.</span><span class="na">openConnection</span><span class="o">();</span>
   <span class="o">}</span>
 
   <span class="kd">public</span> <span class="n">HttpURLConnection</span> <span class="nf">create</span><span class="o">(</span><span class="n">URL</span> <span class="n">url</span><span class="o">,</span> <span class="n">Proxy</span> <span class="n">proxy</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">IOException</span> <span class="o">{</span>
-    <span class="k">if</span> <span class="o">(!</span><span class="s">"https"</span><span class="o">.</span><span class="na">equals</span><span class="o">(</span><span class="n">url</span><span class="o">.</span><span class="na">getProtocol</span><span class="o">()))</span>
+    <span class="k">if</span> <span class="o">(!</span><span class="s">"https"</span><span class="o">.</span><span class="na">equals</span><span class="o">(</span><span class="n">url</span><span class="o">.</span><span class="na">getProtocol</span><span class="o">()))</span> <span class="o">{</span>
       <span class="k">throw</span> <span class="k">new</span> <span class="nf">IOException</span><span class="o">(</span><span class="s">"Only secure requests are allowed"</span><span class="o">);</span>
+    <span class="o">}</span>
     <span class="k">return</span> <span class="o">(</span><span class="n">HttpURLConnection</span><span class="o">)</span> <span class="n">url</span><span class="o">.</span><span class="na">openConnection</span><span class="o">(</span><span class="n">proxy</span><span class="o">);</span>
   <span class="o">}</span>
 <span class="o">});</span>
@@ -330,20 +274,19 @@ Read <a href="https://gist.github.com/JakeWharton/5797571">here</a>.</p>
 <li>
 <a href="https://github.com/JakeWharton">Jake Wharton</a> :: <a href="https://github.com/kevinsawicki/http-request/commits?author=JakeWharton">contributions</a>
 </li>
-<li>
-<a href="https://github.com/oskarhagberg">Oskar Hagberg</a> :: <a href="https://github.com/kevinsawicki/http-request/commits?author=oskarhagberg">contributions</a>
-</li>
-<li>
-<a href="https://github.com/DavidTPate">David Pate</a> :: <a href="https://github.com/kevinsawicki/http-request/commits?author=DavidTPate">contributions</a>
-</li>
 </ul>
       </section>
-      <footer>
-        <p>Project maintained by <a href="https://github.com/kevinsawicki">kevinsawicki</a></p>
-        <p><small>Hosted on GitHub Pages &mdash; Theme by <a href="https://twitter.com/michigangraham">mattgraham</a></small></p>
+    </div>
+
+    <!-- FOOTER  -->
+    <div id="footer_wrap" class="outer">
+      <footer class="inner">
+        <p class="copyright">http-request maintained by <a href="https://github.com/kevinsawicki">kevinsawicki</a></p>
+        <p>Published with <a href="http://pages.github.com">GitHub Pages</a></p>
       </footer>
     </div>
-    <!--[if !IE]><script>fixScale(document);</script><![endif]-->
-    
+
+
+
   </body>
 </html>
