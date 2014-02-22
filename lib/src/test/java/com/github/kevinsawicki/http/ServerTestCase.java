@@ -21,8 +21,11 @@
  */
 package com.github.kevinsawicki.http;
 
+import org.eclipse.jetty.server.ssl.SslSelectChannelConnector;
+import org.eclipse.jetty.server.ssl.SslSocketConnector;
 import org.eclipse.jetty.util.B64Code;
 
+import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.junit.Before;
 import org.eclipse.jetty.server.handler.HandlerList;
 import org.eclipse.jetty.servlet.ServletHolder;
@@ -148,9 +151,21 @@ public class ServerTestCase {
     server = new Server();
     if (handler != null)
       server.setHandler(handler);
+
+    SslContextFactory sslContextFactory = new SslContextFactory(System.getProperty(HttpRequest.SSLConfig.KEY_STORE));
+    sslContextFactory.setTrustStore(System.getProperty(HttpRequest.SSLConfig.TRUST_STORE));
+    sslContextFactory.setKeyStorePassword(System.getProperty(HttpRequest.SSLConfig.KEY_STORE_PASSWORD));
+    sslContextFactory.setKeyStoreType(System.getProperty(HttpRequest.SSLConfig.KEY_STORE_TYPE));
+    sslContextFactory.setTrustStorePassword(System.getProperty(HttpRequest.SSLConfig.TRUST_STORE_PASSWORD));
+    sslContextFactory.setNeedClientAuth(true);
+
+    Connector sslConnector = new SslSelectChannelConnector(sslContextFactory);
+    sslConnector.setPort(8443);
+
     Connector connector = new SelectChannelConnector();
     connector.setPort(0);
-    server.setConnectors(new Connector[] { connector });
+
+    server.setConnectors(new Connector[] { connector, sslConnector });
     server.start();
 
     proxy = new Server();

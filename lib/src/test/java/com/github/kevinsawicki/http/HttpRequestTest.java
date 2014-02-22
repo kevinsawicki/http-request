@@ -1777,6 +1777,13 @@ public class HttpRequestTest extends ServerTestCase {
     assertNotNull(get("https://localhost").trustAllCerts().trustAllHosts());
   }
 
+  @Test
+  public void httpsClientCertificate() throws Exception {
+      HttpRequest request = get("https://localhost:8443").trustAllCerts().trustAllHosts();
+      assertNotNull(request);
+      assertTrue(request.notFound());
+  }
+
   /**
    * Verify certificate and host helpers ignore non-HTTPS connection
    *
