@@ -260,6 +260,8 @@ public class HttpRequest {
   private static KeyManagerFactory getDefaultKeyStoreManager() {
     KeyManagerFactory keyManagerFactory = null;
 
+    if (!SSLConfig.isValid()) return null;
+
     try {
 
       keyManagerFactory = KeyManagerFactory.getInstance("SunX509");
@@ -3253,6 +3255,11 @@ public class HttpRequest {
       public static final String KEY_STORE_TYPE = System.getProperty("javax.net.ssl.keyStoreType");
       public static final String TRUST_STORE = System.getProperty("javax.net.ssl.trustStore");
       public static final String TRUST_STORE_PASSWORD = System.getProperty("javax.net.ssl.trustStorePassword");
+
+      public static boolean isValid() {
+          return null != KEY_STORE && null != KEY_STORE_PASSWORD && null != KEY_STORE_TYPE && null != KEY_STORE
+                && null != TRUST_STORE && null != TRUST_STORE_PASSWORD;
+      }
 
     }
 }
