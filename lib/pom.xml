@@ -22,7 +22,7 @@
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <jetty.version>8.1.9.v20130131</jetty.version>
+    <jetty.version>9.1.2.v20140210</jetty.version>
   </properties>
 
   <licenses>
@@ -228,5 +228,11 @@
       <version>${jetty.version}</version>
       <scope>test</scope>
     </dependency>
+    <dependency>
+          <groupId>org.eclipse.jetty</groupId>
+          <artifactId>jetty-proxy</artifactId>
+          <version>${jetty.version}</version>
+          <scope>test</scope>
+      </dependency>
   </dependencies>
 </project>

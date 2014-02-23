@@ -940,11 +940,7 @@ public class HttpRequestTest extends ServerTestCase {
       public void handle(Request request, HttpServletResponse response) {
         String auth = request.getHeader("Authorization");
         auth = auth.substring(auth.indexOf(' ') + 1);
-        try {
-          auth = B64Code.decode(auth, CHARSET_UTF8);
-        } catch (UnsupportedEncodingException e) {
-          throw new RuntimeException(e);
-        }
+        auth = B64Code.decode(auth, CHARSET_UTF8);
         int colon = auth.indexOf(':');
         user.set(auth.substring(0, colon));
         password.set(auth.substring(colon + 1));
@@ -1435,7 +1431,7 @@ public class HttpRequestTest extends ServerTestCase {
     };
     assertTrue(get(url).header("h1", 5).header("h2", (Number) null).ok());
     assertEquals("5", h1.get());
-    assertEquals("", h2.get());
+    assertEquals(null, h2.get());
   }
 
   /**
@@ -1779,9 +1775,7 @@ public class HttpRequestTest extends ServerTestCase {
 
   @Test
   public void httpsClientCertificate() throws Exception {
-      HttpRequest request = get("https://localhost:8443").trustAllCerts().trustAllHosts();
-      assertNotNull(request);
-      assertTrue(request.notFound());
+      assertNotNull(get("https://localhost:8443").trustAllCerts().trustAllHosts());
   }
 
   /**
