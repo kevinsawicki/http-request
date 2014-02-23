@@ -267,7 +267,7 @@ public class HttpRequest {
       keyManagerFactory = KeyManagerFactory.getInstance("SunX509");
       KeyStore keyStore = KeyStore.getInstance(SSLConfig.KEY_STORE_TYPE);
 
-      InputStream keyInput = new FileInputStream(SSLConfig.KEY_STORE);
+      InputStream keyInput = HttpRequest.class.getResourceAsStream(SSLConfig.KEY_STORE);
       keyStore.load(keyInput, SSLConfig.KEY_STORE_PASSWORD.toCharArray());
       keyInput.close();
       keyManagerFactory.init(keyStore, SSLConfig.KEY_STORE_PASSWORD.toCharArray());

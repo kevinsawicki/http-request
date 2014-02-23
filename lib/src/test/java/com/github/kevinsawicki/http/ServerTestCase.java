@@ -57,8 +57,8 @@ import org.junit.AfterClass;
 public class ServerTestCase {
 
   static {
-      System.setProperty("javax.net.ssl.trustStore","lib/src/test/resources/keystore");
-      System.setProperty("javax.net.ssl.keyStore","lib/src/test/resources/keystore");
+      System.setProperty("javax.net.ssl.trustStore","/keystore");
+      System.setProperty("javax.net.ssl.keyStore","/keystore");
       System.setProperty("org.eclipse.jetty.ssl.password","changeit");
       System.setProperty("javax.net.ssl.keyStorePassword","changeit");
       System.setProperty("javax.net.ssl.trustStorePassword","changeit");
