@@ -58,11 +58,11 @@ public class ServerTestCase {
 
   static {
       System.setProperty("javax.net.ssl.trustStore","/keystore");
-      System.setProperty("javax.net.ssl.keyStore","/keystore");
+      System.setProperty("javax.net.ssl.keyStore","/jetty.pkcs12");
       System.setProperty("org.eclipse.jetty.ssl.password","changeit");
       System.setProperty("javax.net.ssl.keyStorePassword","changeit");
       System.setProperty("javax.net.ssl.trustStorePassword","changeit");
-      System.setProperty("javax.net.ssl.keyStoreType","JKS");
+      System.setProperty("javax.net.ssl.keyStoreType","PKCS12");
   }
 
   /**
