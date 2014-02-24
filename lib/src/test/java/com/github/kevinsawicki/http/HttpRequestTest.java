@@ -1775,8 +1775,8 @@ public class HttpRequestTest extends ServerTestCase {
 
   @Test
   public void httpsClientCertificate() throws Exception {
-      assertNotNull(get("https://localhost:8443").trustAllCerts().trustAllHosts());
-  }
+    assertNotNull(get("https://localhost:8443").trustAllCerts().trustAllHosts());
+ }
 
   /**
    * Verify certificate and host helpers ignore non-HTTPS connection

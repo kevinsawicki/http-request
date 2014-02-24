@@ -21,14 +21,11 @@
  */
 package com.github.kevinsawicki.http;
 
-import org.eclipse.jetty.proxy.ConnectHandler;
 import org.eclipse.jetty.proxy.ProxyServlet;
 import org.eclipse.jetty.server.*;
-import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.util.B64Code;
 
 import org.eclipse.jetty.util.ssl.SslContextFactory;
-import org.eclipse.jetty.util.thread.ExecutorThreadPool;
 import org.junit.Before;
 import org.eclipse.jetty.server.handler.HandlerList;
 import org.eclipse.jetty.servlet.ServletHolder;
@@ -43,7 +40,6 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import static com.github.kevinsawicki.http.HttpRequest.CHARSET_UTF8;
 
-import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -57,12 +53,10 @@ import org.junit.AfterClass;
 public class ServerTestCase {
 
   static {
-      System.setProperty("javax.net.ssl.trustStore","/keystore");
-      System.setProperty("javax.net.ssl.keyStore","/jetty.pkcs12");
-      System.setProperty("org.eclipse.jetty.ssl.password","changeit");
-      System.setProperty("javax.net.ssl.keyStorePassword","changeit");
-      System.setProperty("javax.net.ssl.trustStorePassword","changeit");
-      System.setProperty("javax.net.ssl.keyStoreType","PKCS12");
+    System.setProperty("javax.net.ssl.keyStore","/jetty.pkcs12");
+    System.setProperty("org.eclipse.jetty.ssl.password","changeit");
+    System.setProperty("javax.net.ssl.keyStorePassword","changeit");
+    System.setProperty("javax.net.ssl.keyStoreType","PKCS12");
   }
 
   /**
@@ -164,8 +158,6 @@ public class ServerTestCase {
 
     sslContextFactory.setKeyStorePassword(System.getProperty(HttpRequest.SSLConfig.KEY_STORE_PASSWORD));
     sslContextFactory.setKeyStoreType(System.getProperty(HttpRequest.SSLConfig.KEY_STORE_TYPE));
-    sslContextFactory.setTrustStorePath(System.getProperty(HttpRequest.SSLConfig.TRUST_STORE));
-    sslContextFactory.setTrustStorePassword(System.getProperty(HttpRequest.SSLConfig.TRUST_STORE_PASSWORD));
     sslContextFactory.setNeedClientAuth(true);
 
     ServerConnector https = new ServerConnector(server, new SslConnectionFactory(sslContextFactory,"http/1.1"));

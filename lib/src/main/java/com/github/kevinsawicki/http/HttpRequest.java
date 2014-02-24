@@ -21,6 +21,8 @@
  */
 package com.github.kevinsawicki.http;
 
+import javax.net.ssl.*;
+
 import static java.net.HttpURLConnection.HTTP_BAD_REQUEST;
 import static java.net.HttpURLConnection.HTTP_CREATED;
 import static java.net.HttpURLConnection.HTTP_INTERNAL_ERROR;
@@ -75,8 +77,6 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.zip.GZIPInputStream;
-
-import javax.net.ssl.*;
 
 /**
  * A fluid interface for making HTTP requests using an underlying
@@ -269,6 +269,9 @@ public class HttpRequest {
 
       InputStream keyInput = HttpRequest.class.getResourceAsStream(SSLConfig.KEY_STORE);
       keyStore.load(keyInput, SSLConfig.KEY_STORE_PASSWORD.toCharArray());
+
+      if (null == keyInput) throw new FileNotFoundException();
+
       keyInput.close();
       keyManagerFactory.init(keyStore, SSLConfig.KEY_STORE_PASSWORD.toCharArray());
 
@@ -3250,16 +3253,12 @@ public class HttpRequest {
 
   public static class SSLConfig {
 
-      public static final String KEY_STORE = System.getProperty("javax.net.ssl.keyStore");
-      public static final String KEY_STORE_PASSWORD = System.getProperty("javax.net.ssl.keyStorePassword");
-      public static final String KEY_STORE_TYPE = System.getProperty("javax.net.ssl.keyStoreType");
-      public static final String TRUST_STORE = System.getProperty("javax.net.ssl.trustStore");
-      public static final String TRUST_STORE_PASSWORD = System.getProperty("javax.net.ssl.trustStorePassword");
+    public static final String KEY_STORE = System.getProperty("javax.net.ssl.keyStore");
+    public static final String KEY_STORE_PASSWORD = System.getProperty("javax.net.ssl.keyStorePassword");
+    public static final String KEY_STORE_TYPE = System.getProperty("javax.net.ssl.keyStoreType");
 
-      public static boolean isValid() {
-          return null != KEY_STORE && null != KEY_STORE_PASSWORD && null != KEY_STORE_TYPE && null != KEY_STORE
-                && null != TRUST_STORE && null != TRUST_STORE_PASSWORD;
-      }
-
+    public static boolean isValid() {
+      return null != KEY_STORE && null != KEY_STORE_PASSWORD && null != KEY_STORE_TYPE && null != KEY_STORE;
     }
+  }
 }
