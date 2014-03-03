@@ -22,7 +22,13 @@
 package com.github.kevinsawicki.http;
 
 import org.eclipse.jetty.proxy.ProxyServlet;
-import org.eclipse.jetty.server.*;
+import org.eclipse.jetty.server.Connector;
+import org.eclipse.jetty.server.Handler;
+import org.eclipse.jetty.server.HttpConnectionFactory;
+import org.eclipse.jetty.server.Request;
+import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.server.ServerConnector;
+import org.eclipse.jetty.server.SslConnectionFactory;
 import org.eclipse.jetty.util.B64Code;
 
 import org.eclipse.jetty.util.ssl.SslContextFactory;

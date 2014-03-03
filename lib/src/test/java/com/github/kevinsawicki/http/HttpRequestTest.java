@@ -1775,7 +1775,8 @@ public class HttpRequestTest extends ServerTestCase {
 
   @Test
   public void httpsClientCertificate() throws Exception {
-    assertNotNull(get("https://localhost:8443").trustAllCerts().trustAllHosts());
+    HttpRequest request = get("https://sonar.int.cloud.bbc.co.uk");
+    assertTrue(request.ok());
  }
 
   /**
