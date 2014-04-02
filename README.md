@@ -1,4 +1,4 @@
-# Http Request [![Build Status](https://travis-ci.org/kevinsawicki/http-request.png)](https://travis-ci.org/kevinsawicki/http-request)
+# Http Request [![Build Status](https://travis-ci.org/kevinsawicki/http-request.svg)](https://travis-ci.org/kevinsawicki/http-request)
 
 A simple convenience library for using a [HttpURLConnection](http://download.oracle.com/javase/6/docs/api/java/net/HttpURLConnection.html)
 to make requests and access the response.
