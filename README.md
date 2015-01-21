@@ -13,7 +13,7 @@ The http-request library is available from [Maven Central](http://search.maven.o
 <dependency>
   <groupId>com.github.kevinsawicki</groupId>
   <artifactId>http-request</artifactId>
-  <version>5.6</version>
+  <version>6.0</version>
 </dependency>
 ```
 
