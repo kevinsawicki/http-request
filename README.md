@@ -128,6 +128,14 @@ HttpRequest request = HttpRequest.get("http://google.com", true, 'q', "baseball 
 System.out.println(request.toString()); // GET http://google.com?q=baseball%20gloves&size=100
 ```
 
+### Using arrays as query parameters
+
+```java
+int[] ids = new int[] { 22, 23 };
+HttpRequest request = HttpRequest.get("http://google.com", true, "id", ids);
+System.out.println(request.toString()); // GET http://google.com?id[]=22&id[]=23
+```
+
 ### Working with request/response headers
 
 ```java
