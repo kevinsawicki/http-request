@@ -1021,7 +1021,7 @@ public class HttpRequest {
    *          the name/value query parameter pairs to include as part of the
    *          baseUrl
    *
-   * @see #append(CharSequence, String...)
+   * @see #append(CharSequence, Object...)
    * @see #encode(CharSequence)
    *
    * @return request
