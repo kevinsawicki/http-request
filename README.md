@@ -277,3 +277,4 @@ HttpRequest.setConnectionFactory(new ConnectionFactory() {
 * [David Pate](https://github.com/DavidTPate) :: [contributions](https://github.com/kevinsawicki/http-request/commits?author=DavidTPate)
 * [Anton Rieder](https://github.com/aried3r) :: [contributions](https://github.com/kevinsawicki/http-request/commits?author=aried3r)
 * [Jean-Baptiste Lièvremont](https://github.com/jblievremont) :: [contributions](https://github.com/kevinsawicki/http-request/commits?author=jblievremont)
+* [Roman Petrenko](https://github.com/romanzes) :: [contributions](https://github.com/kevinsawicki/http-request/commits?author=romanzes)
