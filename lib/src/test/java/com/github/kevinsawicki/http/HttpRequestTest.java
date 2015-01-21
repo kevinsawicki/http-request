@@ -3246,6 +3246,14 @@ public class HttpRequestTest extends ServerTestCase {
         HttpRequest.append("http://test.com",
             Collections.singletonMap("a", new int[] { 1, 2 })));
     assertEquals(
+        "http://test.com/?a[]=1",
+        HttpRequest.append("http://test.com",
+            Collections.singletonMap("a", new int[] { 1 })));
+    assertEquals(
+        "http://test.com/?",
+        HttpRequest.append("http://test.com",
+            Collections.singletonMap("a", new int[] { })));
+    assertEquals(
         "http://test.com/?foo[]=bar&foo[]=baz&a[]=1&a[]=2",
         HttpRequest.append("http://test.com",
             "foo", new String[] { "bar", "baz" },
@@ -3267,6 +3275,14 @@ public class HttpRequestTest extends ServerTestCase {
         "http://test.com/?a[]=1&a[]=2",
         HttpRequest.append("http://test.com",
             Collections.singletonMap("a", Arrays.asList(new Integer[] { 1, 2 }))));
+    assertEquals(
+        "http://test.com/?a[]=1",
+        HttpRequest.append("http://test.com",
+            Collections.singletonMap("a", Arrays.asList(new Integer[] { 1 }))));
+    assertEquals(
+        "http://test.com/?",
+        HttpRequest.append("http://test.com",
+            Collections.singletonMap("a", Arrays.asList(new Integer[] { }))));
     assertEquals(
         "http://test.com/?foo[]=bar&foo[]=baz&a[]=1&a[]=2",
         HttpRequest.append("http://test.com",

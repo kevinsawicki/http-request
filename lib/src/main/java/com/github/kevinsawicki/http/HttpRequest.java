@@ -334,14 +334,14 @@ public class HttpRequest {
     return result;
   }
 
-  private static StringBuilder addParam(final Object key, final Object valueObj,
+  private static StringBuilder addParam(final Object key, Object value,
       final StringBuilder result) {
-    Object value = valueObj;
     if (value != null && value.getClass().isArray())
       value = arrayToList(value);
+
     if (value instanceof Iterable<?>) {
       Iterator<?> iterator = ((Iterable<?>) value).iterator();
-      while (true) {
+      while (iterator.hasNext()) {
         result.append(key);
         result.append("[]=");
         Object element = iterator.next();
@@ -349,8 +349,6 @@ public class HttpRequest {
           result.append(element);
         if (iterator.hasNext())
           result.append("&");
-        else
-          break;
       }
     } else {
       result.append(key);
@@ -358,6 +356,7 @@ public class HttpRequest {
       if (value != null)
         result.append(value);
     }
+
     return result;
   }
 
