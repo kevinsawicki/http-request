@@ -1085,7 +1085,7 @@ public class HttpRequest {
    *          the name/value query parameter pairs to include as part of the
    *          baseUrl
    *
-   * @see #append(CharSequence, String...)
+   * @see #append(CharSequence, Object...)
    * @see #encode(CharSequence)
    *
    * @return request
@@ -1149,7 +1149,7 @@ public class HttpRequest {
    *          the name/value query parameter pairs to include as part of the
    *          baseUrl
    *
-   * @see #append(CharSequence, String...)
+   * @see #append(CharSequence, Object...)
    * @see #encode(CharSequence)
    *
    * @return request
@@ -1213,7 +1213,7 @@ public class HttpRequest {
    *          the name/value query parameter pairs to include as part of the
    *          baseUrl
    *
-   * @see #append(CharSequence, String...)
+   * @see #append(CharSequence, Object...)
    * @see #encode(CharSequence)
    *
    * @return request
@@ -1277,7 +1277,7 @@ public class HttpRequest {
    *          the name/value query parameter pairs to include as part of the
    *          baseUrl
    *
-   * @see #append(CharSequence, String...)
+   * @see #append(CharSequence, Object...)
    * @see #encode(CharSequence)
    *
    * @return request
@@ -1357,7 +1357,7 @@ public class HttpRequest {
   }
 
   /**
-   * Set the 'http.proxyHost' & 'https.proxyHost' properties to the given host
+   * Set the 'http.proxyHost' and 'https.proxyHost' properties to the given host
    * value.
    * <p>
    * This setting will apply to all requests.
@@ -1370,7 +1370,7 @@ public class HttpRequest {
   }
 
   /**
-   * Set the 'http.proxyPort' & 'https.proxyPort' properties to the given port
+   * Set the 'http.proxyPort' and 'https.proxyPort' properties to the given port
    * number.
    * <p>
    * This setting will apply to all requests.
