@@ -17,7 +17,7 @@ The http-request library is available from [Maven Central](http://search.maven.o
 </dependency>
 ```
 
-Not using [Maven](http://maven.apache.org/)? Simply copy the [HttpRequest](https://raw2.github.com/kevinsawicki/http-request/master/lib/src/main/java/com/github/kevinsawicki/http/HttpRequest.java)
+Not using [Maven](http://maven.apache.org/)? Simply copy the [HttpRequest](https://raw.githubusercontent.com/kevinsawicki/http-request/master/lib/src/main/java/com/github/kevinsawicki/http/HttpRequest.java)
 class into your project, update the package declaration, and you are good to go.
 
 Javadocs are available [here](http://kevinsawicki.github.com/http-request/apidocs/index.html).
