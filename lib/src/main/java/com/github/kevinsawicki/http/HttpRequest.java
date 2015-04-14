@@ -21,6 +21,15 @@
  */
 package com.github.kevinsawicki.http;
 
+import javax.net.ssl.HostnameVerifier;
+import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.KeyManagerFactory;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLSession;
+import javax.net.ssl.SSLSocketFactory;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
+
 import static java.net.HttpURLConnection.HTTP_BAD_REQUEST;
 import static java.net.HttpURLConnection.HTTP_CREATED;
 import static java.net.HttpURLConnection.HTTP_INTERNAL_ERROR;
@@ -64,8 +73,13 @@ import java.nio.charset.Charset;
 import java.nio.charset.CharsetEncoder;
 import java.security.AccessController;
 import java.security.GeneralSecurityException;
+import java.security.KeyStore;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
 import java.security.PrivilegedAction;
 import java.security.SecureRandom;
+import java.security.UnrecoverableKeyException;
+import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -79,14 +93,6 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.zip.GZIPInputStream;
-
-import javax.net.ssl.HostnameVerifier;
-import javax.net.ssl.HttpsURLConnection;
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLSession;
-import javax.net.ssl.SSLSocketFactory;
-import javax.net.ssl.TrustManager;
-import javax.net.ssl.X509TrustManager;
 
 /**
  * A fluid interface for making HTTP requests using an underlying
@@ -267,6 +273,47 @@ public class HttpRequest {
       return CHARSET_UTF8;
   }
 
+  private static KeyManagerFactory getDefaultKeyStoreManager() {
+    KeyManagerFactory keyManagerFactory = null;
+
+    if (!SSLConfig.isValid()) return null;
+
+    try {
+
+      keyManagerFactory = KeyManagerFactory.getInstance("SunX509");
+      KeyStore keyStore = KeyStore.getInstance(SSLConfig.KEY_STORE_TYPE);
+
+      InputStream keyInput = HttpRequest.class.getResourceAsStream(SSLConfig.KEY_STORE);
+      keyStore.load(keyInput, SSLConfig.KEY_STORE_PASSWORD.toCharArray());
+
+      if (null == keyInput) throw new FileNotFoundException();
+
+      keyInput.close();
+      keyManagerFactory.init(keyStore, SSLConfig.KEY_STORE_PASSWORD.toCharArray());
+
+    } catch (NoSuchAlgorithmException e) {
+      throw new RuntimeException("Problem loading keystore: " + SSLConfig.KEY_STORE +
+              " cannot find algorithm." + e.getStackTrace(), e);
+    } catch (CertificateException e) {
+      throw new RuntimeException("Problem loading keystore: " + SSLConfig.KEY_STORE +
+              " certificate exception" + e.getStackTrace(), e);
+    } catch (UnrecoverableKeyException e) {
+      throw new RuntimeException("Problem loading keystore: " + SSLConfig.KEY_STORE +
+              " password incorrect." + e.getStackTrace(), e);
+    } catch (KeyStoreException e) {
+      throw new RuntimeException("Problem loading keystore: " + SSLConfig.KEY_STORE +
+              " keystore exception." + e.getStackTrace(), e);
+    } catch (FileNotFoundException e) {
+      throw new RuntimeException("Problem loading keystore: " + SSLConfig.KEY_STORE +
+              " file not found." + e.getStackTrace(), e);
+    } catch (IOException e) {
+      throw new RuntimeException("Problem loading keystore: " + SSLConfig.KEY_STORE +
+              " IO Exception." + e.getStackTrace(), e);
+    }
+
+    return keyManagerFactory;
+  }
+
   private static SSLSocketFactory getTrustedFactory()
       throws HttpRequestException {
     if (TRUSTED_FACTORY == null) {
@@ -284,9 +331,10 @@ public class HttpRequest {
           // Intentionally left blank
         }
       } };
+
       try {
         SSLContext context = SSLContext.getInstance("TLS");
-        context.init(null, trustAllCerts, new SecureRandom());
+        context.init(getDefaultKeyStoreManager().getKeyManagers(), trustAllCerts, new SecureRandom());
         TRUSTED_FACTORY = context.getSocketFactory();
       } catch (GeneralSecurityException e) {
         IOException ioException = new IOException(
@@ -3255,5 +3303,16 @@ public class HttpRequest {
   public HttpRequest followRedirects(final boolean followRedirects) {
     getConnection().setInstanceFollowRedirects(followRedirects);
     return this;
+  }
+
+  public static class SSLConfig {
+
+    public static final String KEY_STORE = System.getProperty("javax.net.ssl.keyStore");
+    public static final String KEY_STORE_PASSWORD = System.getProperty("javax.net.ssl.keyStorePassword");
+    public static final String KEY_STORE_TYPE = System.getProperty("javax.net.ssl.keyStoreType");
+
+    public static boolean isValid() {
+      return null != KEY_STORE && null != KEY_STORE_PASSWORD && null != KEY_STORE_TYPE && null != KEY_STORE;
+    }
   }
 }

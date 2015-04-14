@@ -22,7 +22,7 @@
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <jetty.version>8.1.9.v20130131</jetty.version>
+    <jetty.version>9.1.2.v20140210</jetty.version>
   </properties>
 
   <licenses>
@@ -49,8 +49,26 @@
   </developers>
 
   <build>
+    <testResources>
+       <testResource>
+           <directory>src/test/resources</directory>
+           <filtering>true</filtering>
+       </testResource>
+    </testResources>
     <plugins>
       <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-resources-plugin</artifactId>
+          <version>2.6</version>
+          <configuration>
+              <!-- specify UTF-8, ISO-8859-1 or any other file encoding -->
+              <encoding>UTF-8</encoding>
+              <nonFilteredFileExtensions>
+                  <nonFilteredFileExtension>pkcs12</nonFilteredFileExtension>
+              </nonFilteredFileExtensions>
+          </configuration>
+      </plugin>
+        <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
         <version>2.3.2</version>
@@ -223,5 +241,11 @@
       <version>${jetty.version}</version>
       <scope>test</scope>
     </dependency>
+    <dependency>
+          <groupId>org.eclipse.jetty</groupId>
+          <artifactId>jetty-proxy</artifactId>
+          <version>${jetty.version}</version>
+          <scope>test</scope>
+      </dependency>
   </dependencies>
 </project>
