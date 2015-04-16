@@ -24,10 +24,11 @@ package com.github.kevinsawicki.http;
 import static java.net.HttpURLConnection.HTTP_BAD_REQUEST;
 import static java.net.HttpURLConnection.HTTP_CREATED;
 import static java.net.HttpURLConnection.HTTP_INTERNAL_ERROR;
-import static java.net.HttpURLConnection.HTTP_NO_CONTENT;
 import static java.net.HttpURLConnection.HTTP_NOT_FOUND;
 import static java.net.HttpURLConnection.HTTP_NOT_MODIFIED;
+import static java.net.HttpURLConnection.HTTP_NO_CONTENT;
 import static java.net.HttpURLConnection.HTTP_OK;
+import static java.net.HttpURLConnection.HTTP_UNAUTHORIZED;
 import static java.net.Proxy.Type.HTTP;
 
 import java.io.BufferedInputStream;
@@ -1626,6 +1627,10 @@ public class HttpRequest {
   public boolean badRequest() throws HttpRequestException {
     return HTTP_BAD_REQUEST == code();
   }
+  
+  public boolean unathorizedRequest() throws HttpRequestException {
+      return HTTP_UNAUTHORIZED == code();
+    }
 
   /**
    * Is the response code a 404 Not Found?
