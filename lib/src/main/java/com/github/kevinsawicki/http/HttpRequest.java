@@ -3184,15 +3184,9 @@ public class HttpRequest {
    * @return this request
    * @throws HttpRequestException
    */
-  public HttpRequest json(final String jsonString)
-      throws HttpRequestException {
+  public HttpRequest json(final String jsonString) {
     contentType(CONTENT_TYPE_JSON);
-    try {
-      openOutput();
-      output.write(jsonString);
-    } catch (IOException e) {
-      throw new HttpRequestException(e);
-    }
+    send(jsonString);
     return this;
   }
 
