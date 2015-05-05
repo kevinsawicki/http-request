@@ -839,6 +839,31 @@ public class HttpRequestTest extends ServerTestCase {
   }
 
   /**
+   * Make a post of json data
+   *
+   * @throws Exception
+   */
+  @Test
+  public void postJson() throws Exception {
+    final AtomicReference<String> body = new AtomicReference<String>();
+    final AtomicReference<String> contentType = new AtomicReference<String>();
+    handler = new RequestHandler() {
+
+      @Override
+      public void handle(Request request, HttpServletResponse response) {
+        body.set(new String(read()));
+        contentType.set(request.getContentType());
+        response.setStatus(HTTP_OK);
+      }
+    };
+    String jsonString = "{\"name\":\"user\",\"number\":\"1001\"}";
+    int code = post(url).json(jsonString).code();
+    assertEquals(HTTP_OK, code);
+    assertEquals(jsonString, body.get());
+    assertEquals("application/json", contentType.get());
+  }
+
+  /**
    * Make a post in chunked mode
    *
    * @throws Exception
