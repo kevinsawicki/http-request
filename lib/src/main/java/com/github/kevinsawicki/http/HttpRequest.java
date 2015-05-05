@@ -3178,6 +3178,25 @@ public class HttpRequest {
   }
 
   /**
+   * Write the json string
+   *
+   * @param jsonString
+   * @return this request
+   * @throws HttpRequestException
+   */
+  public HttpRequest json(final String jsonString)
+      throws HttpRequestException {
+    contentType(CONTENT_TYPE_JSON);
+    try {
+      openOutput();
+      output.write(jsonString);
+    } catch (IOException e) {
+      throw new HttpRequestException(e);
+    }
+    return this;
+  }
+
+  /**
    * Configure HTTPS connection to trust all certificates
    * <p>
    * This method does nothing if the current request is not a HTTPS request
