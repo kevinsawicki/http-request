@@ -3184,7 +3184,7 @@ public class HttpRequest {
    * @return this request
    * @throws HttpRequestException
    */
-  public HttpRequest json(final String jsonString) {
+  public HttpRequest json(final CharSequence jsonString) {
     contentType(CONTENT_TYPE_JSON);
     send(jsonString);
     return this;
