@@ -287,7 +287,7 @@ public class HttpRequest {
       try {
         SSLContext context = SSLContext.getInstance("TLS");
         context.init(null, trustAllCerts, new SecureRandom());
-        TRUSTED_FACTORY = context.getSocketFactory();
+        TRUSTED_FACTORY = new TLSSocketFactory(context);
       } catch (GeneralSecurityException e) {
         IOException ioException = new IOException(
             "Security exception configuring SSL context");
