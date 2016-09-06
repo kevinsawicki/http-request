@@ -263,7 +263,7 @@ public class HttpRequest {
   private static String getValidCharset(final String charset) {
     if (charset != null && charset.length() > 0)
       return charset;
-    else
+
       return CHARSET_UTF8;
   }
 
@@ -649,7 +649,8 @@ public class HttpRequest {
         byte[] finalOut = new byte[e];
         System.arraycopy(outBuff, 0, finalOut, 0, e);
         return finalOut;
-      } else
+      }
+
         return outBuff;
     }
   }
@@ -1744,7 +1745,7 @@ public class HttpRequest {
     final int size = contentLength();
     if (size > 0)
       return new ByteArrayOutputStream(size);
-    else
+
       return new ByteArrayOutputStream();
   }
 
@@ -2194,7 +2195,7 @@ public class HttpRequest {
     final List<String> values = headers.get(name);
     if (values != null && !values.isEmpty())
       return values.toArray(new String[values.size()]);
-    else
+
       return EMPTY_STRINGS;
   }
 
@@ -2538,7 +2539,8 @@ public class HttpRequest {
     if (charset != null && charset.length() > 0) {
       final String separator = "; " + PARAM_CHARSET + '=';
       return header(HEADER_CONTENT_TYPE, contentType + separator + charset);
-    } else
+    }
+
       return header(HEADER_CONTENT_TYPE, contentType);
   }
 
