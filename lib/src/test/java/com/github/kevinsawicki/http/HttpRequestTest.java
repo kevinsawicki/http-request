@@ -179,6 +179,8 @@ public class HttpRequestTest extends ServerTestCase {
         .getReadTimeout());
     assertEquals(50000, request.connectTimeout(50000).getConnection()
         .getConnectTimeout());
+    assertEquals(90000, request.readInteruptTimeout(90000)
+        .getReadInteruptTimeout());
     assertEquals(2500, request.bufferSize(2500).bufferSize());
     assertFalse(request.ignoreCloseExceptions(false).ignoreCloseExceptions());
     assertFalse(request.useCaches(false).getConnection().getUseCaches());

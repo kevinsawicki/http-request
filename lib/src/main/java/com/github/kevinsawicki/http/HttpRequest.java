@@ -968,6 +968,8 @@ public class HttpRequest {
     return result.toString();
   }
 
+  private int readInterruptTimeout;
+
   /**
    * Start a 'GET' request to the given URL
    *
@@ -1851,18 +1853,18 @@ public class HttpRequest {
    * @throws HttpRequestException
    */
   public InputStream stream() throws HttpRequestException {
-    InputStream stream;
+    InputStream stream = null;
     if (code() < HTTP_BAD_REQUEST)
       try {
-        stream = getConnection().getInputStream();
+        stream = getTimedOutInputStream();
       } catch (IOException e) {
         throw new HttpRequestException(e);
       }
     else {
-      stream = getConnection().getErrorStream();
+      stream = getTimedOutErrorStream();
       if (stream == null)
         try {
-          stream = getConnection().getInputStream();
+          stream = getTimedOutInputStream();
         } catch (IOException e) {
           if (contentLength() > 0)
             throw new HttpRequestException(e);
@@ -1879,6 +1881,43 @@ public class HttpRequest {
       } catch (IOException e) {
         throw new HttpRequestException(e);
       }
+  }
+
+  private InputStream getTimedOutInputStream() throws IOException {
+    InputStream stream = getConnection().getInputStream();
+    setReadInterruptTimerIfNeeded(stream);
+    return stream;
+  }
+
+  private InputStream getTimedOutErrorStream() {
+    InputStream stream = getConnection().getErrorStream();
+    setReadInterruptTimerIfNeeded(stream);
+    return stream;
+  }
+
+  private void setReadInterruptTimerIfNeeded(InputStream stream) {
+    if (readInterruptTimeout > 0 && stream != null) {
+      System.out.println("TimeoutLogs set " + getConnection().hashCode());
+      disconnectIn(readInterruptTimeout, stream, getConnection());
+    }
+  }
+
+  private void disconnectIn(int duration, final InputStream stream, final HttpURLConnection connection) {
+      Timer timer = new Timer();
+      timer.schedule(new TimerTask() {
+        @Override
+        public void run() {
+            try {
+                System.out.println("TimeoutLogs closing stream " + getConnection().hashCode());
+                stream.close();
+            } catch (IOException ignored) {
+                ignored.printStackTrace();
+            } finally {
+                System.out.println("TimeoutLogs disconnect " + getConnection().hashCode());
+                connection.disconnect();
+            }
+        }
+      }, duration);
   }
 
   /**
@@ -2045,6 +2084,17 @@ public class HttpRequest {
   }
 
   /**
+   * Set read interruption timeout on connection to given value
+   *
+   * @param timeout
+   * @return this request
+   */
+  public HttpRequest readInteruptTimeout(final int timeout) {
+    this.readInterruptTimeout = timeout;
+    return this;
+  }
+
+  /**
    * Set connect timeout on connection to given value
    *
    * @param timeout
@@ -2053,6 +2103,10 @@ public class HttpRequest {
   public HttpRequest connectTimeout(final int timeout) {
     getConnection().setConnectTimeout(timeout);
     return this;
+  }
+
+  public int getReadInteruptTimeout() {
+    return readInterruptTimeout;
   }
 
   /**
