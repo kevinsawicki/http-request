@@ -47,6 +47,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintStream;
+import java.io.RandomAccessFile;
 import java.io.Reader;
 import java.io.UnsupportedEncodingException;
 import java.io.Writer;
@@ -196,6 +197,11 @@ public class HttpRequest {
    * 'Referer' header name
    */
   public static final String HEADER_REFERER = "Referer";
+  
+  /**
+   * 'Range' header name
+   */
+  public static final String HEADER_RANGE = "Range";
 
   /**
    * 'Server' header name
@@ -1960,6 +1966,33 @@ public class HttpRequest {
       }
     }.call();
   }
+  
+  /**
+   * * Stream response body to file
+   * 
+   * @param file
+   * @param pos
+   * @return this request
+   * @throws HttpRequestException
+   */
+  public HttpRequest receive(final File file, long pos) throws HttpRequestException {
+	final RandomAccessFile raf;
+    try {
+      raf = new RandomAccessFile(file, "rw");
+      raf.seek(pos);
+    } catch (FileNotFoundException e) {
+      throw new HttpRequestException(e);
+    } catch (IOException e) {
+      throw new HttpRequestException(e);
+    }
+    return new CloseOperation<HttpRequest>(raf, ignoreCloseExceptions) {
+
+      @Override
+      protected HttpRequest run() throws HttpRequestException, IOException {
+        return receive(raf);
+      }
+    }.call();
+  }
 
   /**
    * Stream response to given output stream
@@ -1972,6 +2005,22 @@ public class HttpRequest {
       throws HttpRequestException {
     try {
       return copy(buffer(), output);
+    } catch (IOException e) {
+      throw new HttpRequestException(e);
+    }
+  }
+  
+  /**
+   * Stream response to given RandomAccessFile
+   *
+   * @param output
+   * @return this request
+   * @throws HttpRequestException
+   */
+  public HttpRequest receive(final RandomAccessFile raf)
+      throws HttpRequestException {
+    try {
+      return copy(buffer(), raf);
     } catch (IOException e) {
       throw new HttpRequestException(e);
     }
@@ -2379,6 +2428,28 @@ public class HttpRequest {
   public HttpRequest acceptCharset(final String acceptCharset) {
     return header(HEADER_ACCEPT_CHARSET, acceptCharset);
   }
+  
+  /**
+   * Set the 'Range' header to given value
+   * 
+   * @param startBytes
+   * @param endBytes
+   * @return this request
+   */
+  public HttpRequest range(final int startBytes, final int endBytes) {
+    return header(HEADER_RANGE, "bytes=" + startBytes + "-" + ((endBytes > 0) ? endBytes : ""));
+  }
+  
+  /**
+   * Set the 'Range' header to given value
+   * 
+   * @param startBytes
+   * @return this request
+   */
+  public HttpRequest range(final int startBytes) {
+    return range(startBytes, -1);
+  }
+  
 
   /**
    * Get the 'Content-Encoding' header from the response
@@ -2618,6 +2689,32 @@ public class HttpRequest {
         int read;
         while ((read = input.read(buffer)) != -1) {
           output.write(buffer, 0, read);
+          totalWritten += read;
+          progress.onUpload(totalWritten, totalSize);
+        }
+        return HttpRequest.this;
+      }
+    }.call();
+  }
+  
+  /**
+   * Copy from input stream to RandomAccessFile
+   *
+   * @param input
+   * @param output
+   * @return this request
+   * @throws IOException
+   */
+  protected HttpRequest copy(final InputStream input, final RandomAccessFile raf)
+      throws IOException {
+    return new CloseOperation<HttpRequest>(input, ignoreCloseExceptions) {
+
+      @Override
+      public HttpRequest run() throws IOException {
+        final byte[] buffer = new byte[bufferSize];
+        int read;
+        while ((read = input.read(buffer)) != -1) {
+          raf.write(buffer, 0, read);
           totalWritten += read;
           progress.onUpload(totalWritten, totalSize);
         }
