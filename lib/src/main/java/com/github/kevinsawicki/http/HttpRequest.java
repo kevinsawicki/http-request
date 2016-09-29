@@ -247,6 +247,12 @@ public class HttpRequest {
    */
   public static final String PARAM_CHARSET = "charset";
 
+  /**
+   * http timeout
+   */
+  public static int TIMEOUT_CONNECT = 15000;
+  public static int TIMEOUT_READ = 15000;
+
   private static final String BOUNDARY = "00content0boundary00";
 
   private static final String CONTENT_TYPE_MULTIPART = "multipart/form-data; boundary="
@@ -386,11 +392,17 @@ public class HttpRequest {
      */
     ConnectionFactory DEFAULT = new ConnectionFactory() {
       public HttpURLConnection create(URL url) throws IOException {
-        return (HttpURLConnection) url.openConnection();
+        HttpURLConnection huc = (HttpURLConnection) url.openConnection();
+        huc.setConnectTimeout(TIMEOUT_CONNECT);
+        huc.setReadTimeout(TIMEOUT_READ);
+        return huc;
       }
 
       public HttpURLConnection create(URL url, Proxy proxy) throws IOException {
-        return (HttpURLConnection) url.openConnection(proxy);
+        HttpURLConnection huc = (HttpURLConnection) url.openConnection(proxy);
+        huc.setConnectTimeout(TIMEOUT_CONNECT);
+        huc.setReadTimeout(TIMEOUT_READ);
+        return huc;
       }
     };
   }
