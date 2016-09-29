@@ -2063,6 +2063,9 @@ public class HttpRequest {
    * @return this request
    */
   public HttpRequest header(final String name, final String value) {
+    if (form) {
+      throw new IllegalStateException("Headers must be declared before form data");
+    }
     getConnection().setRequestProperty(name, value);
     return this;
   }
