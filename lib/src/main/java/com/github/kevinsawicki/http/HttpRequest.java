@@ -3269,6 +3269,4 @@ public class HttpRequest {
     this.contentTypeMultipart ="multipart/form-data; boundary="
             + boundary ;
   }
-
-
 }
