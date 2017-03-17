@@ -247,10 +247,10 @@ public class HttpRequest {
    */
   public static final String PARAM_CHARSET = "charset";
 
-  private static final String BOUNDARY = "00content0boundary00";
+  private static final String DEFAULT_BOUNDARY = "00content0boundary00";
 
-  private static final String CONTENT_TYPE_MULTIPART = "multipart/form-data; boundary="
-      + BOUNDARY;
+  private static final String DEFAULT_CONTENT_TYPE_MULTIPART = "multipart/form-data; boundary="
+      + DEFAULT_BOUNDARY;
 
   private static final String CRLF = "\r\n";
 
@@ -1441,6 +1441,10 @@ public class HttpRequest {
   private RequestOutputStream output;
 
   private boolean multipart;
+
+  private String boundary = DEFAULT_BOUNDARY;
+
+  private String contentTypeMultipart = DEFAULT_CONTENT_TYPE_MULTIPART;
 
   private boolean form;
 
@@ -2685,7 +2689,7 @@ public class HttpRequest {
     if (output == null)
       return this;
     if (multipart)
-      output.write(CRLF + "--" + BOUNDARY + "--" + CRLF);
+      output.write(CRLF + "--" + boundary+ "--" + CRLF);
     if (ignoreCloseExceptions)
       try {
         output.close();
@@ -2739,10 +2743,10 @@ public class HttpRequest {
   protected HttpRequest startPart() throws IOException {
     if (!multipart) {
       multipart = true;
-      contentType(CONTENT_TYPE_MULTIPART).openOutput();
-      output.write("--" + BOUNDARY + CRLF);
+      contentType(contentTypeMultipart).openOutput();
+      output.write("--" + boundary + CRLF);
     } else
-      output.write(CRLF + "--" + BOUNDARY + CRLF);
+      output.write(CRLF + "--" + boundary+ CRLF);
     return this;
   }
 
@@ -3256,4 +3260,15 @@ public class HttpRequest {
     getConnection().setInstanceFollowRedirects(followRedirects);
     return this;
   }
+
+  public void setMultipartFormDataBoundary(String boundary){
+    if (connection != null) {
+      throw new IllegalStateException("The connection has already been created. This method must be called before reading or writing to the request.");
+    }
+    this.boundary = boundary;
+    this.contentTypeMultipart ="multipart/form-data; boundary="
+            + boundary ;
+  }
+
+
 }

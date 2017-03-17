@@ -62,12 +62,7 @@ import java.io.Writer;
 import java.net.HttpURLConnection;
 import java.net.Proxy;
 import java.net.URL;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -1638,6 +1633,63 @@ public class HttpRequestTest extends ServerTestCase {
     assertTrue(body.toString().contains("content3\r\n"));
     assertTrue(body.toString().contains("content4\r\n"));
     assertTrue(body.toString().contains(Long.toString(file.length()) + "\r\n"));
+  }
+
+  /**
+   * Verify multipart with file, stream, number, and string parameters
+   *
+   * @throws Exception
+   */
+  @Test
+  public void postMultipartWithCustomBoundary() throws Exception {
+    final StringBuilder body = new StringBuilder();
+    handler = new RequestHandler() {
+
+      @Override
+      public void handle(Request request, HttpServletResponse response) {
+        response.setStatus(HTTP_OK);
+        char[] buffer = new char[8192];
+        int read;
+        try {
+          while ((read = request.getReader().read(buffer)) != -1)
+            body.append(buffer, 0, read);
+        } catch (IOException e) {
+          fail();
+        }
+      }
+    };
+    File file = File.createTempFile("body", ".txt");
+    File file2 = File.createTempFile("body", ".txt");
+    new FileWriter(file).append("content1").close();
+    new FileWriter(file2).append("content4").close();
+    String boundary = UUID.randomUUID().toString();
+    HttpRequest request = post(url);
+    request.setMultipartFormDataBoundary(boundary);
+    request.part("description", "content2");
+    request.part("size", file.length());
+    request.part("body", file.getName(), file);
+    request.part("file", file2);
+    request.part("stream", new ByteArrayInputStream("content3".getBytes()));
+    assertTrue(request.ok());
+    assertTrue(body.toString().contains("content1\r\n"));
+    assertTrue(body.toString().contains("content2\r\n"));
+    assertTrue(body.toString().contains("content3\r\n"));
+    assertTrue(body.toString().contains("content4\r\n"));
+    assertTrue(body.toString().contains(Long.toString(file.length()) + "\r\n"));
+  }
+
+  @Test
+  public void canNotSetMultipartFormBoundaryAfterConnectionCreated() throws Exception {
+    HttpRequest request = post(url);
+    String boundary = UUID.randomUUID().toString();
+    request.part("description", "content2");
+    try {
+      request.setMultipartFormDataBoundary(boundary);
+      fail();
+    } catch (IllegalStateException ignored) {
+      // expected
+    }
+
   }
 
   /**
