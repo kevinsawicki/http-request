@@ -2689,7 +2689,7 @@ public class HttpRequest {
     if (output == null)
       return this;
     if (multipart)
-      output.write(CRLF + "--" + boundary+ "--" + CRLF);
+      output.write(CRLF + "--" + boundary + "--" + CRLF);
     if (ignoreCloseExceptions)
       try {
         output.close();

@@ -1689,7 +1689,6 @@ public class HttpRequestTest extends ServerTestCase {
     } catch (IllegalStateException ignored) {
       // expected
     }
-
   }
 
   /**
