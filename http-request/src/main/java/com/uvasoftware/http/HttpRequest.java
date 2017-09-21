@@ -313,19 +313,18 @@ public class HttpRequest {
     return TRUSTED_VERIFIER;
   }
 
-  private static StringBuilder addPathSeparator(final String baseUrl,
-                                                final StringBuilder result) {
+  private static void addPathSeparator(final String baseUrl,
+                                       final StringBuilder result) {
     // Add trailing slash if the base URL doesn't have any path segments.
     //
     // The following test is checking for the last slash not being part of
     // the protocol to host separator: '://'.
     if (baseUrl.indexOf(':') + 2 == baseUrl.lastIndexOf('/'))
       result.append('/');
-    return result;
   }
 
-  private static StringBuilder addParamPrefix(final String baseUrl,
-                                              final StringBuilder result) {
+  private static void addParamPrefix(final String baseUrl,
+                                     final StringBuilder result) {
     // Add '?' if missing and add '&' if params already exist in base url
     final int queryStart = baseUrl.indexOf('?');
     final int lastChar = result.length() - 1;
@@ -333,11 +332,10 @@ public class HttpRequest {
       result.append('?');
     else if (queryStart < lastChar && baseUrl.charAt(lastChar) != '&')
       result.append('&');
-    return result;
   }
 
-  private static StringBuilder addParam(final Object key, Object value,
-                                        final StringBuilder result) {
+  private static void addParam(final Object key, Object value,
+                               final StringBuilder result) {
     if (value != null && value.getClass().isArray())
       value = arrayToList(value);
 
@@ -359,7 +357,6 @@ public class HttpRequest {
         result.append(value);
     }
 
-    return result;
   }
 
   /**
