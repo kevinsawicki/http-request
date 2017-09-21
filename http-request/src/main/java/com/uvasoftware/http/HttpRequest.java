@@ -2393,6 +2393,10 @@ public class HttpRequest {
       writePartHeader(name, filename, contentType);
       copy(part, output);
     } catch (IOException e) {
+      try {
+        part.close();
+      } catch (IOException ignored) {
+      } //when Connection timed out, close the file silently
       throw new HttpRequestException(e);
     }
     return this;
