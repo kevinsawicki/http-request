@@ -138,7 +138,7 @@ public class Base64 {
    * @throws IllegalArgumentException if source array, offset, or length are invalid
    * @since 2.0
    */
-  public static String encodeBytes(byte[] source) {
+  private static String encodeBytes(byte[] source) {
     return encodeBytes(source, 0, source.length);
   }
 
@@ -153,7 +153,7 @@ public class Base64 {
    * @throws IllegalArgumentException if source array, offset, or length are invalid
    * @since 2.0
    */
-  public static String encodeBytes(byte[] source, int off, int len) {
+  private static String encodeBytes(byte[] source, int off, int len) {
     byte[] encoded = encodeBytesToBytes(source, off, len);
     try {
       return new String(encoded, PREFERRED_ENCODING);
@@ -175,7 +175,7 @@ public class Base64 {
    * @throws IllegalArgumentException if source array, offset, or length are invalid
    * @since 2.3.1
    */
-  public static byte[] encodeBytesToBytes(byte[] source, int off, int len) {
+  private static byte[] encodeBytesToBytes(byte[] source, int off, int len) {
 
     if (source == null)
       throw new NullPointerException("Cannot serialize a null array.");

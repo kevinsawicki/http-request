@@ -13,7 +13,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class ConcurrentHttpRequestTest extends HttpRequestTest {
+public class TlsHttpRequestTest extends HttpRequestTest {
   @Test
   public void shouldBeThreadSafe() throws Exception {
     handler = new RequestHandler() {

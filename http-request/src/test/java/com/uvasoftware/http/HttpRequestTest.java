@@ -21,6 +21,7 @@
  */
 package com.uvasoftware.http;
 
+import com.uvasoftware.http.internal.HttpUtils;
 import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.util.B64Code;
 import org.junit.After;
@@ -44,6 +45,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.zip.GZIPOutputStream;
 
 import static com.uvasoftware.http.HttpRequest.*;
+import static com.uvasoftware.http.internal.HttpUtils.encode;
 import static java.net.HttpURLConnection.*;
 import static org.junit.Assert.*;
 
@@ -2994,7 +2996,7 @@ public class HttpRequestTest extends ServerTestCase {
   public void appendMappedQueryParamsWithNoPath() throws Exception {
     assertEquals(
       "http://test.com/?a=b",
-      HttpRequest.append("http://test.com",
+      HttpUtils.append("http://test.com",
         Collections.singletonMap("a", "b")));
   }
 
@@ -3006,7 +3008,7 @@ public class HttpRequestTest extends ServerTestCase {
   @Test
   public void appendVarargsQueryParmasWithNoPath() throws Exception {
     assertEquals("http://test.com/?a=b",
-      HttpRequest.append("http://test.com", "a", "b"));
+      HttpUtils.append("http://test.com", "a", "b"));
   }
 
   /**
@@ -3018,11 +3020,11 @@ public class HttpRequestTest extends ServerTestCase {
   public void appendMappedQueryParamsWithPath() throws Exception {
     assertEquals(
       "http://test.com/segment1?a=b",
-      HttpRequest.append("http://test.com/segment1",
+      HttpUtils.append("http://test.com/segment1",
         Collections.singletonMap("a", "b")));
     assertEquals(
       "http://test.com/?a=b",
-      HttpRequest.append("http://test.com/",
+      HttpUtils.append("http://test.com/",
         Collections.singletonMap("a", "b")));
   }
 
@@ -3034,9 +3036,9 @@ public class HttpRequestTest extends ServerTestCase {
   @Test
   public void appendVarargsQueryParamsWithPath() throws Exception {
     assertEquals("http://test.com/segment1?a=b",
-      HttpRequest.append("http://test.com/segment1", "a", "b"));
+      HttpUtils.append("http://test.com/segment1", "a", "b"));
     assertEquals("http://test.com/?a=b",
-      HttpRequest.append("http://test.com/", "a", "b"));
+      HttpUtils.append("http://test.com/", "a", "b"));
   }
 
   /**
@@ -3050,7 +3052,7 @@ public class HttpRequestTest extends ServerTestCase {
     params.put("a", "b");
     params.put("c", "d");
     assertEquals("http://test.com/1?a=b&c=d",
-      HttpRequest.append("http://test.com/1", params));
+      HttpUtils.append("http://test.com/1", params));
   }
 
   /**
@@ -3061,7 +3063,7 @@ public class HttpRequestTest extends ServerTestCase {
   @Test
   public void appendMultipleVarargsQueryParams() throws Exception {
     assertEquals("http://test.com/1?a=b&c=d",
-      HttpRequest.append("http://test.com/1", "a", "b", "c", "d"));
+      HttpUtils.append("http://test.com/1", "a", "b", "c", "d"));
   }
 
   /**
@@ -3072,7 +3074,7 @@ public class HttpRequestTest extends ServerTestCase {
   @Test
   public void appendNullMappedQueryParams() throws Exception {
     assertEquals("http://test.com/1",
-      HttpRequest.append("http://test.com/1", (Map<?, ?>) null));
+      HttpUtils.append("http://test.com/1", (Map<?, ?>) null));
   }
 
   /**
@@ -3083,7 +3085,7 @@ public class HttpRequestTest extends ServerTestCase {
   @Test
   public void appendNullVaragsQueryParams() throws Exception {
     assertEquals("http://test.com/1",
-      HttpRequest.append("http://test.com/1", (Object[]) null));
+      HttpUtils.append("http://test.com/1", (Object[]) null));
   }
 
   /**
@@ -3095,7 +3097,7 @@ public class HttpRequestTest extends ServerTestCase {
   public void appendEmptyMappedQueryParams() throws Exception {
     assertEquals(
       "http://test.com/1",
-      HttpRequest.append("http://test.com/1",
+      HttpUtils.append("http://test.com/1",
         Collections.<String, String>emptyMap()));
   }
 
@@ -3107,7 +3109,7 @@ public class HttpRequestTest extends ServerTestCase {
   @Test
   public void appendEmptyVarargsQueryParams() throws Exception {
     assertEquals("http://test.com/1",
-      HttpRequest.append("http://test.com/1", new Object[0]));
+      HttpUtils.append("http://test.com/1"));
   }
 
   /**
@@ -3121,7 +3123,7 @@ public class HttpRequestTest extends ServerTestCase {
     params.put("a", null);
     params.put("b", null);
     assertEquals("http://test.com/1?a=&b=",
-      HttpRequest.append("http://test.com/1", params));
+      HttpUtils.append("http://test.com/1", params));
   }
 
   /**
@@ -3132,7 +3134,7 @@ public class HttpRequestTest extends ServerTestCase {
   @Test
   public void appendWithNullVaragsQueryParamValues() throws Exception {
     assertEquals("http://test.com/1?a=&b=",
-      HttpRequest.append("http://test.com/1", "a", null, "b", null));
+      HttpUtils.append("http://test.com/1", "a", null, "b", null));
   }
 
   /**
@@ -3140,7 +3142,7 @@ public class HttpRequestTest extends ServerTestCase {
    */
   @Test(expected = IllegalArgumentException.class)
   public void appendOddNumberOfParams() {
-    HttpRequest.append("http://test.com", "1");
+    HttpUtils.append("http://test.com", "1");
   }
 
   /**
@@ -3150,7 +3152,7 @@ public class HttpRequestTest extends ServerTestCase {
   public void appendMappedQueryParamsWithExistingQueryStart() {
     assertEquals(
       "http://test.com/1?a=b",
-      HttpRequest.append("http://test.com/1?",
+      HttpUtils.append("http://test.com/1?",
         Collections.singletonMap("a", "b")));
   }
 
@@ -3160,7 +3162,7 @@ public class HttpRequestTest extends ServerTestCase {
   @Test
   public void appendVarargsQueryParamsWithExistingQueryStart() {
     assertEquals("http://test.com/1?a=b",
-      HttpRequest.append("http://test.com/1?", "a", "b"));
+      HttpUtils.append("http://test.com/1?", "a", "b"));
   }
 
   /**
@@ -3170,11 +3172,11 @@ public class HttpRequestTest extends ServerTestCase {
   public void appendMappedQueryParamsWithExistingParams() {
     assertEquals(
       "http://test.com/1?a=b&c=d",
-      HttpRequest.append("http://test.com/1?a=b",
+      HttpUtils.append("http://test.com/1?a=b",
         Collections.singletonMap("c", "d")));
     assertEquals(
       "http://test.com/1?a=b&c=d",
-      HttpRequest.append("http://test.com/1?a=b&",
+      HttpUtils.append("http://test.com/1?a=b&",
         Collections.singletonMap("c", "d")));
 
   }
@@ -3185,9 +3187,9 @@ public class HttpRequestTest extends ServerTestCase {
   @Test
   public void appendWithVarargsQueryParamsWithExistingParams() {
     assertEquals("http://test.com/1?a=b&c=d",
-      HttpRequest.append("http://test.com/1?a=b", "c", "d"));
+      HttpUtils.append("http://test.com/1?a=b", "c", "d"));
     assertEquals("http://test.com/1?a=b&c=d",
-      HttpRequest.append("http://test.com/1?a=b&", "c", "d"));
+      HttpUtils.append("http://test.com/1?a=b&", "c", "d"));
   }
 
   /**
@@ -3199,23 +3201,23 @@ public class HttpRequestTest extends ServerTestCase {
   public void appendArrayQueryParams() throws Exception {
     assertEquals(
       "http://test.com/?foo[]=bar&foo[]=baz",
-      HttpRequest.append("http://test.com",
+      HttpUtils.append("http://test.com",
         Collections.singletonMap("foo", new String[]{"bar", "baz"})));
     assertEquals(
       "http://test.com/?a[]=1&a[]=2",
-      HttpRequest.append("http://test.com",
+      HttpUtils.append("http://test.com",
         Collections.singletonMap("a", new int[]{1, 2})));
     assertEquals(
       "http://test.com/?a[]=1",
-      HttpRequest.append("http://test.com",
+      HttpUtils.append("http://test.com",
         Collections.singletonMap("a", new int[]{1})));
     assertEquals(
       "http://test.com/?",
-      HttpRequest.append("http://test.com",
+      HttpUtils.append("http://test.com",
         Collections.singletonMap("a", new int[]{})));
     assertEquals(
       "http://test.com/?foo[]=bar&foo[]=baz&a[]=1&a[]=2",
-      HttpRequest.append("http://test.com",
+      HttpUtils.append("http://test.com",
         "foo", new String[]{"bar", "baz"},
         "a", new int[]{1, 2}));
   }
@@ -3229,23 +3231,23 @@ public class HttpRequestTest extends ServerTestCase {
   public void appendListQueryParams() throws Exception {
     assertEquals(
       "http://test.com/?foo[]=bar&foo[]=baz",
-      HttpRequest.append("http://test.com",
+      HttpUtils.append("http://test.com",
         Collections.singletonMap("foo", Arrays.asList(new String[]{"bar", "baz"}))));
     assertEquals(
       "http://test.com/?a[]=1&a[]=2",
-      HttpRequest.append("http://test.com",
+      HttpUtils.append("http://test.com",
         Collections.singletonMap("a", Arrays.asList(new Integer[]{1, 2}))));
     assertEquals(
       "http://test.com/?a[]=1",
-      HttpRequest.append("http://test.com",
+      HttpUtils.append("http://test.com",
         Collections.singletonMap("a", Arrays.asList(new Integer[]{1}))));
     assertEquals(
       "http://test.com/?",
-      HttpRequest.append("http://test.com",
+      HttpUtils.append("http://test.com",
         Collections.singletonMap("a", Arrays.asList(new Integer[]{}))));
     assertEquals(
       "http://test.com/?foo[]=bar&foo[]=baz&a[]=1&a[]=2",
-      HttpRequest.append("http://test.com",
+      HttpUtils.append("http://test.com",
         "foo", Arrays.asList(new String[]{"bar", "baz"}),
         "a", Arrays.asList(new Integer[]{1, 2})));
   }
