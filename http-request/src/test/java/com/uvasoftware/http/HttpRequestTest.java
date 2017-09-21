@@ -52,8 +52,8 @@ import static org.junit.Assert.*;
  */
 public class HttpRequestTest extends ServerTestCase {
 
-  private static String url;
   protected static RequestHandler handler;
+  private static String url;
 
   /**
    * Set up server
@@ -3653,5 +3653,28 @@ public class HttpRequestTest extends ServerTestCase {
     int code = post(url).progress(null).send(file).code();
     assertEquals(HTTP_OK, code);
     assertEquals("hello", body.get());
+  }
+
+  /**
+   * Make a post of json data
+   */
+  @Test
+  public void postJson() throws Exception {
+    final AtomicReference<String> body = new AtomicReference<String>();
+    final AtomicReference<String> contentType = new AtomicReference<String>();
+    handler = new RequestHandler() {
+
+      @Override
+      public void handle(Request request, HttpServletResponse response) {
+        body.set(new String(read()));
+        contentType.set(request.getContentType());
+        response.setStatus(HTTP_OK);
+      }
+    };
+    String jsonString = "{\"name\":\"user\",\"number\":\"1001\"}";
+    int code = post(url).json(jsonString).code();
+    assertEquals(HTTP_OK, code);
+    assertEquals(jsonString, body.get());
+    assertEquals("application/json", contentType.get());
   }
 }

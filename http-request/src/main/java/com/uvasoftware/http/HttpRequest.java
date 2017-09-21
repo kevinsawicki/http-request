@@ -937,6 +937,19 @@ public class HttpRequest {
     return AccessController.doPrivileged(action);
   }
 
+  /**
+   * Write the json string
+   *
+   * @param jsonString the json payload to send
+   * @return this request
+   * @throws HttpRequestException
+   */
+  public HttpRequest json(final CharSequence jsonString) {
+    contentType(CONTENT_TYPE_JSON);
+    send(jsonString);
+    return this;
+  }
+
   private Proxy createProxy() {
     return new Proxy(HTTP, new InetSocketAddress(httpProxyHost, httpProxyPort));
   }
