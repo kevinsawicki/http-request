@@ -97,7 +97,7 @@ public class EncodeTest {
   /**
    * Encoding malformed URI
    */
-  @Test(expected = HttpRequest.HttpRequestException.class)
+  @Test(expected = HttpRequestException.class)
   public void encodeMalformedUri() {
     HttpRequest.encode("\\m/");
   }

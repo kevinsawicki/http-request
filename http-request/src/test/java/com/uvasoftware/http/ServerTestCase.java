@@ -7,9 +7,11 @@ import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.handler.AbstractHandler;
 import org.eclipse.jetty.server.handler.HandlerList;
 import org.eclipse.jetty.server.nio.SelectChannelConnector;
+import org.eclipse.jetty.server.ssl.SslSocketConnector;
 import org.eclipse.jetty.servlet.ServletHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
 import org.eclipse.jetty.util.B64Code;
+import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.junit.AfterClass;
 import org.junit.Before;
 
@@ -30,15 +32,15 @@ import static com.uvasoftware.http.HttpRequest.CHARSET_UTF8;
  */
 public class ServerTestCase {
 
-  protected static final AtomicInteger proxyHitCount = new AtomicInteger(0);
-  protected static final AtomicReference<String> proxyUser = new AtomicReference<String>();
-  protected static final AtomicReference<String> proxyPassword = new AtomicReference<String>();
+  static final AtomicInteger proxyHitCount = new AtomicInteger(0);
+  static final AtomicReference<String> proxyUser = new AtomicReference<String>();
+  static final AtomicReference<String> proxyPassword = new AtomicReference<String>();
   /**
    * Server
    */
-  protected static Server server;
-  protected static Server proxy;
-  protected static int proxyPort;
+  private static Server server;
+  private static Server proxy;
+  static int proxyPort;
 
   /**
    * Set up server with handler
@@ -53,7 +55,15 @@ public class ServerTestCase {
       server.setHandler(handler);
     Connector connector = new SelectChannelConnector();
     connector.setPort(0);
-    server.setConnectors(new Connector[]{connector});
+
+    //    TLS connector
+    SslContextFactory sslContextFactory = new SslContextFactory();
+    sslContextFactory.setKeyStorePassword("password");
+    sslContextFactory.setKeyStorePath("src/test/resources/keystore.jks");
+    Connector connector1 = new SslSocketConnector(sslContextFactory);
+    connector1.setPort(8081);
+
+    server.setConnectors(new Connector[]{connector, connector1});
     server.start();
 
     proxy = new Server();
@@ -137,7 +147,7 @@ public class ServerTestCase {
      *
      * @return content
      */
-    protected byte[] read() {
+    byte[] read() {
       ByteArrayOutputStream content = new ByteArrayOutputStream();
       final byte[] buffer = new byte[8196];
       int read;
@@ -156,7 +166,7 @@ public class ServerTestCase {
      *
      * @param value
      */
-    protected void write(String value) {
+    void write(String value) {
       try {
         response.getWriter().print(value);
       } catch (IOException e) {
