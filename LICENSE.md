@@ -1,3 +1,4 @@
+Copyright (c) 2017 Uva Software, LLC ping@uvasoftware.com
 Copyright (c) 2014 Kevin Sawicki <kevinsawicki@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy

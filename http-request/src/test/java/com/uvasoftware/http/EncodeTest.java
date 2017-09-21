@@ -19,13 +19,11 @@
  * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
  * IN THE SOFTWARE.
  */
-package com.github.kevinsawicki.http;
-
-import static org.junit.Assert.assertEquals;
-
-import com.github.kevinsawicki.http.HttpRequest.HttpRequestException;
+package com.uvasoftware.http;
 
 import org.junit.Test;
+
+import static org.junit.Assert.assertEquals;
 
 /**
  * Unit tests of URL encoding done by {@link HttpRequest}
@@ -99,7 +97,7 @@ public class EncodeTest {
   /**
    * Encoding malformed URI
    */
-  @Test(expected = HttpRequestException.class)
+  @Test(expected = HttpRequest.HttpRequestException.class)
   public void encodeMalformedUri() {
     HttpRequest.encode("\\m/");
   }

@@ -19,17 +19,9 @@
  * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
  * IN THE SOFTWARE.
  */
-package com.github.kevinsawicki.http;
+package com.uvasoftware.http;
 
-import static com.github.kevinsawicki.http.HttpRequest.CHARSET_UTF8;
-import static com.github.kevinsawicki.http.HttpRequest.delete;
-import static com.github.kevinsawicki.http.HttpRequest.encode;
-import static com.github.kevinsawicki.http.HttpRequest.get;
-import static com.github.kevinsawicki.http.HttpRequest.head;
-import static com.github.kevinsawicki.http.HttpRequest.options;
-import static com.github.kevinsawicki.http.HttpRequest.post;
-import static com.github.kevinsawicki.http.HttpRequest.put;
-import static com.github.kevinsawicki.http.HttpRequest.trace;
+import static com.uvasoftware.http.HttpRequest.*;
 import static java.net.HttpURLConnection.HTTP_BAD_REQUEST;
 import static java.net.HttpURLConnection.HTTP_CREATED;
 import static java.net.HttpURLConnection.HTTP_INTERNAL_ERROR;
@@ -42,9 +34,6 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
-import com.github.kevinsawicki.http.HttpRequest.HttpRequestException;
-import com.github.kevinsawicki.http.HttpRequest.ConnectionFactory;
-import com.github.kevinsawicki.http.HttpRequest.UploadProgress;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
@@ -131,7 +120,7 @@ public class HttpRequestTest extends ServerTestCase {
   /**
    * Create request with malformed URL
    */
-  @Test(expected = HttpRequestException.class)
+  @Test(expected = HttpRequest.HttpRequestException.class)
   public void malformedStringUrl() {
     get("\\m/");
   }
@@ -144,7 +133,7 @@ public class HttpRequestTest extends ServerTestCase {
     try {
       delete("\\m/");
       fail("Exception not thrown");
-    } catch (HttpRequestException e) {
+    } catch (HttpRequest.HttpRequestException e) {
       assertNotNull(e.getCause());
     }
   }
