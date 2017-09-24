@@ -255,7 +255,10 @@ HttpRequest.setConnectionFactory(new ConnectionFactory() {
   }
 });
 ```
-### Posting json content: 
+### Posting json content
+
+This will post the JSON content as well as setup the proper content type.
+
 ```java
 HttpRequest r = HttpRquest.post("https://httpbin.org/post").json("{\"name\":\"user\",\"number\":\"1001\"}");
 
