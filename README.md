@@ -19,9 +19,6 @@ The http-request library is available from Maven central:
 </dependency>
 ```
 
-Not using [Maven](http://maven.apache.org/)? Simply copy the [HttpRequest]()
-class into your project, update the package declaration, and you are good to go.
-
 ## FAQ
 
 ### Why was this written?
