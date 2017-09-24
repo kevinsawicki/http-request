@@ -1,7 +1,9 @@
 # Http Request 
 
 A simple convenience library for using a [HttpURLConnection](http://download.oracle.com/javase/6/docs/api/java/net/HttpURLConnection.html)
-to make requests and access the response. **This is a fork of the original library written by Kevin Sawicki available [here](https://github.com/kevinsawicki/http-request) and with some added bugfixes and features maintained by Uva Software LLC and used on [scanii.com](https://scanii.com).**
+to make requests and access the response. 
+
+**This is a fork of the original library written by Kevin Sawicki and available [here](https://github.com/kevinsawicki/http-request) with some added bugfixes and features.** This fork is maintained by Uva Software LLC and used on [scanii.com](https://scanii.com).
 
 This library is available under the [MIT License](http://www.opensource.org/licenses/mit-license.php).
 
