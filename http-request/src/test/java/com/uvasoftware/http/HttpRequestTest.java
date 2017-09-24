@@ -25,12 +25,9 @@ import com.uvasoftware.http.internal.HttpUtils;
 import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.util.B64Code;
 import org.junit.After;
-import org.junit.BeforeClass;
 import org.junit.Test;
 
 import javax.net.ssl.HttpsURLConnection;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
 import java.net.HttpURLConnection;
@@ -52,35 +49,7 @@ import static org.junit.Assert.*;
 /**
  * Unit tests of {@link HttpRequest}
  */
-public class HttpRequestTest extends ServerTestCase {
-
-  protected static RequestHandler handler;
-  private static String url;
-
-  /**
-   * Set up server
-   *
-   * @throws Exception
-   */
-  @BeforeClass
-  public static void startServer() throws Exception {
-    url = setUp(new RequestHandler() {
-
-      @Override
-      public void handle(String target, Request baseRequest,
-                         HttpServletRequest request, HttpServletResponse response)
-        throws IOException, ServletException {
-        if (handler != null)
-          handler.handle(target, baseRequest, request, response);
-      }
-
-      @Override
-      public void handle(Request request, HttpServletResponse response) {
-        if (handler != null)
-          handler.handle(request, response);
-      }
-    });
-  }
+public class HttpRequestTest extends IntegrationTest {
 
   /**
    * Clear handler
@@ -135,7 +104,7 @@ public class HttpRequestTest extends ServerTestCase {
         response.setStatus(HTTP_OK);
       }
     };
-    HttpRequest request = get(url);
+    HttpRequest request = get(baseUrl);
     assertNotNull(request.getConnection());
     assertEquals(30000, request.readTimeout(30000).getConnection()
       .getReadTimeout());
@@ -159,7 +128,7 @@ public class HttpRequestTest extends ServerTestCase {
     assertFalse(request.toString().length() == 0);
     assertEquals(request, request.disconnect());
     assertTrue(request.isBodyEmpty());
-    assertEquals(request.url().toString(), url);
+    assertEquals(request.url().toString(), baseUrl);
     assertEquals("GET", request.method());
   }
 
@@ -179,7 +148,7 @@ public class HttpRequestTest extends ServerTestCase {
         response.setStatus(HTTP_OK);
       }
     };
-    HttpRequest request = get(new URL(url));
+    HttpRequest request = get(new URL(baseUrl));
     assertNotNull(request.getConnection());
     int code = request.code();
     assertTrue(request.ok());
@@ -210,7 +179,7 @@ public class HttpRequestTest extends ServerTestCase {
         response.setStatus(HTTP_NO_CONTENT);
       }
     };
-    HttpRequest request = get(new URL(url));
+    HttpRequest request = get(new URL(baseUrl));
     assertNotNull(request.getConnection());
     int code = request.code();
     assertFalse(request.ok());
@@ -242,7 +211,7 @@ public class HttpRequestTest extends ServerTestCase {
         response.setStatus(HTTP_OK);
       }
     };
-    HttpRequest request = get(encode(url + unencoded));
+    HttpRequest request = get(encode(baseUrl + unencoded));
     assertTrue(request.ok());
     assertEquals(unencoded, path.get());
   }
@@ -264,7 +233,7 @@ public class HttpRequestTest extends ServerTestCase {
         response.setStatus(HTTP_OK);
       }
     };
-    HttpRequest request = get(encode(url + unencoded));
+    HttpRequest request = get(encode(baseUrl + unencoded));
     assertTrue(request.ok());
     assertEquals(unencoded, path.get());
   }
@@ -286,7 +255,7 @@ public class HttpRequestTest extends ServerTestCase {
         response.setStatus(HTTP_OK);
       }
     };
-    HttpRequest request = get(encode(url + unencoded));
+    HttpRequest request = get(encode(baseUrl + unencoded));
     assertTrue(request.ok());
     assertEquals(unencoded, path.get());
   }
@@ -307,7 +276,7 @@ public class HttpRequestTest extends ServerTestCase {
         response.setStatus(HTTP_OK);
       }
     };
-    HttpRequest request = delete(url);
+    HttpRequest request = delete(baseUrl);
     assertNotNull(request.getConnection());
     assertTrue(request.ok());
     assertFalse(request.notFound());
@@ -332,7 +301,7 @@ public class HttpRequestTest extends ServerTestCase {
         response.setStatus(HTTP_OK);
       }
     };
-    HttpRequest request = delete(new URL(url));
+    HttpRequest request = delete(new URL(baseUrl));
     assertNotNull(request.getConnection());
     assertTrue(request.ok());
     assertFalse(request.notFound());
@@ -356,7 +325,7 @@ public class HttpRequestTest extends ServerTestCase {
         response.setStatus(HTTP_OK);
       }
     };
-    HttpRequest request = options(url);
+    HttpRequest request = options(baseUrl);
     assertNotNull(request.getConnection());
     assertTrue(request.ok());
     assertFalse(request.notFound());
@@ -380,7 +349,7 @@ public class HttpRequestTest extends ServerTestCase {
         response.setStatus(HTTP_OK);
       }
     };
-    HttpRequest request = options(new URL(url));
+    HttpRequest request = options(new URL(baseUrl));
     assertNotNull(request.getConnection());
     assertTrue(request.ok());
     assertFalse(request.notFound());
@@ -404,7 +373,7 @@ public class HttpRequestTest extends ServerTestCase {
         response.setStatus(HTTP_OK);
       }
     };
-    HttpRequest request = head(url);
+    HttpRequest request = head(baseUrl);
     assertNotNull(request.getConnection());
     assertTrue(request.ok());
     assertFalse(request.notFound());
@@ -428,7 +397,7 @@ public class HttpRequestTest extends ServerTestCase {
         response.setStatus(HTTP_OK);
       }
     };
-    HttpRequest request = head(new URL(url));
+    HttpRequest request = head(new URL(baseUrl));
     assertNotNull(request.getConnection());
     assertTrue(request.ok());
     assertFalse(request.notFound());
@@ -452,7 +421,7 @@ public class HttpRequestTest extends ServerTestCase {
         response.setStatus(HTTP_OK);
       }
     };
-    HttpRequest request = put(url);
+    HttpRequest request = put(baseUrl);
     assertNotNull(request.getConnection());
     assertTrue(request.ok());
     assertFalse(request.notFound());
@@ -476,7 +445,7 @@ public class HttpRequestTest extends ServerTestCase {
         response.setStatus(HTTP_OK);
       }
     };
-    HttpRequest request = put(new URL(url));
+    HttpRequest request = put(new URL(baseUrl));
     assertNotNull(request.getConnection());
     assertTrue(request.ok());
     assertFalse(request.notFound());
@@ -500,7 +469,7 @@ public class HttpRequestTest extends ServerTestCase {
         response.setStatus(HTTP_OK);
       }
     };
-    HttpRequest request = trace(url);
+    HttpRequest request = trace(baseUrl);
     assertNotNull(request.getConnection());
     assertTrue(request.ok());
     assertFalse(request.notFound());
@@ -524,7 +493,7 @@ public class HttpRequestTest extends ServerTestCase {
         response.setStatus(HTTP_OK);
       }
     };
-    HttpRequest request = trace(new URL(url));
+    HttpRequest request = trace(new URL(baseUrl));
     assertNotNull(request.getConnection());
     assertTrue(request.ok());
     assertFalse(request.notFound());
@@ -548,7 +517,7 @@ public class HttpRequestTest extends ServerTestCase {
         response.setStatus(HTTP_CREATED);
       }
     };
-    HttpRequest request = post(url);
+    HttpRequest request = post(baseUrl);
     int code = request.code();
     assertEquals("POST", method.get());
     assertFalse(request.ok());
@@ -572,7 +541,7 @@ public class HttpRequestTest extends ServerTestCase {
         response.setStatus(HTTP_CREATED);
       }
     };
-    HttpRequest request = post(new URL(url));
+    HttpRequest request = post(new URL(baseUrl));
     int code = request.code();
     assertEquals("POST", method.get());
     assertFalse(request.ok());
@@ -596,7 +565,7 @@ public class HttpRequestTest extends ServerTestCase {
         response.setStatus(HTTP_OK);
       }
     };
-    int code = post(url).send("hello").code();
+    int code = post(baseUrl).send("hello").code();
     assertEquals(HTTP_OK, code);
     assertEquals("hello", body.get());
   }
@@ -619,7 +588,7 @@ public class HttpRequestTest extends ServerTestCase {
     };
     File file = File.createTempFile("post", ".txt");
     new FileWriter(file).append("hello").close();
-    int code = post(url).send(file).code();
+    int code = post(baseUrl).send(file).code();
     assertEquals(HTTP_OK, code);
     assertEquals("hello", body.get());
   }
@@ -647,7 +616,7 @@ public class HttpRequestTest extends ServerTestCase {
     File file2 = File.createTempFile("post", ".txt");
     new FileWriter(file2).append(" world").close();
 
-    int code = post(url).send(file1).send(file2).code();
+    int code = post(baseUrl).send(file1).send(file2).code();
     assertEquals(HTTP_OK, code);
     assertEquals("hello world", body.get());
   }
@@ -670,7 +639,7 @@ public class HttpRequestTest extends ServerTestCase {
     };
     File file = File.createTempFile("post", ".txt");
     new FileWriter(file).append("hello").close();
-    int code = post(url).send(new FileReader(file)).code();
+    int code = post(baseUrl).send(new FileReader(file)).code();
     assertEquals(HTTP_OK, code);
     assertEquals("hello", body.get());
   }
@@ -692,7 +661,7 @@ public class HttpRequestTest extends ServerTestCase {
       }
     };
     byte[] bytes = "hello".getBytes(CHARSET_UTF8);
-    int code = post(url).contentLength(Integer.toString(bytes.length))
+    int code = post(baseUrl).contentLength(Integer.toString(bytes.length))
       .send(bytes).code();
     assertEquals(HTTP_OK, code);
     assertEquals("hello", body.get());
@@ -718,7 +687,7 @@ public class HttpRequestTest extends ServerTestCase {
     };
     String data = "hello";
     int sent = data.getBytes().length;
-    int code = post(url).contentLength(sent).send(data).code();
+    int code = post(baseUrl).contentLength(sent).send(data).code();
     assertEquals(HTTP_OK, code);
     assertEquals(sent, length.get().intValue());
     assertEquals(data, body.get());
@@ -745,7 +714,7 @@ public class HttpRequestTest extends ServerTestCase {
     Map<String, String> data = new LinkedHashMap<String, String>();
     data.put("name", "user");
     data.put("number", "100");
-    int code = post(url).form(data).form("zip", "12345").code();
+    int code = post(baseUrl).form(data).form("zip", "12345").code();
     assertEquals(HTTP_OK, code);
     assertEquals("name=user&number=100&zip=12345", body.get());
     assertEquals("application/x-www-form-urlencoded; charset=UTF-8",
@@ -773,7 +742,7 @@ public class HttpRequestTest extends ServerTestCase {
     Map<String, String> data = new LinkedHashMap<String, String>();
     data.put("name", "user");
     data.put("number", "100");
-    int code = post(url).form(data, null).form("zip", "12345").code();
+    int code = post(baseUrl).form(data, null).form("zip", "12345").code();
     assertEquals(HTTP_OK, code);
     assertEquals("name=user&number=100&zip=12345", body.get());
     assertEquals("application/x-www-form-urlencoded", contentType.get());
@@ -795,7 +764,7 @@ public class HttpRequestTest extends ServerTestCase {
         response.setStatus(HTTP_OK);
       }
     };
-    int code = post(url).form(new HashMap<String, String>()).code();
+    int code = post(baseUrl).form(new HashMap<String, String>()).code();
     assertEquals(HTTP_OK, code);
     assertEquals("", body.get());
   }
@@ -819,7 +788,7 @@ public class HttpRequestTest extends ServerTestCase {
       }
     };
     String data = "hello";
-    int code = post(url).chunk(2).send(data).code();
+    int code = post(baseUrl).chunk(2).send(data).code();
     assertEquals(HTTP_OK, code);
     assertEquals(data, body.get());
     assertEquals("chunked", encoding.get());
@@ -840,7 +809,7 @@ public class HttpRequestTest extends ServerTestCase {
         write("hello");
       }
     };
-    HttpRequest request = get(url);
+    HttpRequest request = get(baseUrl);
     assertEquals(HTTP_OK, request.code());
     assertEquals("hello", request.body());
     assertEquals("hello".getBytes().length, request.contentLength());
@@ -862,9 +831,9 @@ public class HttpRequestTest extends ServerTestCase {
         response.setContentType("text/html; charset=UTF-8");
       }
     };
-    HttpRequest request = get(url);
+    HttpRequest request = get(baseUrl);
     assertEquals(HTTP_OK, request.code());
-    assertEquals(CHARSET_UTF8, request.charset());
+    assertEquals(CHARSET_UTF8, request.charset().toUpperCase());
   }
 
   /**
@@ -882,7 +851,7 @@ public class HttpRequestTest extends ServerTestCase {
         response.setContentType("text/html; param1=val1; charset=UTF-8");
       }
     };
-    HttpRequest request = get(url);
+    HttpRequest request = get(baseUrl);
     assertEquals(HTTP_OK, request.code());
     assertEquals(CHARSET_UTF8, request.charset());
   }
@@ -902,18 +871,14 @@ public class HttpRequestTest extends ServerTestCase {
       public void handle(Request request, HttpServletResponse response) {
         String auth = request.getHeader("Authorization");
         auth = auth.substring(auth.indexOf(' ') + 1);
-        try {
-          auth = B64Code.decode(auth, CHARSET_UTF8);
-        } catch (UnsupportedEncodingException e) {
-          throw new RuntimeException(e);
-        }
+        auth = B64Code.decode(auth, CHARSET_UTF8);
         int colon = auth.indexOf(':');
         user.set(auth.substring(0, colon));
         password.set(auth.substring(colon + 1));
         response.setStatus(HTTP_OK);
       }
     };
-    assertTrue(get(url).basic("user", "p4ssw0rd").ok());
+    assertTrue(get(baseUrl).basic("user", "p4ssw0rd").ok());
     assertEquals("user", user.get());
     assertEquals("p4ssw0rd", password.get());
   }
@@ -934,7 +899,7 @@ public class HttpRequestTest extends ServerTestCase {
         response.setStatus(HTTP_OK);
       }
     };
-    assertTrue(get(url).useProxy("localhost", proxyPort).proxyBasic("user", "p4ssw0rd").ok());
+    assertTrue(get(baseUrl).useProxy("localhost", proxyPort).proxyBasic("user", "p4ssw0rd").ok());
     assertEquals("user", proxyUser.get());
     assertEquals("p4ssw0rd", proxyPassword.get());
     assertEquals(true, finalHostReached.get());
@@ -956,7 +921,7 @@ public class HttpRequestTest extends ServerTestCase {
         write("hello");
       }
     };
-    HttpRequest request = get(url);
+    HttpRequest request = get(baseUrl);
     assertTrue(request.ok());
     BufferedReader reader = new BufferedReader(request.reader());
     assertEquals("hello", reader.readLine());
@@ -980,7 +945,7 @@ public class HttpRequestTest extends ServerTestCase {
       }
     };
 
-    HttpRequest request = post(url);
+    HttpRequest request = post(baseUrl);
     request.writer().append("hello").close();
     assertTrue(request.ok());
     assertEquals("hello", body.get());
@@ -1001,7 +966,7 @@ public class HttpRequestTest extends ServerTestCase {
         write("hello");
       }
     };
-    HttpRequest request = get(url);
+    HttpRequest request = get(baseUrl);
     assertTrue(request.ok());
     BufferedReader reader = request.bufferedReader();
     assertEquals("hello", reader.readLine());
@@ -1023,7 +988,7 @@ public class HttpRequestTest extends ServerTestCase {
         write("hello");
       }
     };
-    HttpRequest request = get(url);
+    HttpRequest request = get(baseUrl);
     assertTrue(request.ok());
     BufferedReader reader = new BufferedReader(request.reader(CHARSET_UTF8));
     assertEquals("hello", reader.readLine());
@@ -1045,7 +1010,7 @@ public class HttpRequestTest extends ServerTestCase {
         write("hello");
       }
     };
-    HttpRequest request = get(url);
+    HttpRequest request = get(baseUrl);
     assertTrue(request.ok());
     assertTrue(Arrays.equals("hello".getBytes(), request.bytes()));
   }
@@ -1065,7 +1030,7 @@ public class HttpRequestTest extends ServerTestCase {
         write("error");
       }
     };
-    HttpRequest request = get(url);
+    HttpRequest request = get(baseUrl);
     assertTrue(request.notFound());
     assertEquals("error", request.body());
   }
@@ -1084,7 +1049,7 @@ public class HttpRequestTest extends ServerTestCase {
         response.setStatus(HTTP_OK);
       }
     };
-    HttpRequest request = get(url);
+    HttpRequest request = get(baseUrl);
     assertTrue(request.ok());
     assertEquals("", request.body());
   }
@@ -1104,7 +1069,7 @@ public class HttpRequestTest extends ServerTestCase {
         response.setHeader("Server", "aserver");
       }
     };
-    assertEquals("aserver", get(url).server());
+    assertEquals("aserver", get(baseUrl).server());
   }
 
   /**
@@ -1122,7 +1087,7 @@ public class HttpRequestTest extends ServerTestCase {
         response.setDateHeader("Expires", 1234000);
       }
     };
-    assertEquals(1234000, get(url).expires());
+    assertEquals(1234000, get(baseUrl).expires());
   }
 
   /**
@@ -1140,7 +1105,7 @@ public class HttpRequestTest extends ServerTestCase {
         response.setDateHeader("Last-Modified", 555000);
       }
     };
-    assertEquals(555000, get(url).lastModified());
+    assertEquals(555000, get(baseUrl).lastModified());
   }
 
   /**
@@ -1158,7 +1123,7 @@ public class HttpRequestTest extends ServerTestCase {
         response.setDateHeader("Date", 66000);
       }
     };
-    assertEquals(66000, get(url).date());
+    assertEquals(66000, get(baseUrl).date());
   }
 
   /**
@@ -1176,7 +1141,7 @@ public class HttpRequestTest extends ServerTestCase {
         response.setHeader("ETag", "abcd");
       }
     };
-    assertEquals("abcd", get(url).eTag());
+    assertEquals("abcd", get(baseUrl).eTag());
   }
 
   /**
@@ -1194,7 +1159,7 @@ public class HttpRequestTest extends ServerTestCase {
         response.setHeader("Location", "http://nowhere");
       }
     };
-    assertEquals("http://nowhere", get(url).location());
+    assertEquals("http://nowhere", get(baseUrl).location());
   }
 
   /**
@@ -1212,7 +1177,7 @@ public class HttpRequestTest extends ServerTestCase {
         response.setHeader("Content-Encoding", "gzip");
       }
     };
-    assertEquals("gzip", get(url).contentEncoding());
+    assertEquals("gzip", get(baseUrl).contentEncoding());
   }
 
   /**
@@ -1230,7 +1195,7 @@ public class HttpRequestTest extends ServerTestCase {
         response.setHeader("Content-Type", "text/html");
       }
     };
-    assertEquals("text/html", get(url).contentType());
+    assertEquals("text/html", get(baseUrl).contentType());
   }
 
   /**
@@ -1249,7 +1214,7 @@ public class HttpRequestTest extends ServerTestCase {
         response.setStatus(HTTP_OK);
       }
     };
-    assertTrue(post(url).contentType("text/html", "UTF-8").ok());
+    assertTrue(post(baseUrl).contentType("text/html", "UTF-8").ok());
     assertEquals("text/html; charset=UTF-8", contentType.get());
   }
 
@@ -1269,7 +1234,7 @@ public class HttpRequestTest extends ServerTestCase {
         response.setStatus(HTTP_OK);
       }
     };
-    assertTrue(post(url).contentType("text/html", null).ok());
+    assertTrue(post(baseUrl).contentType("text/html", null).ok());
     assertEquals("text/html", contentType.get());
   }
 
@@ -1289,7 +1254,7 @@ public class HttpRequestTest extends ServerTestCase {
         response.setStatus(HTTP_OK);
       }
     };
-    assertTrue(post(url).contentType("text/html", "").ok());
+    assertTrue(post(baseUrl).contentType("text/html", "").ok());
     assertEquals("text/html", contentType.get());
   }
 
@@ -1308,7 +1273,7 @@ public class HttpRequestTest extends ServerTestCase {
         response.setHeader("Cache-Control", "no-cache");
       }
     };
-    assertEquals("no-cache", get(url).cacheControl());
+    assertEquals("no-cache", get(baseUrl).cacheControl());
   }
 
   /**
@@ -1332,7 +1297,7 @@ public class HttpRequestTest extends ServerTestCase {
     Map<String, String> headers = new HashMap<String, String>();
     headers.put("h1", "v1");
     headers.put("h2", "v2");
-    assertTrue(get(url).headers(headers).ok());
+    assertTrue(get(baseUrl).headers(headers).ok());
     assertEquals("v1", h1.get());
     assertEquals("v2", h2.get());
   }
@@ -1351,7 +1316,7 @@ public class HttpRequestTest extends ServerTestCase {
         response.setStatus(HTTP_OK);
       }
     };
-    assertTrue(get(url).headers(Collections.<String, String>emptyMap()).ok());
+    assertTrue(get(baseUrl).headers(Collections.<String, String>emptyMap()).ok());
   }
 
   /**
@@ -1371,8 +1336,8 @@ public class HttpRequestTest extends ServerTestCase {
         response.addHeader("a", "another");
       }
     };
-    Map<String, List<String>> headers = get(url).headers();
-    assertEquals(headers.size(), 5);
+    Map<String, List<String>> headers = get(baseUrl).headers();
+    assertEquals(headers.size(), 6);
     assertEquals(headers.get("a").size(), 2);
     assertTrue(headers.get("b").get(0).equals("b"));
   }
@@ -1395,7 +1360,9 @@ public class HttpRequestTest extends ServerTestCase {
         h2.set(request.getHeader("h2"));
       }
     };
-    assertTrue(get(url).header("h1", 5).header("h2", (Number) null).ok());
+
+    HttpRequest r = HttpRequest.get(baseUrl).header("h1", 5).header("h2", (Number) null);
+    assertTrue(r.ok());
     assertEquals("5", h1.get());
     assertEquals("", h2.get());
   }
@@ -1416,7 +1383,7 @@ public class HttpRequestTest extends ServerTestCase {
         header.set(request.getHeader("User-Agent"));
       }
     };
-    assertTrue(get(url).userAgent("browser 1.0").ok());
+    assertTrue(get(baseUrl).userAgent("browser 1.0").ok());
     assertEquals("browser 1.0", header.get());
   }
 
@@ -1436,7 +1403,7 @@ public class HttpRequestTest extends ServerTestCase {
         header.set(request.getHeader("Accept"));
       }
     };
-    assertTrue(get(url).accept("application/json").ok());
+    assertTrue(get(baseUrl).accept("application/json").ok());
     assertEquals("application/json", header.get());
   }
 
@@ -1457,7 +1424,7 @@ public class HttpRequestTest extends ServerTestCase {
         header.set(request.getHeader("Accept"));
       }
     };
-    assertTrue(get(url).acceptJson().ok());
+    assertTrue(get(baseUrl).acceptJson().ok());
     assertEquals("application/json", header.get());
   }
 
@@ -1477,7 +1444,7 @@ public class HttpRequestTest extends ServerTestCase {
         header.set(request.getHeader("If-None-Match"));
       }
     };
-    assertTrue(get(url).ifNoneMatch("eid").ok());
+    assertTrue(get(baseUrl).ifNoneMatch("eid").ok());
     assertEquals("eid", header.get());
   }
 
@@ -1497,7 +1464,7 @@ public class HttpRequestTest extends ServerTestCase {
         header.set(request.getHeader("Accept-Charset"));
       }
     };
-    assertTrue(get(url).acceptCharset(CHARSET_UTF8).ok());
+    assertTrue(get(baseUrl).acceptCharset(CHARSET_UTF8).ok());
     assertEquals(CHARSET_UTF8, header.get());
   }
 
@@ -1517,7 +1484,7 @@ public class HttpRequestTest extends ServerTestCase {
         header.set(request.getHeader("Accept-Encoding"));
       }
     };
-    assertTrue(get(url).acceptEncoding("compress").ok());
+    assertTrue(get(baseUrl).acceptEncoding("compress").ok());
     assertEquals("compress", header.get());
   }
 
@@ -1537,7 +1504,7 @@ public class HttpRequestTest extends ServerTestCase {
         header.set(request.getDateHeader("If-Modified-Since"));
       }
     };
-    assertTrue(get(url).ifModifiedSince(5000).ok());
+    assertTrue(get(baseUrl).ifModifiedSince(5000).ok());
     assertEquals(5000, header.get());
   }
 
@@ -1557,7 +1524,7 @@ public class HttpRequestTest extends ServerTestCase {
         response.setStatus(HTTP_OK);
       }
     };
-    assertTrue(post(url).referer("http://heroku.com").ok());
+    assertTrue(post(baseUrl).referer("http://heroku.com").ok());
     assertEquals("http://heroku.com", referer.get());
   }
 
@@ -1588,7 +1555,7 @@ public class HttpRequestTest extends ServerTestCase {
     File file2 = File.createTempFile("body", ".txt");
     new FileWriter(file).append("content1").close();
     new FileWriter(file2).append("content4").close();
-    HttpRequest request = post(url);
+    HttpRequest request = post(baseUrl);
     request.part("description", "content2");
     request.part("size", file.length());
     request.part("body", file.getName(), file);
@@ -1618,7 +1585,7 @@ public class HttpRequestTest extends ServerTestCase {
         body.set(new String(read()));
       }
     };
-    HttpRequest request = post(url);
+    HttpRequest request = post(baseUrl);
     request.part("body", null, "application/json", "contents");
     assertTrue(request.ok());
     assertTrue(body.toString().contains("Content-Type: application/json"));
@@ -1645,7 +1612,7 @@ public class HttpRequestTest extends ServerTestCase {
         }
       }
     };
-    assertTrue(post(url).receive(body).ok());
+    assertTrue(post(baseUrl).receive(body).ok());
     assertEquals("content", body.toString());
   }
 
@@ -1669,7 +1636,7 @@ public class HttpRequestTest extends ServerTestCase {
       }
     };
     StringWriter writer = new StringWriter();
-    assertTrue(post(url).receive(writer).ok());
+    assertTrue(post(baseUrl).receive(writer).ok());
     assertEquals("content", writer.toString());
   }
 
@@ -1694,7 +1661,7 @@ public class HttpRequestTest extends ServerTestCase {
     };
     ByteArrayOutputStream output = new ByteArrayOutputStream();
     PrintStream stream = new PrintStream(output, true, CHARSET_UTF8);
-    assertTrue(post(url).receive(stream).ok());
+    assertTrue(post(baseUrl).receive(stream).ok());
     stream.close();
     assertEquals("content", output.toString(CHARSET_UTF8));
   }
@@ -1719,7 +1686,7 @@ public class HttpRequestTest extends ServerTestCase {
       }
     };
     File output = File.createTempFile("output", ".txt");
-    assertTrue(post(url).receive(output).ok());
+    assertTrue(post(baseUrl).receive(output).ok());
     StringBuilder buffer = new StringBuilder();
     BufferedReader reader = new BufferedReader(new FileReader(output));
     int read;
@@ -1826,7 +1793,7 @@ public class HttpRequestTest extends ServerTestCase {
       }
     };
     try {
-      post(url).send(stream);
+      post(baseUrl).send(stream);
       fail("Exception not thrown");
     } catch (HttpRequestException e) {
       assertEquals(readCause, e.getCause());
@@ -1864,7 +1831,7 @@ public class HttpRequestTest extends ServerTestCase {
       }
     };
     try {
-      post(url).ignoreCloseExceptions(false).send(stream);
+      post(baseUrl).ignoreCloseExceptions(false).send(stream);
       fail("Exception not thrown");
     } catch (HttpRequestException e) {
       assertEquals(closeCause, e.getCause());
@@ -1886,7 +1853,7 @@ public class HttpRequestTest extends ServerTestCase {
       }
     };
     AtomicInteger code = new AtomicInteger(0);
-    get(url).code(code);
+    get(baseUrl).code(code);
     assertEquals(HTTP_OK, code.get());
   }
 
@@ -1910,7 +1877,7 @@ public class HttpRequestTest extends ServerTestCase {
       }
     };
     AtomicReference<String> body = new AtomicReference<String>(null);
-    get(url).body(body);
+    get(baseUrl).body(body);
     assertEquals("hello world", body.get());
   }
 
@@ -1934,15 +1901,13 @@ public class HttpRequestTest extends ServerTestCase {
       }
     };
     AtomicReference<String> body = new AtomicReference<String>(null);
-    get(url).body(body, CHARSET_UTF8);
+    get(baseUrl).body(body, CHARSET_UTF8);
     assertEquals("hello world", body.get());
   }
 
 
   /**
    * Make a GET request that should be compressed
-   *
-   * @throws Exception
    */
   @Test
   public void getGzipped() throws Exception {
@@ -1974,18 +1939,16 @@ public class HttpRequestTest extends ServerTestCase {
         }
       }
     };
-    HttpRequest request = get(url).acceptGzipEncoding().uncompress(true);
+    HttpRequest request = get(baseUrl).acceptGzipEncoding().uncompress(true);
     assertTrue(request.ok());
     assertEquals("hello compressed", request.body(CHARSET_UTF8));
   }
 
   /**
    * Make a GET request that should be compressed but isn't
-   *
-   * @throws Exception
    */
   @Test
-  public void getNonGzippedWithUncompressEnabled() throws Exception {
+  public void getNonGzippedWithUncompressedEnabled() throws Exception {
     handler = new RequestHandler() {
 
       @Override
@@ -1997,7 +1960,7 @@ public class HttpRequestTest extends ServerTestCase {
         write("hello not compressed");
       }
     };
-    HttpRequest request = get(url).acceptGzipEncoding().uncompress(true);
+    HttpRequest request = get(baseUrl).acceptGzipEncoding().uncompress(true);
     assertTrue(request.ok());
     assertEquals("hello not compressed", request.body(CHARSET_UTF8));
   }
@@ -2018,7 +1981,7 @@ public class HttpRequestTest extends ServerTestCase {
         response.addHeader("a", "2");
       }
     };
-    HttpRequest request = get(url);
+    HttpRequest request = get(baseUrl);
     assertTrue(request.ok());
     String[] values = request.headers("a");
     assertNotNull(values);
@@ -2041,7 +2004,7 @@ public class HttpRequestTest extends ServerTestCase {
         response.setStatus(HTTP_OK);
       }
     };
-    HttpRequest request = get(url);
+    HttpRequest request = get(baseUrl);
     assertTrue(request.ok());
     String[] values = request.headers("a");
     assertNotNull(values);
@@ -2063,7 +2026,7 @@ public class HttpRequestTest extends ServerTestCase {
         response.setHeader("a", "b;c=d");
       }
     };
-    HttpRequest request = get(url);
+    HttpRequest request = get(baseUrl);
     assertTrue(request.ok());
     assertEquals("d", request.parameter("a", "c"));
   }
@@ -2083,7 +2046,7 @@ public class HttpRequestTest extends ServerTestCase {
         response.setHeader("a", "b;c=d;e=f");
       }
     };
-    HttpRequest request = get(url);
+    HttpRequest request = get(baseUrl);
     assertTrue(request.ok());
     assertEquals("d", request.parameter("a", "c"));
     assertEquals("f", request.parameter("a", "e"));
@@ -2104,7 +2067,7 @@ public class HttpRequestTest extends ServerTestCase {
         response.setHeader("a", "b;c=\"d\"");
       }
     };
-    HttpRequest request = get(url);
+    HttpRequest request = get(baseUrl);
     assertTrue(request.ok());
     assertEquals("d", request.parameter("a", "c"));
   }
@@ -2124,7 +2087,7 @@ public class HttpRequestTest extends ServerTestCase {
         response.setHeader("a", "b;c=\"d\";e=\"f\"");
       }
     };
-    HttpRequest request = get(url);
+    HttpRequest request = get(baseUrl);
     assertTrue(request.ok());
     assertEquals("d", request.parameter("a", "c"));
     assertEquals("f", request.parameter("a", "e"));
@@ -2145,7 +2108,7 @@ public class HttpRequestTest extends ServerTestCase {
         response.setHeader("a", "b;c=d");
       }
     };
-    HttpRequest request = get(url);
+    HttpRequest request = get(baseUrl);
     assertTrue(request.ok());
     assertNull(request.parameter("a", "e"));
   }
@@ -2165,7 +2128,7 @@ public class HttpRequestTest extends ServerTestCase {
         response.setHeader("a", "b;c=d");
       }
     };
-    HttpRequest request = get(url);
+    HttpRequest request = get(baseUrl);
     assertTrue(request.ok());
     assertNull(request.parameter("b", "c"));
     assertTrue(request.parameters("b").isEmpty());
@@ -2186,7 +2149,7 @@ public class HttpRequestTest extends ServerTestCase {
         response.setHeader("a", "b;c=");
       }
     };
-    HttpRequest request = get(url);
+    HttpRequest request = get(baseUrl);
     assertTrue(request.ok());
     assertNull(request.parameter("a", "c"));
     assertTrue(request.parameters("a").isEmpty());
@@ -2207,7 +2170,7 @@ public class HttpRequestTest extends ServerTestCase {
         response.setHeader("a", "b;");
       }
     };
-    HttpRequest request = get(url);
+    HttpRequest request = get(baseUrl);
     assertTrue(request.ok());
     assertNull(request.parameter("a", "c"));
     assertTrue(request.parameters("a").isEmpty());
@@ -2228,7 +2191,7 @@ public class HttpRequestTest extends ServerTestCase {
         response.setHeader("a", "value;b=c;d=e");
       }
     };
-    HttpRequest request = get(url);
+    HttpRequest request = get(baseUrl);
     assertTrue(request.ok());
     Map<String, String> params = request.parameters("a");
     assertNotNull(params);
@@ -2252,7 +2215,7 @@ public class HttpRequestTest extends ServerTestCase {
         response.setHeader("a", "value;b=\"c\";d=\"e\"");
       }
     };
-    HttpRequest request = get(url);
+    HttpRequest request = get(baseUrl);
     assertTrue(request.ok());
     Map<String, String> params = request.parameters("a");
     assertNotNull(params);
@@ -2276,7 +2239,7 @@ public class HttpRequestTest extends ServerTestCase {
         response.setHeader("a", "value; b=c; d=\"e\"");
       }
     };
-    HttpRequest request = get(url);
+    HttpRequest request = get(baseUrl);
     assertTrue(request.ok());
     Map<String, String> params = request.parameters("a");
     assertNotNull(params);
@@ -2299,7 +2262,7 @@ public class HttpRequestTest extends ServerTestCase {
         response.setStatus(HTTP_OK);
       }
     };
-    assertEquals(1234L, get(url).dateHeader("missing", 1234L));
+    assertEquals(1234L, get(baseUrl).dateHeader("missing", 1234L));
   }
 
   /**
@@ -2317,7 +2280,7 @@ public class HttpRequestTest extends ServerTestCase {
         response.setHeader("malformed", "not a date");
       }
     };
-    assertEquals(1234L, get(url).dateHeader("malformed", 1234L));
+    assertEquals(1234L, get(baseUrl).dateHeader("malformed", 1234L));
   }
 
   /**
@@ -2334,7 +2297,7 @@ public class HttpRequestTest extends ServerTestCase {
         response.setStatus(HTTP_OK);
       }
     };
-    assertEquals(4321, get(url).intHeader("missing", 4321));
+    assertEquals(4321, get(baseUrl).intHeader("missing", 4321));
   }
 
   /**
@@ -2352,7 +2315,7 @@ public class HttpRequestTest extends ServerTestCase {
         response.setHeader("malformed", "not an integer");
       }
     };
-    assertEquals(4321, get(url).intHeader("malformed", 4321));
+    assertEquals(4321, get(baseUrl).intHeader("malformed", 4321));
   }
 
   /**
@@ -2374,7 +2337,7 @@ public class HttpRequestTest extends ServerTestCase {
     Map<String, String> data = new LinkedHashMap<String, String>();
     data.put("name", "user");
     data.put("number", "100");
-    HttpRequest request = post(url);
+    HttpRequest request = post(baseUrl);
     for (Entry<String, String> entry : data.entrySet())
       request.form(entry);
     int code = request.code();
@@ -2400,7 +2363,7 @@ public class HttpRequestTest extends ServerTestCase {
     };
     Map<String, String> data = new LinkedHashMap<String, String>();
     data.put("name", null);
-    HttpRequest request = post(url);
+    HttpRequest request = post(baseUrl);
     for (Entry<String, String> entry : data.entrySet())
       request.form(entry);
     int code = request.code();
@@ -2430,7 +2393,7 @@ public class HttpRequestTest extends ServerTestCase {
         response.setStatus(HTTP_OK);
       }
     };
-    HttpRequest request = post(url, inputParams, false);
+    HttpRequest request = post(baseUrl, inputParams, false);
     assertTrue(request.ok());
     assertEquals("POST", method.get());
     assertEquals("user", outputParams.get("name"));
@@ -2456,7 +2419,7 @@ public class HttpRequestTest extends ServerTestCase {
         response.setStatus(HTTP_OK);
       }
     };
-    HttpRequest request = post(url, false, "name", "user", "number", "100");
+    HttpRequest request = post(baseUrl, false, "name", "user", "number", "100");
     assertTrue(request.ok());
     assertEquals("POST", method.get());
     assertEquals("user", outputParams.get("name"));
@@ -2485,7 +2448,7 @@ public class HttpRequestTest extends ServerTestCase {
         response.setStatus(HTTP_OK);
       }
     };
-    HttpRequest request = post(url, inputParams, true);
+    HttpRequest request = post(baseUrl, inputParams, true);
     assertTrue(request.ok());
     assertEquals("POST", method.get());
     assertEquals("us er", outputParams.get("name"));
@@ -2511,7 +2474,7 @@ public class HttpRequestTest extends ServerTestCase {
         response.setStatus(HTTP_OK);
       }
     };
-    HttpRequest request = post(url, true, "name", "us er", "number", "100");
+    HttpRequest request = post(baseUrl, true, "name", "us er", "number", "100");
     assertTrue(request.ok());
     assertEquals("POST", method.get());
     assertEquals("us er", outputParams.get("name"));
@@ -2540,7 +2503,7 @@ public class HttpRequestTest extends ServerTestCase {
         response.setStatus(HTTP_OK);
       }
     };
-    HttpRequest request = post(url, inputParams, false);
+    HttpRequest request = post(baseUrl, inputParams, false);
     assertTrue(request.ok());
     assertEquals("POST", method.get());
     assertEquals("2", outputParams.get("1"));
@@ -2569,7 +2532,7 @@ public class HttpRequestTest extends ServerTestCase {
         response.setStatus(HTTP_OK);
       }
     };
-    HttpRequest request = get(url, inputParams, false);
+    HttpRequest request = get(baseUrl, inputParams, false);
     assertTrue(request.ok());
     assertEquals("GET", method.get());
     assertEquals("user", outputParams.get("name"));
@@ -2595,7 +2558,7 @@ public class HttpRequestTest extends ServerTestCase {
         response.setStatus(HTTP_OK);
       }
     };
-    HttpRequest request = get(url, false, "name", "user", "number", "100");
+    HttpRequest request = get(baseUrl, false, "name", "user", "number", "100");
     assertTrue(request.ok());
     assertEquals("GET", method.get());
     assertEquals("user", outputParams.get("name"));
@@ -2624,7 +2587,7 @@ public class HttpRequestTest extends ServerTestCase {
         response.setStatus(HTTP_OK);
       }
     };
-    HttpRequest request = get(url, inputParams, true);
+    HttpRequest request = get(baseUrl, inputParams, true);
     assertTrue(request.ok());
     assertEquals("GET", method.get());
     assertEquals("us er", outputParams.get("name"));
@@ -2650,7 +2613,7 @@ public class HttpRequestTest extends ServerTestCase {
         response.setStatus(HTTP_OK);
       }
     };
-    HttpRequest request = get(url, true, "name", "us er", "number", "100");
+    HttpRequest request = get(baseUrl, true, "name", "us er", "number", "100");
     assertTrue(request.ok());
     assertEquals("GET", method.get());
     assertEquals("us er", outputParams.get("name"));
@@ -2679,7 +2642,7 @@ public class HttpRequestTest extends ServerTestCase {
         response.setStatus(HTTP_OK);
       }
     };
-    HttpRequest request = delete(url, inputParams, false);
+    HttpRequest request = delete(baseUrl, inputParams, false);
     assertTrue(request.ok());
     assertEquals("DELETE", method.get());
     assertEquals("user", outputParams.get("name"));
@@ -2705,7 +2668,7 @@ public class HttpRequestTest extends ServerTestCase {
         response.setStatus(HTTP_OK);
       }
     };
-    HttpRequest request = delete(url, false, "name", "user", "number", "100");
+    HttpRequest request = delete(baseUrl, false, "name", "user", "number", "100");
     assertTrue(request.ok());
     assertEquals("DELETE", method.get());
     assertEquals("user", outputParams.get("name"));
@@ -2734,7 +2697,7 @@ public class HttpRequestTest extends ServerTestCase {
         response.setStatus(HTTP_OK);
       }
     };
-    HttpRequest request = delete(url, inputParams, true);
+    HttpRequest request = delete(baseUrl, inputParams, true);
     assertTrue(request.ok());
     assertEquals("DELETE", method.get());
     assertEquals("us er", outputParams.get("name"));
@@ -2760,7 +2723,7 @@ public class HttpRequestTest extends ServerTestCase {
         response.setStatus(HTTP_OK);
       }
     };
-    HttpRequest request = delete(url, true, "name", "us er", "number", "100");
+    HttpRequest request = delete(baseUrl, true, "name", "us er", "number", "100");
     assertTrue(request.ok());
     assertEquals("DELETE", method.get());
     assertEquals("us er", outputParams.get("name"));
@@ -2789,7 +2752,7 @@ public class HttpRequestTest extends ServerTestCase {
         response.setStatus(HTTP_OK);
       }
     };
-    HttpRequest request = put(url, inputParams, false);
+    HttpRequest request = put(baseUrl, inputParams, false);
     assertTrue(request.ok());
     assertEquals("PUT", method.get());
     assertEquals("user", outputParams.get("name"));
@@ -2815,7 +2778,7 @@ public class HttpRequestTest extends ServerTestCase {
         response.setStatus(HTTP_OK);
       }
     };
-    HttpRequest request = put(url, false, "name", "user", "number", "100");
+    HttpRequest request = put(baseUrl, false, "name", "user", "number", "100");
     assertTrue(request.ok());
     assertEquals("PUT", method.get());
     assertEquals("user", outputParams.get("name"));
@@ -2844,7 +2807,7 @@ public class HttpRequestTest extends ServerTestCase {
         response.setStatus(HTTP_OK);
       }
     };
-    HttpRequest request = put(url, inputParams, true);
+    HttpRequest request = put(baseUrl, inputParams, true);
     assertTrue(request.ok());
     assertEquals("PUT", method.get());
     assertEquals("us er", outputParams.get("name"));
@@ -2870,7 +2833,7 @@ public class HttpRequestTest extends ServerTestCase {
         response.setStatus(HTTP_OK);
       }
     };
-    HttpRequest request = put(url, true, "name", "us er", "number", "100");
+    HttpRequest request = put(baseUrl, true, "name", "us er", "number", "100");
     assertTrue(request.ok());
     assertEquals("PUT", method.get());
     assertEquals("us er", outputParams.get("name"));
@@ -2899,7 +2862,7 @@ public class HttpRequestTest extends ServerTestCase {
         response.setStatus(HTTP_OK);
       }
     };
-    HttpRequest request = head(url, inputParams, false);
+    HttpRequest request = head(baseUrl, inputParams, false);
     assertTrue(request.ok());
     assertEquals("HEAD", method.get());
     assertEquals("user", outputParams.get("name"));
@@ -2925,7 +2888,7 @@ public class HttpRequestTest extends ServerTestCase {
         response.setStatus(HTTP_OK);
       }
     };
-    HttpRequest request = head(url, false, "name", "user", "number", "100");
+    HttpRequest request = head(baseUrl, false, "name", "user", "number", "100");
     assertTrue(request.ok());
     assertEquals("HEAD", method.get());
     assertEquals("user", outputParams.get("name"));
@@ -2954,7 +2917,7 @@ public class HttpRequestTest extends ServerTestCase {
         response.setStatus(HTTP_OK);
       }
     };
-    HttpRequest request = head(url, inputParams, true);
+    HttpRequest request = head(baseUrl, inputParams, true);
     assertTrue(request.ok());
     assertEquals("HEAD", method.get());
     assertEquals("us er", outputParams.get("name"));
@@ -2980,7 +2943,7 @@ public class HttpRequestTest extends ServerTestCase {
         response.setStatus(HTTP_OK);
       }
     };
-    HttpRequest request = head(url, true, "name", "us er", "number", "100");
+    HttpRequest request = head(baseUrl, true, "name", "us er", "number", "100");
     assertTrue(request.ok());
     assertEquals("HEAD", method.get());
     assertEquals("us er", outputParams.get("name"));
@@ -3266,7 +3229,7 @@ public class HttpRequestTest extends ServerTestCase {
         response.setStatus(HTTP_INTERNAL_ERROR);
       }
     };
-    HttpRequest request = get(url);
+    HttpRequest request = get(baseUrl);
     assertNotNull(request);
     assertTrue(request.serverError());
   }
@@ -3285,7 +3248,7 @@ public class HttpRequestTest extends ServerTestCase {
         response.setStatus(HTTP_BAD_REQUEST);
       }
     };
-    HttpRequest request = get(url);
+    HttpRequest request = get(baseUrl);
     assertNotNull(request);
     assertTrue(request.badRequest());
   }
@@ -3304,7 +3267,7 @@ public class HttpRequestTest extends ServerTestCase {
         response.setStatus(HTTP_NOT_MODIFIED);
       }
     };
-    HttpRequest request = get(url);
+    HttpRequest request = get(baseUrl);
     assertNotNull(request);
     assertTrue(request.notModified());
   }
@@ -3332,7 +3295,7 @@ public class HttpRequestTest extends ServerTestCase {
       }
     };
 
-    HttpRequest request = post(url).ignoreCloseExceptions(false);
+    HttpRequest request = post(baseUrl).ignoreCloseExceptions(false);
     assertEquals("world", request.send("hello").body());
     assertEquals("hello", body.get());
   }
@@ -3357,7 +3320,7 @@ public class HttpRequestTest extends ServerTestCase {
       }
     };
 
-    HttpRequest request = post(url).ignoreCloseExceptions(false);
+    HttpRequest request = post(baseUrl).ignoreCloseExceptions(false);
     Map<String, List<String>> headers = request.send("hello").headers();
     assertEquals("v1", headers.get("h1").get(0));
     assertEquals("v2", headers.get("h2").get(0));
@@ -3383,7 +3346,7 @@ public class HttpRequestTest extends ServerTestCase {
       }
     };
 
-    HttpRequest request = post(url).ignoreCloseExceptions(false);
+    HttpRequest request = post(baseUrl).ignoreCloseExceptions(false);
     assertEquals(1000, request.send("hello").date());
     assertEquals("hello", body.get());
   }
@@ -3407,7 +3370,7 @@ public class HttpRequestTest extends ServerTestCase {
       }
     };
 
-    HttpRequest request = post(url).ignoreCloseExceptions(false);
+    HttpRequest request = post(baseUrl).ignoreCloseExceptions(false);
     assertEquals(9876, request.send("hello").intHeader("Width"));
     assertEquals("hello", body.get());
   }
@@ -3428,7 +3391,7 @@ public class HttpRequestTest extends ServerTestCase {
     ConnectionFactory factory = new ConnectionFactory() {
 
       public HttpURLConnection create(URL otherUrl) throws IOException {
-        return (HttpURLConnection) new URL(url).openConnection();
+        return (HttpURLConnection) new URL(baseUrl).openConnection();
       }
 
       public HttpURLConnection create(URL url, Proxy proxy) throws IOException {
@@ -3455,7 +3418,7 @@ public class HttpRequestTest extends ServerTestCase {
     };
 
     HttpRequest.setConnectionFactory(null);
-    int code = get(url).code();
+    int code = get(baseUrl).code();
     assertEquals(200, code);
   }
 
@@ -3473,7 +3436,7 @@ public class HttpRequestTest extends ServerTestCase {
         response.setStatus(200);
       }
     };
-    assertEquals("", get(url).body());
+    assertEquals("", get(baseUrl).body());
   }
 
   /**
@@ -3490,7 +3453,7 @@ public class HttpRequestTest extends ServerTestCase {
         response.setStatus(HTTP_BAD_REQUEST);
       }
     };
-    assertEquals("", get(url).body());
+    assertEquals("", get(baseUrl).body());
   }
 
   /**
@@ -3512,7 +3475,7 @@ public class HttpRequestTest extends ServerTestCase {
         }
       }
     };
-    assertEquals("error", get(url).body());
+    assertEquals("error", get(baseUrl).body());
   }
 
   /**
@@ -3541,7 +3504,7 @@ public class HttpRequestTest extends ServerTestCase {
         assertEquals(tx.incrementAndGet(), transferred);
       }
     };
-    post(url).bufferSize(1).progress(progress).send(file).code();
+    post(baseUrl).bufferSize(1).progress(progress).send(file).code();
     assertEquals(file.length(), tx.get());
   }
 
@@ -3571,7 +3534,7 @@ public class HttpRequestTest extends ServerTestCase {
         assertEquals(tx.incrementAndGet(), transferred);
       }
     };
-    post(url).bufferSize(1).progress(progress).send(input).code();
+    post(baseUrl).bufferSize(1).progress(progress).send(input).code();
     assertEquals(file.length(), tx.get());
   }
 
@@ -3600,7 +3563,7 @@ public class HttpRequestTest extends ServerTestCase {
         assertEquals(tx.incrementAndGet(), transferred);
       }
     };
-    post(url).bufferSize(1).progress(progress).send(bytes).code();
+    post(baseUrl).bufferSize(1).progress(progress).send(bytes).code();
     assertEquals(bytes.length, tx.get());
   }
 
@@ -3630,7 +3593,7 @@ public class HttpRequestTest extends ServerTestCase {
     };
     File file = File.createTempFile("post", ".txt");
     new FileWriter(file).append("hello").close();
-    post(url).progress(progress).bufferSize(1).send(new FileReader(file)).code();
+    post(baseUrl).progress(progress).bufferSize(1).send(new FileReader(file)).code();
     assertEquals(file.length(), tx.get());
   }
 
@@ -3652,7 +3615,7 @@ public class HttpRequestTest extends ServerTestCase {
     };
     File file = File.createTempFile("post", ".txt");
     new FileWriter(file).append("hello").close();
-    int code = post(url).progress(null).send(file).code();
+    int code = post(baseUrl).progress(null).send(file).code();
     assertEquals(HTTP_OK, code);
     assertEquals("hello", body.get());
   }
@@ -3674,7 +3637,7 @@ public class HttpRequestTest extends ServerTestCase {
       }
     };
     String jsonString = "{\"name\":\"user\",\"number\":\"1001\"}";
-    int code = post(url).json(jsonString).code();
+    int code = post(baseUrl).json(jsonString).code();
     assertEquals(HTTP_OK, code);
     assertEquals(jsonString, body.get());
     assertEquals("application/json", contentType.get());

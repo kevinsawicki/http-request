@@ -2,14 +2,24 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>org.sonatype.oss</groupId>
+    <artifactId>oss-parent</artifactId>
+    <version>7</version>
+  </parent>
+
   <groupId>com.uvasoftware</groupId>
   <artifactId>http-request-parent</artifactId>
   <version>7.0.0-SNAPSHOT</version>
   <packaging>pom</packaging>
 
+  <modules>
+    <module>http-request</module>
+  </modules>
+
   <url>https://github.com/uvasoftware/http-request</url>
   <description>Library for making HTTP requests</description>
-
   <scm>
     <url>https://github.com/uvasoftware/http-request</url>
     <connection>scm:git:git@github.com:uvasoftware/http-request.git</connection>
@@ -27,13 +37,9 @@
     <system>GitHub Issues</system>
   </issueManagement>
 
-  <modules>
-    <module>http-request</module>
-  </modules>
-
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <jetty.version>8.1.9.v20130131</jetty.version>
+    <jetty.version>9.4.7.v20170914</jetty.version>
     <maven.compiler.source>1.6</maven.compiler.source>
     <maven.compiler.target>1.6</maven.compiler.target>
   </properties>
@@ -63,7 +69,7 @@
         <configuration>
           <instructions>
             <Require-Bundle/>
-            <Export-Package>!.,com.github.kevinsawicki.http</Export-Package>
+            <Export-Package>!.,com.uvasoftware.http</Export-Package>
             <Bundle-RequiredExecutionEnvironment>J2SE-1.5</Bundle-RequiredExecutionEnvironment>
           </instructions>
         </configuration>

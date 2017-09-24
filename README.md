@@ -1,7 +1,9 @@
-# Http Request [![Build Status](https://travis-ci.org/kevinsawicki/http-request.svg)](https://travis-ci.org/kevinsawicki/http-request)
+# Http Request 
 
 A simple convenience library for using a [HttpURLConnection](http://download.oracle.com/javase/6/docs/api/java/net/HttpURLConnection.html)
-to make requests and access the response.
+to make requests and access the response. This is a fork of the original library available written by Kevin Sawicki available [here:](https://github.com/kevinsawicki/http-request) with some added features such as: 
+
+* 
 
 This library is available under the [MIT License](http://www.opensource.org/licenses/mit-license.php).
 
@@ -11,13 +13,13 @@ The http-request library is available from [Maven Central](http://search.maven.o
 
 ```xml
 <dependency>
-  <groupId>com.github.kevinsawicki</groupId>
+  <groupId>com.uvasoftware.http</groupId>
   <artifactId>http-request</artifactId>
-  <version>6.0</version>
+  <version>${latest-version}</version>
 </dependency>
 ```
 
-Not using [Maven](http://maven.apache.org/)? Simply copy the [HttpRequest](https://raw.githubusercontent.com/kevinsawicki/http-request/master/lib/src/main/java/com/github/kevinsawicki/http/HttpRequest.java)
+Not using [Maven](http://maven.apache.org/)? Simply copy the [HttpRequest]()
 class into your project, update the package declaration, and you are good to go.
 
 Javadocs are available [here](http://kevinsawicki.github.com/http-request/apidocs/index.html).

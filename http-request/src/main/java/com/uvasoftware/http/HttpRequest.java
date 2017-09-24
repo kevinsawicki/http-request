@@ -1,29 +1,9 @@
-/*
- * Copyright (c) 2014 Kevin Sawicki <kevinsawicki@gmail.com>
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to
- * deal in the Software without restriction, including without limitation the
- * rights to use, copy, modify, merge, publish, distribute, sublicense, and/or
- * sell copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
- * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
- * IN THE SOFTWARE.
- */
 package com.uvasoftware.http;
 
 import com.uvasoftware.http.internal.Base64;
 import com.uvasoftware.http.internal.CloseOperation;
 import com.uvasoftware.http.internal.FlushOperation;
+import com.uvasoftware.http.internal.HttpUtils;
 
 import javax.net.ssl.*;
 import java.io.*;
@@ -37,13 +17,12 @@ import java.security.GeneralSecurityException;
 import java.security.PrivilegedAction;
 import java.security.SecureRandom;
 import java.security.cert.X509Certificate;
-import java.util.Collections;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.logging.Logger;
 import java.util.zip.GZIPInputStream;
 
 import static com.uvasoftware.http.internal.HttpUtils.append;
@@ -58,7 +37,7 @@ import static java.net.Proxy.Type.HTTP;
  * Each instance supports making a single request and cannot be reused for
  * further requests.
  */
-@SuppressWarnings("WeakerAccess")
+@SuppressWarnings({"WeakerAccess", "UnusedReturnValue"})
 public class HttpRequest {
 
   /**
@@ -211,17 +190,15 @@ public class HttpRequest {
    */
   public static final String PARAM_CHARSET = "charset";
 
+  private static final Logger LOG = Logger.getLogger(HttpRequest.class.getName());
+
   private static final String BOUNDARY = "00content0boundary00";
-
-  private static final String CONTENT_TYPE_MULTIPART = "multipart/form-data; boundary="
-    + BOUNDARY;
-
+  private static final String CONTENT_TYPE_MULTIPART = "multipart/form-data; boundary=" + BOUNDARY;
   private static final String CRLF = "\r\n";
-
   private static final String[] EMPTY_STRINGS = new String[0];
 
   private static final ThreadLocal<SSLSocketFactory> trustedFactory = new ThreadLocal<SSLSocketFactory>();
-  private static HostnameVerifier TRUSTED_VERIFIER;
+  private static HostnameVerifier trustedVerifier;
   private static volatile ConnectionFactory connectionFactory = ConnectionFactory.DEFAULT;
   private final URL url;
   private final String requestMethod;
@@ -230,7 +207,7 @@ public class HttpRequest {
   private boolean multipart;
   private boolean form;
   private boolean ignoreCloseExceptions = true;
-  private boolean uncompress = false;
+  private boolean uncompressed = false;
   private int bufferSize = 8192;
   private long totalSize = -1;
   private long totalWritten = 0;
@@ -243,16 +220,17 @@ public class HttpRequest {
    *
    * @param url    Remote resource URL.
    * @param method HTTP request method (e.g., "GET", "POST").
-   * @throws HttpRequestException
+   * @
    */
-  public HttpRequest(final CharSequence url, final String method)
-    throws HttpRequestException {
+  public HttpRequest(final CharSequence url, final String method) {
     try {
       this.url = new URL(url.toString());
     } catch (MalformedURLException e) {
       throw new HttpRequestException(e);
     }
     this.requestMethod = method;
+
+    LOG.fine(String.format("Request -> [%s] %s ", method, url));
   }
 
   /**
@@ -260,10 +238,9 @@ public class HttpRequest {
    *
    * @param url    Remote resource URL.
    * @param method HTTP request method (e.g., "GET", "POST").
-   * @throws HttpRequestException
+   * @
    */
-  public HttpRequest(final URL url, final String method)
-    throws HttpRequestException {
+  public HttpRequest(final URL url, final String method) {
     this.url = url;
     this.requestMethod = method;
   }
@@ -275,8 +252,7 @@ public class HttpRequest {
       return CHARSET_UTF8;
   }
 
-  private static SSLSocketFactory getTrustedFactory()
-    throws HttpRequestException {
+  private static SSLSocketFactory getTrustedFactory() {
     if (trustedFactory.get() == null) {
       final TrustManager[] trustAllCerts = new TrustManager[]{new X509TrustManager() {
 
@@ -307,15 +283,15 @@ public class HttpRequest {
   }
 
   private static HostnameVerifier getTrustedVerifier() {
-    if (TRUSTED_VERIFIER == null)
-      TRUSTED_VERIFIER = new HostnameVerifier() {
+    if (trustedVerifier == null)
+      trustedVerifier = new HostnameVerifier() {
 
         public boolean verify(String hostname, SSLSession session) {
           return true;
         }
       };
 
-    return TRUSTED_VERIFIER;
+    return trustedVerifier;
   }
 
 
@@ -333,30 +309,27 @@ public class HttpRequest {
   /**
    * Start a 'GET' request to the given URL
    *
-   * @param url
+   * @param url request destination URL
    * @return request
-   * @throws HttpRequestException
    */
-  public static HttpRequest get(final CharSequence url)
-    throws HttpRequestException {
+  public static HttpRequest get(final CharSequence url) {
     return new HttpRequest(url, METHOD_GET);
   }
 
   /**
    * Start a 'GET' request to the given URL
    *
-   * @param url
+   * @param url request destination URL
    * @return request
-   * @throws HttpRequestException
    */
-  public static HttpRequest get(final URL url) throws HttpRequestException {
+  public static HttpRequest get(final URL url) {
     return new HttpRequest(url, METHOD_GET);
   }
 
   /**
    * Start a 'GET' request to the given URL along with the query params
    *
-   * @param baseUrl
+   * @param baseUrl request destination base URL
    * @param params  The query parameters to include as part of the baseUrl
    * @param encode  true to encode the full URL
    * @return request
@@ -370,7 +343,7 @@ public class HttpRequest {
   /**
    * Start a 'GET' request to the given URL along with the query params
    *
-   * @param baseUrl
+   * @param baseUrl request destination base URL
    * @param encode  true to encode the full URL
    * @param params  the name/value query parameter pairs to include as part of the
    *                baseUrl
@@ -385,30 +358,29 @@ public class HttpRequest {
   /**
    * Start a 'POST' request to the given URL
    *
-   * @param url
+   * @param url request destination URL
    * @return request
-   * @throws HttpRequestException
+   * @
    */
-  public static HttpRequest post(final CharSequence url)
-    throws HttpRequestException {
+  public static HttpRequest post(final CharSequence url) {
     return new HttpRequest(url, METHOD_POST);
   }
 
   /**
    * Start a 'POST' request to the given URL
    *
-   * @param url
+   * @param url request destination URL
    * @return request
-   * @throws HttpRequestException
+   * @
    */
-  public static HttpRequest post(final URL url) throws HttpRequestException {
+  public static HttpRequest post(final URL url) {
     return new HttpRequest(url, METHOD_POST);
   }
 
   /**
    * Start a 'POST' request to the given URL along with the query params
    *
-   * @param baseUrl
+   * @param baseUrl request destination base URL
    * @param params  the query parameters to include as part of the baseUrl
    * @param encode  true to encode the full URL
    * @return request
@@ -422,7 +394,7 @@ public class HttpRequest {
   /**
    * Start a 'POST' request to the given URL along with the query params
    *
-   * @param baseUrl
+   * @param baseUrl request destination base URL
    * @param encode  true to encode the full URL
    * @param params  the name/value query parameter pairs to include as part of the
    *                baseUrl
@@ -437,30 +409,29 @@ public class HttpRequest {
   /**
    * Start a 'PUT' request to the given URL
    *
-   * @param url
+   * @param url request destination URL
    * @return request
-   * @throws HttpRequestException
+   * @
    */
-  public static HttpRequest put(final CharSequence url)
-    throws HttpRequestException {
+  public static HttpRequest put(final CharSequence url) {
     return new HttpRequest(url, METHOD_PUT);
   }
 
   /**
    * Start a 'PUT' request to the given URL
    *
-   * @param url
+   * @param url request destination URL
    * @return request
-   * @throws HttpRequestException
+   * @
    */
-  public static HttpRequest put(final URL url) throws HttpRequestException {
+  public static HttpRequest put(final URL url) {
     return new HttpRequest(url, METHOD_PUT);
   }
 
   /**
    * Start a 'PUT' request to the given URL along with the query params
    *
-   * @param baseUrl
+   * @param baseUrl request destination base URL
    * @param params  the query parameters to include as part of the baseUrl
    * @param encode  true to encode the full URL
    * @return request
@@ -474,7 +445,7 @@ public class HttpRequest {
   /**
    * Start a 'PUT' request to the given URL along with the query params
    *
-   * @param baseUrl
+   * @param baseUrl request destination base URL
    * @param encode  true to encode the full URL
    * @param params  the name/value query parameter pairs to include as part of the
    *                baseUrl
@@ -489,30 +460,29 @@ public class HttpRequest {
   /**
    * Start a 'DELETE' request to the given URL
    *
-   * @param url
+   * @param url request destination URL
    * @return request
-   * @throws HttpRequestException
+   * @
    */
-  public static HttpRequest delete(final CharSequence url)
-    throws HttpRequestException {
+  public static HttpRequest delete(final CharSequence url) {
     return new HttpRequest(url, METHOD_DELETE);
   }
 
   /**
    * Start a 'DELETE' request to the given URL
    *
-   * @param url
+   * @param url request destination URL
    * @return request
-   * @throws HttpRequestException
+   * @
    */
-  public static HttpRequest delete(final URL url) throws HttpRequestException {
+  public static HttpRequest delete(final URL url) {
     return new HttpRequest(url, METHOD_DELETE);
   }
 
   /**
    * Start a 'DELETE' request to the given URL along with the query params
    *
-   * @param baseUrl
+   * @param baseUrl request destination base URL
    * @param params  The query parameters to include as part of the baseUrl
    * @param encode  true to encode the full URL
    * @return request
@@ -526,7 +496,7 @@ public class HttpRequest {
   /**
    * Start a 'DELETE' request to the given URL along with the query params
    *
-   * @param baseUrl
+   * @param baseUrl request destination base URL
    * @param encode  true to encode the full URL
    * @param params  the name/value query parameter pairs to include as part of the
    *                baseUrl
@@ -543,10 +513,9 @@ public class HttpRequest {
    *
    * @param url
    * @return request
-   * @throws HttpRequestException
+   * @
    */
-  public static HttpRequest head(final CharSequence url)
-    throws HttpRequestException {
+  public static HttpRequest head(final CharSequence url) {
     return new HttpRequest(url, METHOD_HEAD);
   }
 
@@ -555,16 +524,16 @@ public class HttpRequest {
    *
    * @param url
    * @return request
-   * @throws HttpRequestException
+   * @
    */
-  public static HttpRequest head(final URL url) throws HttpRequestException {
+  public static HttpRequest head(final URL url) {
     return new HttpRequest(url, METHOD_HEAD);
   }
 
   /**
    * Start a 'HEAD' request to the given URL along with the query params
    *
-   * @param baseUrl
+   * @param baseUrl request destination base URL
    * @param params  The query parameters to include as part of the baseUrl
    * @param encode  true to encode the full URL
    * @return request
@@ -578,7 +547,7 @@ public class HttpRequest {
   /**
    * Start a 'GET' request to the given URL along with the query params
    *
-   * @param baseUrl
+   * @param baseUrl request destination base URL
    * @param encode  true to encode the full URL
    * @param params  the name/value query parameter pairs to include as part of the
    *                baseUrl
@@ -593,46 +562,44 @@ public class HttpRequest {
   /**
    * Start an 'OPTIONS' request to the given URL
    *
-   * @param url
+   * @param url request destination URL
    * @return request
-   * @throws HttpRequestException
+   * @
    */
-  public static HttpRequest options(final CharSequence url)
-    throws HttpRequestException {
+  public static HttpRequest options(final CharSequence url) {
     return new HttpRequest(url, METHOD_OPTIONS);
   }
 
   /**
    * Start an 'OPTIONS' request to the given URL
    *
-   * @param url
+   * @param url request destination URL
    * @return request
-   * @throws HttpRequestException
+   * @
    */
-  public static HttpRequest options(final URL url) throws HttpRequestException {
+  public static HttpRequest options(final URL url) {
     return new HttpRequest(url, METHOD_OPTIONS);
   }
 
   /**
    * Start a 'TRACE' request to the given URL
    *
-   * @param url
+   * @param url request destination URL
    * @return request
-   * @throws HttpRequestException
+   * @
    */
-  public static HttpRequest trace(final CharSequence url)
-    throws HttpRequestException {
+  public static HttpRequest trace(final CharSequence url) {
     return new HttpRequest(url, METHOD_TRACE);
   }
 
   /**
    * Start a 'TRACE' request to the given URL
    *
-   * @param url
+   * @param url request destination URL
    * @return request
-   * @throws HttpRequestException
+   * @
    */
-  public static HttpRequest trace(final URL url) throws HttpRequestException {
+  public static HttpRequest trace(final URL url) {
     return new HttpRequest(url, METHOD_TRACE);
   }
 
@@ -739,7 +706,7 @@ public class HttpRequest {
    *
    * @param jsonString the json payload to send
    * @return this request
-   * @throws HttpRequestException
+   * @
    */
   public HttpRequest json(final CharSequence jsonString) {
     contentType(CONTENT_TYPE_JSON);
@@ -787,7 +754,7 @@ public class HttpRequest {
    * <p>
    * The default value of this setting is <code>true</code>
    *
-   * @param ignore
+   * @param ignore whether it should be ignored or not
    * @return this request
    */
   public HttpRequest ignoreCloseExceptions(final boolean ignore) {
@@ -809,9 +776,8 @@ public class HttpRequest {
    * Get the status code of the response
    *
    * @return the response code
-   * @throws HttpRequestException
    */
-  public int code() throws HttpRequestException {
+  public int code() {
     try {
       closeOutput();
       return getConnection().getResponseCode();
@@ -824,12 +790,10 @@ public class HttpRequest {
    * Set the value of the given {@link AtomicInteger} to the status code of the
    * response
    *
-   * @param output
+   * @param output the atomic integer to host the response code
    * @return this request
-   * @throws HttpRequestException
    */
-  public HttpRequest code(final AtomicInteger output)
-    throws HttpRequestException {
+  public HttpRequest code(final AtomicInteger output) {
     output.set(code());
     return this;
   }
@@ -838,9 +802,8 @@ public class HttpRequest {
    * Is the response code a 200 OK?
    *
    * @return true if 200, false otherwise
-   * @throws HttpRequestException
    */
-  public boolean ok() throws HttpRequestException {
+  public boolean ok() {
     return HTTP_OK == code();
   }
 
@@ -848,9 +811,9 @@ public class HttpRequest {
    * Is the response code a 201 Created?
    *
    * @return true if 201, false otherwise
-   * @throws HttpRequestException
+   * @
    */
-  public boolean created() throws HttpRequestException {
+  public boolean created() {
     return HTTP_CREATED == code();
   }
 
@@ -858,9 +821,9 @@ public class HttpRequest {
    * Is the response code a 204 No Content?
    *
    * @return true if 204, false otherwise
-   * @throws HttpRequestException
+   * @
    */
-  public boolean noContent() throws HttpRequestException {
+  public boolean noContent() {
     return HTTP_NO_CONTENT == code();
   }
 
@@ -868,9 +831,9 @@ public class HttpRequest {
    * Is the response code a 500 Internal Server Error?
    *
    * @return true if 500, false otherwise
-   * @throws HttpRequestException
+   * @
    */
-  public boolean serverError() throws HttpRequestException {
+  public boolean serverError() {
     return HTTP_INTERNAL_ERROR == code();
   }
 
@@ -878,9 +841,9 @@ public class HttpRequest {
    * Is the response code a 400 Bad Request?
    *
    * @return true if 400, false otherwise
-   * @throws HttpRequestException
+   * @
    */
-  public boolean badRequest() throws HttpRequestException {
+  public boolean badRequest() {
     return HTTP_BAD_REQUEST == code();
   }
 
@@ -888,9 +851,9 @@ public class HttpRequest {
    * Is the response code a 404 Not Found?
    *
    * @return true if 404, false otherwise
-   * @throws HttpRequestException
+   * @
    */
-  public boolean notFound() throws HttpRequestException {
+  public boolean notFound() {
     return HTTP_NOT_FOUND == code();
   }
 
@@ -898,9 +861,9 @@ public class HttpRequest {
    * Is the response code a 304 Not Modified?
    *
    * @return true if 304, false otherwise
-   * @throws HttpRequestException
+   * @
    */
-  public boolean notModified() throws HttpRequestException {
+  public boolean notModified() {
     return HTTP_NOT_MODIFIED == code();
   }
 
@@ -908,9 +871,9 @@ public class HttpRequest {
    * Get status message of the response
    *
    * @return message
-   * @throws HttpRequestException
+   * @
    */
-  public String message() throws HttpRequestException {
+  public String message() {
     try {
       closeOutput();
       return getConnection().getResponseMessage();
@@ -988,7 +951,7 @@ public class HttpRequest {
    * @return this request
    */
   public HttpRequest uncompress(final boolean uncompress) {
-    this.uncompress = uncompress;
+    this.uncompressed = uncompress;
     return this;
   }
 
@@ -1013,9 +976,9 @@ public class HttpRequest {
    *
    * @param charset
    * @return string
-   * @throws HttpRequestException
+   * @
    */
-  public String body(final String charset) throws HttpRequestException {
+  public String body(final String charset) {
     final ByteArrayOutputStream output = byteStream();
     try {
       copy(buffer(), output);
@@ -1030,9 +993,9 @@ public class HttpRequest {
    * {@link #charset()}
    *
    * @return string
-   * @throws HttpRequestException
+   * @
    */
-  public String body() throws HttpRequestException {
+  public String body() {
     return body(charset());
   }
 
@@ -1042,9 +1005,9 @@ public class HttpRequest {
    *
    * @param output
    * @return this request
-   * @throws HttpRequestException
+   * @
    */
-  public HttpRequest body(final AtomicReference<String> output) throws HttpRequestException {
+  public HttpRequest body(final AtomicReference<String> output) {
     output.set(body());
     return this;
   }
@@ -1056,9 +1019,9 @@ public class HttpRequest {
    * @param output
    * @param charset
    * @return this request
-   * @throws HttpRequestException
+   * @
    */
-  public HttpRequest body(final AtomicReference<String> output, final String charset) throws HttpRequestException {
+  public HttpRequest body(final AtomicReference<String> output, final String charset) {
     output.set(body(charset));
     return this;
   }
@@ -1067,9 +1030,9 @@ public class HttpRequest {
    * Is the response body empty?
    *
    * @return true if the Content-Length response header is 0, false otherwise
-   * @throws HttpRequestException
+   * @
    */
-  public boolean isBodyEmpty() throws HttpRequestException {
+  public boolean isBodyEmpty() {
     return contentLength() == 0;
   }
 
@@ -1077,9 +1040,9 @@ public class HttpRequest {
    * Get response as byte array
    *
    * @return byte array
-   * @throws HttpRequestException
+   * @
    */
-  public byte[] bytes() throws HttpRequestException {
+  public byte[] bytes() {
     final ByteArrayOutputStream output = byteStream();
     try {
       copy(buffer(), output);
@@ -1093,10 +1056,10 @@ public class HttpRequest {
    * Get response in a buffered stream
    *
    * @return stream
-   * @throws HttpRequestException
+   * @
    * @see #bufferSize(int)
    */
-  public BufferedInputStream buffer() throws HttpRequestException {
+  public BufferedInputStream buffer() {
     return new BufferedInputStream(stream(), bufferSize);
   }
 
@@ -1104,9 +1067,9 @@ public class HttpRequest {
    * Get stream to response body
    *
    * @return stream
-   * @throws HttpRequestException
+   * @
    */
-  public InputStream stream() throws HttpRequestException {
+  public InputStream stream() {
     InputStream stream;
     if (code() < HTTP_BAD_REQUEST)
       try {
@@ -1127,7 +1090,7 @@ public class HttpRequest {
         }
     }
 
-    if (!uncompress || !ENCODING_GZIP.equals(contentEncoding()))
+    if (!uncompressed || !ENCODING_GZIP.equals(contentEncoding()))
       return stream;
     else
       try {
@@ -1145,10 +1108,8 @@ public class HttpRequest {
    *
    * @param charset
    * @return reader
-   * @throws HttpRequestException
    */
-  public InputStreamReader reader(final String charset)
-    throws HttpRequestException {
+  public InputStreamReader reader(final String charset) {
     try {
       return new InputStreamReader(stream(), getValidCharset(charset));
     } catch (UnsupportedEncodingException e) {
@@ -1161,9 +1122,9 @@ public class HttpRequest {
    * {@link #charset()}
    *
    * @return reader
-   * @throws HttpRequestException
+   * @
    */
-  public InputStreamReader reader() throws HttpRequestException {
+  public InputStreamReader reader() {
     return reader(charset());
   }
 
@@ -1173,11 +1134,9 @@ public class HttpRequest {
    *
    * @param charset
    * @return reader
-   * @throws HttpRequestException
    * @see #bufferSize(int)
    */
-  public BufferedReader bufferedReader(final String charset)
-    throws HttpRequestException {
+  public BufferedReader bufferedReader(final String charset) {
     return new BufferedReader(reader(charset), bufferSize);
   }
 
@@ -1186,10 +1145,9 @@ public class HttpRequest {
    * {@link #charset()} and the configured buffer size
    *
    * @return reader
-   * @throws HttpRequestException
    * @see #bufferSize(int)
    */
-  public BufferedReader bufferedReader() throws HttpRequestException {
+  public BufferedReader bufferedReader() {
     return bufferedReader(charset());
   }
 
@@ -1198,9 +1156,8 @@ public class HttpRequest {
    *
    * @param file
    * @return this request
-   * @throws HttpRequestException
    */
-  public HttpRequest receive(final File file) throws HttpRequestException {
+  public HttpRequest receive(final File file) {
     final OutputStream output;
     try {
       output = new BufferedOutputStream(new FileOutputStream(file), bufferSize);
@@ -1210,7 +1167,7 @@ public class HttpRequest {
     return new CloseOperation<HttpRequest>(output, ignoreCloseExceptions) {
 
       @Override
-      protected HttpRequest run() throws HttpRequestException, IOException {
+      protected HttpRequest run() throws IOException {
         return receive(output);
       }
     }.call();
@@ -1221,10 +1178,8 @@ public class HttpRequest {
    *
    * @param output
    * @return this request
-   * @throws HttpRequestException
    */
-  public HttpRequest receive(final OutputStream output)
-    throws HttpRequestException {
+  public HttpRequest receive(final OutputStream output) {
     try {
       return copy(buffer(), output);
     } catch (IOException e) {
@@ -1237,10 +1192,8 @@ public class HttpRequest {
    *
    * @param output
    * @return this request
-   * @throws HttpRequestException
    */
-  public HttpRequest receive(final PrintStream output)
-    throws HttpRequestException {
+  public HttpRequest receive(final PrintStream output) {
     return receive((OutputStream) output);
   }
 
@@ -1249,10 +1202,8 @@ public class HttpRequest {
    *
    * @param appendable
    * @return this request
-   * @throws HttpRequestException
    */
-  public HttpRequest receive(final Appendable appendable)
-    throws HttpRequestException {
+  public HttpRequest receive(final Appendable appendable) {
     final BufferedReader reader = bufferedReader();
     return new CloseOperation<HttpRequest>(reader, ignoreCloseExceptions) {
 
@@ -1275,9 +1226,8 @@ public class HttpRequest {
    *
    * @param writer
    * @return this request
-   * @throws HttpRequestException
    */
-  public HttpRequest receive(final Writer writer) throws HttpRequestException {
+  public HttpRequest receive(final Writer writer) {
     final BufferedReader reader = bufferedReader();
     return new CloseOperation<HttpRequest>(reader, ignoreCloseExceptions) {
 
@@ -1313,20 +1263,30 @@ public class HttpRequest {
   /**
    * Set header name to given value
    *
-   * @param name
-   * @param value
+   * @param name  the header name to set
+   * @param value the header value to set
    * @return this request
    */
   public HttpRequest header(final String name, final String value) {
-    getConnection().setRequestProperty(name, value);
+    String sanitizedValue = value;
+    if (name == null) {
+      throw new IllegalStateException("header name cannot be null");
+    }
+
+    if (value == null) {
+      LOG.warning("header value received, casting it to empty string");
+      sanitizedValue = "";
+    }
+
+    getConnection().setRequestProperty(name, sanitizedValue);
     return this;
   }
 
   /**
    * Set header name to given value
    *
-   * @param name
-   * @param value
+   * @param name  the header name to set
+   * @param value the header value to set
    * @return this request
    */
   public HttpRequest header(final String name, final Number value) {
@@ -1362,9 +1322,9 @@ public class HttpRequest {
    *
    * @param name
    * @return response header
-   * @throws HttpRequestException
+   * @
    */
-  public String header(final String name) throws HttpRequestException {
+  public String header(final String name) {
     closeOutputQuietly();
     return getConnection().getHeaderField(name);
   }
@@ -1373,9 +1333,9 @@ public class HttpRequest {
    * Get all the response headers
    *
    * @return map of response header names to their value(s)
-   * @throws HttpRequestException
+   * @
    */
-  public Map<String, List<String>> headers() throws HttpRequestException {
+  public Map<String, List<String>> headers() {
     closeOutputQuietly();
     return getConnection().getHeaderFields();
   }
@@ -1386,9 +1346,9 @@ public class HttpRequest {
    *
    * @param name
    * @return date, -1 on failures
-   * @throws HttpRequestException
+   * @
    */
-  public long dateHeader(final String name) throws HttpRequestException {
+  public long dateHeader(final String name) {
     return dateHeader(name, -1L);
   }
 
@@ -1399,10 +1359,9 @@ public class HttpRequest {
    * @param name
    * @param defaultValue
    * @return date, default value on failures
-   * @throws HttpRequestException
+   * @
    */
-  public long dateHeader(final String name, final long defaultValue)
-    throws HttpRequestException {
+  public long dateHeader(final String name, final long defaultValue) {
     closeOutputQuietly();
     return getConnection().getHeaderFieldDate(name, defaultValue);
   }
@@ -1413,9 +1372,9 @@ public class HttpRequest {
    *
    * @param name
    * @return header value as an integer, -1 when missing or parsing fails
-   * @throws HttpRequestException
+   * @
    */
-  public int intHeader(final String name) throws HttpRequestException {
+  public int intHeader(final String name) {
     return intHeader(name, -1);
   }
 
@@ -1427,10 +1386,9 @@ public class HttpRequest {
    * @param defaultValue
    * @return header value as an integer, default value when missing or parsing
    * fails
-   * @throws HttpRequestException
+   * @
    */
-  public int intHeader(final String name, final int defaultValue)
-    throws HttpRequestException {
+  public int intHeader(final String name, final int defaultValue) {
     closeOutputQuietly();
     return getConnection().getHeaderFieldInt(name, defaultValue);
   }
@@ -1461,7 +1419,7 @@ public class HttpRequest {
    * @return parameter value or null if missing
    */
   public String parameter(final String headerName, final String paramName) {
-    return getParam(header(headerName), paramName);
+    return HttpUtils.getParam(header(headerName), paramName);
   }
 
   /**
@@ -1474,96 +1432,9 @@ public class HttpRequest {
    * @return non-null but possibly empty map of parameter headers
    */
   public Map<String, String> parameters(final String headerName) {
-    return getParams(header(headerName));
+    return HttpUtils.getParams(header(headerName));
   }
 
-  /**
-   * Get parameter values from header value
-   *
-   * @param header
-   * @return parameter value or null if none
-   */
-  protected Map<String, String> getParams(final String header) {
-    if (header == null || header.length() == 0)
-      return Collections.emptyMap();
-
-    final int headerLength = header.length();
-    int start = header.indexOf(';') + 1;
-    if (start == 0 || start == headerLength)
-      return Collections.emptyMap();
-
-    int end = header.indexOf(';', start);
-    if (end == -1)
-      end = headerLength;
-
-    Map<String, String> params = new LinkedHashMap<String, String>();
-    while (start < end) {
-      int nameEnd = header.indexOf('=', start);
-      if (nameEnd != -1 && nameEnd < end) {
-        String name = header.substring(start, nameEnd).trim();
-        if (name.length() > 0) {
-          String value = header.substring(nameEnd + 1, end).trim();
-          int length = value.length();
-          if (length != 0)
-            if (length > 2 && '"' == value.charAt(0)
-              && '"' == value.charAt(length - 1))
-              params.put(name, value.substring(1, length - 1));
-            else
-              params.put(name, value);
-        }
-      }
-
-      start = end + 1;
-      end = header.indexOf(';', start);
-      if (end == -1)
-        end = headerLength;
-    }
-
-    return params;
-  }
-
-  /**
-   * Get parameter value from header value
-   *
-   * @param value
-   * @param paramName
-   * @return parameter value or null if none
-   */
-  protected String getParam(final String value, final String paramName) {
-    if (value == null || value.length() == 0)
-      return null;
-
-    final int length = value.length();
-    int start = value.indexOf(';') + 1;
-    if (start == 0 || start == length)
-      return null;
-
-    int end = value.indexOf(';', start);
-    if (end == -1)
-      end = length;
-
-    while (start < end) {
-      int nameEnd = value.indexOf('=', start);
-      if (nameEnd != -1 && nameEnd < end
-        && paramName.equals(value.substring(start, nameEnd).trim())) {
-        String paramValue = value.substring(nameEnd + 1, end).trim();
-        int valueLength = paramValue.length();
-        if (valueLength != 0)
-          if (valueLength > 2 && '"' == paramValue.charAt(0)
-            && '"' == paramValue.charAt(valueLength - 1))
-            return paramValue.substring(1, valueLength - 1);
-          else
-            return paramValue;
-      }
-
-      start = end + 1;
-      end = value.indexOf(';', start);
-      if (end == -1)
-        end = length;
-    }
-
-    return null;
-  }
 
   /**
    * Get 'charset' parameter from 'Content-Type' response header
@@ -1932,8 +1803,8 @@ public class HttpRequest {
    * Close output stream
    *
    * @return this request
-   * @throws HttpRequestException
    * @throws IOException
+   * @
    */
   protected HttpRequest closeOutput() throws IOException {
     progress(null);
@@ -1958,9 +1829,9 @@ public class HttpRequest {
    * an {@link HttpRequestException}
    *
    * @return this request
-   * @throws HttpRequestException
+   * @
    */
-  protected HttpRequest closeOutputQuietly() throws HttpRequestException {
+  protected HttpRequest closeOutputQuietly() {
     try {
       return closeOutput();
     } catch (IOException e) {
@@ -1978,7 +1849,7 @@ public class HttpRequest {
     if (output != null)
       return this;
     getConnection().setDoOutput(true);
-    final String charset = getParam(
+    final String charset = HttpUtils.getParam(
       getConnection().getRequestProperty(HEADER_CONTENT_TYPE), PARAM_CHARSET);
     output = new RequestOutputStream(getConnection().getOutputStream(), charset,
       bufferSize);
@@ -2054,10 +1925,10 @@ public class HttpRequest {
    * @param filename
    * @param part
    * @return this request
-   * @throws HttpRequestException
+   * @
    */
   public HttpRequest part(final String name, final String filename,
-                          final String part) throws HttpRequestException {
+                          final String part) {
     return part(name, filename, null, part);
   }
 
@@ -2069,10 +1940,10 @@ public class HttpRequest {
    * @param contentType value of the Content-Type part header
    * @param part
    * @return this request
-   * @throws HttpRequestException
+   * @
    */
   public HttpRequest part(final String name, final String filename,
-                          final String contentType, final String part) throws HttpRequestException {
+                          final String contentType, final String part) {
     try {
       startPart();
       writePartHeader(name, filename, contentType);
@@ -2089,10 +1960,9 @@ public class HttpRequest {
    * @param name
    * @param part
    * @return this request
-   * @throws HttpRequestException
+   * @
    */
-  public HttpRequest part(final String name, final Number part)
-    throws HttpRequestException {
+  public HttpRequest part(final String name, final Number part) {
     return part(name, null, part);
   }
 
@@ -2103,10 +1973,10 @@ public class HttpRequest {
    * @param filename
    * @param part
    * @return this request
-   * @throws HttpRequestException
+   * @
    */
   public HttpRequest part(final String name, final String filename,
-                          final Number part) throws HttpRequestException {
+                          final Number part) {
     return part(name, filename, part != null ? part.toString() : null);
   }
 
@@ -2116,10 +1986,9 @@ public class HttpRequest {
    * @param name
    * @param part
    * @return this request
-   * @throws HttpRequestException
+   * @
    */
-  public HttpRequest part(final String name, final File part)
-    throws HttpRequestException {
+  public HttpRequest part(final String name, final File part) {
     return part(name, null, part);
   }
 
@@ -2130,10 +1999,10 @@ public class HttpRequest {
    * @param filename
    * @param part
    * @return this request
-   * @throws HttpRequestException
+   * @
    */
   public HttpRequest part(final String name, final String filename,
-                          final File part) throws HttpRequestException {
+                          final File part) {
     return part(name, filename, null, part);
   }
 
@@ -2145,10 +2014,10 @@ public class HttpRequest {
    * @param contentType value of the Content-Type part header
    * @param part
    * @return this request
-   * @throws HttpRequestException
+   * @
    */
   public HttpRequest part(final String name, final String filename,
-                          final String contentType, final File part) throws HttpRequestException {
+                          final String contentType, final File part) {
     final InputStream stream;
     try {
       stream = new BufferedInputStream(new FileInputStream(part));
@@ -2165,10 +2034,9 @@ public class HttpRequest {
    * @param name
    * @param part
    * @return this request
-   * @throws HttpRequestException
+   * @
    */
-  public HttpRequest part(final String name, final InputStream part)
-    throws HttpRequestException {
+  public HttpRequest part(final String name, final InputStream part) {
     return part(name, null, null, part);
   }
 
@@ -2180,11 +2048,10 @@ public class HttpRequest {
    * @param contentType value of the Content-Type part header
    * @param part
    * @return this request
-   * @throws HttpRequestException
+   * @
    */
   public HttpRequest part(final String name, final String filename,
-                          final String contentType, final InputStream part)
-    throws HttpRequestException {
+                          final String contentType, final InputStream part) {
     try {
       startPart();
       writePartHeader(name, filename, contentType);
@@ -2205,10 +2072,10 @@ public class HttpRequest {
    * @param name
    * @param value
    * @return this request
-   * @throws HttpRequestException
+   * @
    */
-  public HttpRequest partHeader(final String name, final String value)
-    throws HttpRequestException {
+  @SuppressWarnings("UnusedReturnValue")
+  public HttpRequest partHeader(final String name, final String value) {
     return send(name).send(": ").send(value).send(CRLF);
   }
 
@@ -2217,9 +2084,9 @@ public class HttpRequest {
    *
    * @param input
    * @return this request
-   * @throws HttpRequestException
+   * @
    */
-  public HttpRequest send(final File input) throws HttpRequestException {
+  public HttpRequest send(final File input) {
     final InputStream stream;
     try {
       stream = new BufferedInputStream(new FileInputStream(input));
@@ -2235,12 +2102,14 @@ public class HttpRequest {
    *
    * @param input
    * @return this request
-   * @throws HttpRequestException
+   * @
    */
-  public HttpRequest send(final byte[] input) throws HttpRequestException {
-    if (input != null)
+  public HttpRequest send(final byte[] input) {
+    if (input != null) {
       incrementTotalSize(input.length);
-    return send(new ByteArrayInputStream(input));
+      return send(new ByteArrayInputStream(input));
+    }
+    throw new IllegalArgumentException("null bytes provided");
   }
 
   /**
@@ -2250,9 +2119,9 @@ public class HttpRequest {
    *
    * @param input
    * @return this request
-   * @throws HttpRequestException
+   * @
    */
-  public HttpRequest send(final InputStream input) throws HttpRequestException {
+  public HttpRequest send(final InputStream input) {
     try {
       openOutput();
       copy(input, output);
@@ -2269,9 +2138,9 @@ public class HttpRequest {
    *
    * @param input
    * @return this request
-   * @throws HttpRequestException
+   * @
    */
-  public HttpRequest send(final Reader input) throws HttpRequestException {
+  public HttpRequest send(final Reader input) {
     try {
       openOutput();
     } catch (IOException e) {
@@ -2296,9 +2165,9 @@ public class HttpRequest {
    *
    * @param value
    * @return this request
-   * @throws HttpRequestException
+   * @
    */
-  public HttpRequest send(final CharSequence value) throws HttpRequestException {
+  public HttpRequest send(final CharSequence value) {
     try {
       openOutput();
       output.write(value.toString());
@@ -2312,9 +2181,9 @@ public class HttpRequest {
    * Create writer to request output stream
    *
    * @return writer
-   * @throws HttpRequestException
+   * @
    */
-  public OutputStreamWriter writer() throws HttpRequestException {
+  public OutputStreamWriter writer() {
     try {
       openOutput();
       return new OutputStreamWriter(output, output.encoder.charset());
@@ -2331,9 +2200,9 @@ public class HttpRequest {
    *
    * @param values
    * @return this request
-   * @throws HttpRequestException
+   * @
    */
-  public HttpRequest form(final Map<?, ?> values) throws HttpRequestException {
+  public HttpRequest form(final Map<?, ?> values) {
     return form(values, CHARSET_UTF8);
   }
 
@@ -2345,9 +2214,9 @@ public class HttpRequest {
    *
    * @param entry
    * @return this request
-   * @throws HttpRequestException
+   * @
    */
-  public HttpRequest form(final Entry<?, ?> entry) throws HttpRequestException {
+  public HttpRequest form(final Entry<?, ?> entry) {
     return form(entry, CHARSET_UTF8);
   }
 
@@ -2360,10 +2229,9 @@ public class HttpRequest {
    * @param entry
    * @param charset
    * @return this request
-   * @throws HttpRequestException
+   * @
    */
-  public HttpRequest form(final Entry<?, ?> entry, final String charset)
-    throws HttpRequestException {
+  public HttpRequest form(final Entry<?, ?> entry, final String charset) {
     return form(entry.getKey(), entry.getValue(), charset);
   }
 
@@ -2376,10 +2244,9 @@ public class HttpRequest {
    * @param name
    * @param value
    * @return this request
-   * @throws HttpRequestException
+   * @
    */
-  public HttpRequest form(final Object name, final Object value)
-    throws HttpRequestException {
+  public HttpRequest form(final Object name, final Object value) {
     return form(name, value, CHARSET_UTF8);
   }
 
@@ -2393,10 +2260,9 @@ public class HttpRequest {
    * @param value
    * @param charset
    * @return this request
-   * @throws HttpRequestException
+   * @
    */
-  public HttpRequest form(final Object name, final Object value, String charset)
-    throws HttpRequestException {
+  public HttpRequest form(final Object name, final Object value, String charset) {
     final boolean first = !form;
     if (first) {
       contentType(CONTENT_TYPE_FORM, charset);
@@ -2423,10 +2289,9 @@ public class HttpRequest {
    * @param values
    * @param charset
    * @return this request
-   * @throws HttpRequestException
+   * @
    */
-  public HttpRequest form(final Map<?, ?> values, final String charset)
-    throws HttpRequestException {
+  public HttpRequest form(final Map<?, ?> values, final String charset) {
     if (!values.isEmpty())
       for (Entry<?, ?> entry : values.entrySet())
         form(entry, charset);
@@ -2439,9 +2304,9 @@ public class HttpRequest {
    * This method does nothing if the current request is not a HTTPS request
    *
    * @return this request
-   * @throws HttpRequestException
+   * @
    */
-  public HttpRequest trustAllCerts() throws HttpRequestException {
+  public HttpRequest trustAllCerts() {
     final HttpURLConnection connection = getConnection();
     if (connection instanceof HttpsURLConnection)
       ((HttpsURLConnection) connection)
@@ -2593,7 +2458,7 @@ public class HttpRequest {
      *
      * @param value
      * @return this stream
-     * @throws IOException
+     * @throws IOException rethrows underlying io exception if any
      */
     public RequestOutputStream write(final String value) throws IOException {
       final ByteBuffer bytes = encoder.encode(CharBuffer.wrap(value));

@@ -45,7 +45,7 @@
     </dependency>
     <dependency>
       <groupId>org.eclipse.jetty</groupId>
-      <artifactId>jetty-servlets</artifactId>
+      <artifactId>jetty-proxy</artifactId>
       <version>${jetty.version}</version>
       <scope>test</scope>
     </dependency>

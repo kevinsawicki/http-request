@@ -1,19 +1,16 @@
 package com.uvasoftware.http;
 
-import org.eclipse.jetty.server.Connector;
-import org.eclipse.jetty.server.Handler;
-import org.eclipse.jetty.server.Request;
-import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.proxy.AsyncProxyServlet;
+import org.eclipse.jetty.server.*;
 import org.eclipse.jetty.server.handler.AbstractHandler;
 import org.eclipse.jetty.server.handler.HandlerList;
-import org.eclipse.jetty.server.nio.SelectChannelConnector;
-import org.eclipse.jetty.server.ssl.SslSocketConnector;
 import org.eclipse.jetty.servlet.ServletHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
 import org.eclipse.jetty.util.B64Code;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.junit.AfterClass;
 import org.junit.Before;
+import org.junit.BeforeClass;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -21,55 +18,77 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.logging.Logger;
 
 import static com.uvasoftware.http.HttpRequest.CHARSET_UTF8;
 
 /**
  * Base test case that provides a running HTTP server
  */
-public class ServerTestCase {
+public class IntegrationTest {
 
   static final AtomicInteger proxyHitCount = new AtomicInteger(0);
   static final AtomicReference<String> proxyUser = new AtomicReference<String>();
   static final AtomicReference<String> proxyPassword = new AtomicReference<String>();
+  private static final Logger LOG = Logger.getLogger(IntegrationTest.class.getName());
+  static RequestHandler handler;
+  static int proxyPort;
+  static String baseUrl;
+  static String baseTlsUrl;
   /**
    * Server
    */
   private static Server server;
-  private static Server proxy;
-  static int proxyPort;
+  private static Server proxyServer;
 
-  /**
-   * Set up server with handler
-   *
-   * @param handler
-   * @return port
-   * @throws Exception
-   */
-  public static String setUp(final Handler handler) throws Exception {
+  static {
+    TestUtils.setupLogging();
+  }
+
+  @BeforeClass
+  public static void startServer() throws Exception {
+    setUp(new RequestHandler() {
+
+      @Override
+      public void handle(String target, Request baseRequest,
+                         HttpServletRequest request, HttpServletResponse response)
+        throws IOException, ServletException {
+        if (handler != null)
+          handler.handle(target, baseRequest, request, response);
+      }
+
+      @Override
+      public void handle(Request request, HttpServletResponse response) {
+        if (handler != null)
+          handler.handle(request, response);
+      }
+    });
+  }
+
+  public static void setUp(final Handler handler) throws Exception {
+    LOG.info("starting server");
     server = new Server();
     if (handler != null)
       server.setHandler(handler);
-    Connector connector = new SelectChannelConnector();
+    ServerConnector connector = new ServerConnector(server);
     connector.setPort(0);
 
     //    TLS connector
     SslContextFactory sslContextFactory = new SslContextFactory();
     sslContextFactory.setKeyStorePassword("password");
     sslContextFactory.setKeyStorePath("src/test/resources/keystore.jks");
-    Connector connector1 = new SslSocketConnector(sslContextFactory);
-    connector1.setPort(8081);
+    ServerConnector connector1 = new ServerConnector(server, sslContextFactory);
+    connector1.setPort(0);
 
     server.setConnectors(new Connector[]{connector, connector1});
     server.start();
 
-    proxy = new Server();
-    Connector proxyConnector = new SelectChannelConnector();
-    proxyConnector.setPort(0);
-    proxy.setConnectors(new Connector[]{proxyConnector});
+    proxyServer = new Server();
+    ServerConnector connector2 = new ServerConnector(proxyServer);
+    connector2.setPort(0);
+    proxyServer.setConnectors(new Connector[]{connector2});
 
     ServletHandler proxyHandler = new ServletHandler();
 
@@ -80,11 +99,7 @@ public class ServerTestCase {
         proxyHitCount.incrementAndGet();
         String auth = request.getHeader("Proxy-Authorization");
         auth = auth.substring(auth.indexOf(' ') + 1);
-        try {
-          auth = B64Code.decode(auth, CHARSET_UTF8);
-        } catch (UnsupportedEncodingException e) {
-          throw new RuntimeException(e);
-        }
+        auth = B64Code.decode(auth, CHARSET_UTF8);
         int colon = auth.indexOf(':');
         proxyUser.set(auth.substring(0, colon));
         proxyPassword.set(auth.substring(colon + 1));
@@ -95,29 +110,32 @@ public class ServerTestCase {
     HandlerList handlerList = new HandlerList();
     handlerList.addHandler(proxyCountingHandler);
     handlerList.addHandler(proxyHandler);
-    proxy.setHandler(handlerList);
+    proxyServer.setHandler(handlerList);
 
-    ServletHolder proxyHolder = proxyHandler.addServletWithMapping("org.eclipse.jetty.servlets.ProxyServlet", "/");
+    ServletHolder proxyHolder = proxyHandler.addServletWithMapping(AsyncProxyServlet.class, "/");
+    proxyHolder.setInitParameter("maxThreads", "10");
     proxyHolder.setAsyncSupported(true);
 
-    proxy.start();
+    proxyServer.start();
 
-    proxyPort = proxyConnector.getLocalPort();
+    proxyPort = connector2.getLocalPort();
 
-    return "http://localhost:" + connector.getLocalPort();
+    baseUrl = "http://localhost:" + connector.getLocalPort();
+    baseTlsUrl = "https://localhost:" + connector1.getLocalPort();
   }
 
   /**
    * Tear down server if created
-   *
-   * @throws Exception
    */
   @AfterClass
   public static void tearDown() throws Exception {
-    if (server != null)
+    LOG.info("SHUTTING DOWN...");
+    if (server != null) {
       server.stop();
-    if (proxy != null)
-      proxy.stop();
+    }
+    if (proxyServer != null) {
+      proxyServer.stop();
+    }
   }
 
   @Before
@@ -131,22 +149,10 @@ public class ServerTestCase {
   protected static abstract class RequestHandler extends AbstractHandler {
 
     private Request request;
-
     private HttpServletResponse response;
 
-    /**
-     * Handle request
-     *
-     * @param request
-     * @param response
-     */
     public abstract void handle(Request request, HttpServletResponse response);
 
-    /**
-     * Read content
-     *
-     * @return content
-     */
     byte[] read() {
       ByteArrayOutputStream content = new ByteArrayOutputStream();
       final byte[] buffer = new byte[8196];
@@ -161,11 +167,6 @@ public class ServerTestCase {
       return content.toByteArray();
     }
 
-    /**
-     * Write value
-     *
-     * @param value
-     */
     void write(String value) {
       try {
         response.getWriter().print(value);
@@ -174,11 +175,6 @@ public class ServerTestCase {
       }
     }
 
-    /**
-     * Write line
-     *
-     * @param value
-     */
     protected void writeln(String value) {
       try {
         response.getWriter().println(value);

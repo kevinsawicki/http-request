@@ -196,4 +196,92 @@ public class HttpUtils {
     }
 
   }
+
+  /**
+   * Get parameter values from header value
+   *
+   * @param header
+   * @return parameter value or null if none
+   */
+  public static Map<String, String> getParams(final String header) {
+    if (header == null || header.length() == 0)
+      return Collections.emptyMap();
+
+    final int headerLength = header.length();
+    int start = header.indexOf(';') + 1;
+    if (start == 0 || start == headerLength)
+      return Collections.emptyMap();
+
+    int end = header.indexOf(';', start);
+    if (end == -1)
+      end = headerLength;
+
+    Map<String, String> params = new LinkedHashMap<String, String>();
+    while (start < end) {
+      int nameEnd = header.indexOf('=', start);
+      if (nameEnd != -1 && nameEnd < end) {
+        String name = header.substring(start, nameEnd).trim();
+        if (name.length() > 0) {
+          String value = header.substring(nameEnd + 1, end).trim();
+          int length = value.length();
+          if (length != 0)
+            if (length > 2 && '"' == value.charAt(0)
+              && '"' == value.charAt(length - 1))
+              params.put(name, value.substring(1, length - 1));
+            else
+              params.put(name, value);
+        }
+      }
+
+      start = end + 1;
+      end = header.indexOf(';', start);
+      if (end == -1)
+        end = headerLength;
+    }
+
+    return params;
+  }
+
+  /**
+   * Get parameter value from header value
+   *
+   * @param value
+   * @param paramName
+   * @return parameter value or null if none
+   */
+  public static String getParam(final String value, final String paramName) {
+    if (value == null || value.length() == 0)
+      return null;
+
+    final int length = value.length();
+    int start = value.indexOf(';') + 1;
+    if (start == 0 || start == length)
+      return null;
+
+    int end = value.indexOf(';', start);
+    if (end == -1)
+      end = length;
+
+    while (start < end) {
+      int nameEnd = value.indexOf('=', start);
+      if (nameEnd != -1 && nameEnd < end
+        && paramName.equals(value.substring(start, nameEnd).trim())) {
+        String paramValue = value.substring(nameEnd + 1, end).trim();
+        int valueLength = paramValue.length();
+        if (valueLength != 0)
+          if (valueLength > 2 && '"' == paramValue.charAt(0)
+            && '"' == paramValue.charAt(valueLength - 1))
+            return paramValue.substring(1, valueLength - 1);
+          else
+            return paramValue;
+      }
+
+      start = end + 1;
+      end = value.indexOf(';', start);
+      if (end == -1)
+        end = length;
+    }
+
+    return null;
+  }
 }
