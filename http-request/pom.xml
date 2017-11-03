@@ -5,7 +5,7 @@
   <parent>
     <groupId>com.uvasoftware</groupId>
     <artifactId>http-request-parent</artifactId>
-    <version>7.0.0</version>
+    <version>7.0.1-SNAPSHOT</version>
   </parent>
 
   <artifactId>http-request</artifactId>
