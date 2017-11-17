@@ -1,33 +1,25 @@
-# Http Request [![Build Status](https://travis-ci.org/kevinsawicki/http-request.svg)](https://travis-ci.org/kevinsawicki/http-request)
+# Http Request 
 
 A simple convenience library for using a [HttpURLConnection](http://download.oracle.com/javase/6/docs/api/java/net/HttpURLConnection.html)
-to make requests and access the response.
+to make requests and access the response. 
+
+**This is a fork of the original library written by Kevin Sawicki and available [here](https://github.com/kevinsawicki/http-request) with some added bugfixes and features.** This fork is maintained by Uva Software LLC and used on [scanii.com](https://scanii.com).
 
 This library is available under the [MIT License](http://www.opensource.org/licenses/mit-license.php).
 
 ## Usage
 
-The http-request library is available from [Maven Central](http://search.maven.org/#search%7Cgav%7C1%7Cg%3A%22com.github.kevinsawicki%22%20AND%20a%3A%22http-request%22).
+The http-request library is available from Maven central:
 
 ```xml
 <dependency>
-  <groupId>com.github.kevinsawicki</groupId>
+  <groupId>com.uvasoftware.http</groupId>
   <artifactId>http-request</artifactId>
-  <version>6.0</version>
+  <version>${latest-version}</version>
 </dependency>
 ```
 
-Not using [Maven](http://maven.apache.org/)? Simply copy the [HttpRequest](https://raw.githubusercontent.com/kevinsawicki/http-request/master/lib/src/main/java/com/github/kevinsawicki/http/HttpRequest.java)
-class into your project, update the package declaration, and you are good to go.
-
-Javadocs are available [here](http://kevinsawicki.github.com/http-request/apidocs/index.html).
-
 ## FAQ
-
-### Who uses this?
-
-See [here](https://github.com/kevinsawicki/http-request/wiki/Used-By) for a
-list of known projects using this library.
 
 ### Why was this written?
 
@@ -262,19 +254,13 @@ HttpRequest.setConnectionFactory(new ConnectionFactory() {
   }
 });
 ```
+### Posting json content
 
-## Contributors
+This will post the JSON content as well as setup the proper content type.
 
-* [Kevin Sawicki](https://github.com/kevinsawicki) :: [contributions](https://github.com/kevinsawicki/http-request/commits?author=kevinsawicki)
-* [Eddie Ringle](https://github.com/eddieringle) :: [contributions](https://github.com/kevinsawicki/http-request/commits?author=eddieringle)
-* [Sean Jensen-Grey](https://github.com/seanjensengrey) :: [contributions](https://github.com/kevinsawicki/http-request/commits?author=seanjensengrey)
-* [Levi Notik](https://github.com/levinotik) :: [contributions](https://github.com/kevinsawicki/http-request/commits?author=levinotik)
-* [Michael Wang](https://github.com/michael-wang) :: [contributions](https://github.com/kevinsawicki/http-request/commits?author=michael-wang)
-* [Julien HENRY](https://github.com/henryju) :: [contributions](https://github.com/kevinsawicki/http-request/commits?author=henryju)
-* [Benoit Lubek](https://github.com/BoD) :: [contributions](https://github.com/kevinsawicki/http-request/commits?author=BoD)
-* [Jake Wharton](https://github.com/JakeWharton) :: [contributions](https://github.com/kevinsawicki/http-request/commits?author=JakeWharton)
-* [Oskar Hagberg](https://github.com/oskarhagberg) :: [contributions](https://github.com/kevinsawicki/http-request/commits?author=oskarhagberg)
-* [David Pate](https://github.com/DavidTPate) :: [contributions](https://github.com/kevinsawicki/http-request/commits?author=DavidTPate)
-* [Anton Rieder](https://github.com/aried3r) :: [contributions](https://github.com/kevinsawicki/http-request/commits?author=aried3r)
-* [Jean-Baptiste Lièvremont](https://github.com/jblievremont) :: [contributions](https://github.com/kevinsawicki/http-request/commits?author=jblievremont)
-* [Roman Petrenko](https://github.com/romanzes) :: [contributions](https://github.com/kevinsawicki/http-request/commits?author=romanzes)
+```java
+HttpRequest r = HttpRquest.post("https://httpbin.org/post").json("{\"name\":\"user\",\"number\":\"1001\"}");
+
+if (r.ok())
+  System.out.println("Status was updated");
+```

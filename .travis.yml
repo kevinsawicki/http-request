@@ -1,7 +1,0 @@
-language: java
-
-notifications:
-  email: false
-
-git:
-  depth: 10
