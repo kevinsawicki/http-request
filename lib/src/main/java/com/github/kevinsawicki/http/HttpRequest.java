@@ -3141,6 +3141,25 @@ public class HttpRequest {
    */
   public HttpRequest form(final Object name, final Object value, String charset)
       throws HttpRequestException {
+    List<Object> names = new ArrayList<Object>();
+    names.add(name);
+    return form(names, value, charset);
+  }
+
+  /**
+   * Write the name/value pair as form data to the request body
+   * <p>
+   * The values specified will be URL-encoded and sent with the
+   * 'application/x-www-form-urlencoded' content-type
+   *
+   * @param names Name of param, as a list of ancestors
+   * @param value
+   * @param charset
+   * @return this request
+   * @throws HttpRequestException
+   */
+  public HttpRequest form(final List<Object> names, final Object value, String charset)
+      throws HttpRequestException {
     final boolean first = !form;
     if (first) {
       contentType(CONTENT_TYPE_FORM, charset);
@@ -3149,12 +3168,35 @@ public class HttpRequest {
     charset = getValidCharset(charset);
     try {
       openOutput();
-      if (!first)
-        output.write('&');
-      output.write(URLEncoder.encode(name.toString(), charset));
-      output.write('=');
-      if (value != null)
-        output.write(URLEncoder.encode(value.toString(), charset));
+      if (value instanceof List<?>) {
+        names.add("");
+        for (Object item : (List<Object>)value)
+          form(names, item, charset);
+        names.remove(names.size() - 1);
+      } else if (value instanceof Map<?, ?>) {
+        for (Entry<Object, Object> entry : ((Map<Object, Object>)value).entrySet()) {
+          names.add(entry.getKey());
+          form(names, entry.getValue(), charset);
+          names.remove(names.size() - 1);
+        }
+      } else {
+        if (!first)
+          output.write('&');
+
+        boolean firstName = true;
+        for (Object name : names) {
+          if (!firstName)
+            output.write('[');
+          output.write(URLEncoder.encode(name.toString(), charset));
+          if (!firstName)
+            output.write(']');
+          firstName = false;
+        }
+
+        output.write('=');
+        if (value != null)
+          output.write(URLEncoder.encode(value.toString(), charset));
+      }
     } catch (IOException e) {
       throw new HttpRequestException(e);
     }
