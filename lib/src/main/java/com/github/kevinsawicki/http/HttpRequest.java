@@ -2609,7 +2609,11 @@ public class HttpRequest {
     this.defaultTimeOutFlag = true;
     return this;
   }
-
+  /**
+   *
+   * HttpResponse collects the http response info and make the responsibility clearly(HttpRequest for request,HttpResponse for response)
+   *
+   */
   public class HttpResponse{
 
     /**
@@ -2630,7 +2634,7 @@ public class HttpRequest {
     /**
      * Close output stream
      *
-     * @return this request
+     * @return this response
      * @throws HttpRequestException
      * @throws IOException
      */
@@ -2657,7 +2661,7 @@ public class HttpRequest {
      * response
      *
      * @param output
-     * @return this request
+     * @return this response
      * @throws HttpRequestException
      */
     public HttpResponse code(final AtomicInteger output)
@@ -2670,7 +2674,7 @@ public class HttpRequest {
      * Call {@link #closeOutput()} and re-throw a caught {@link IOException}s as
      * an {@link HttpRequestException}
      *
-     * @return this request
+     * @return this response
      * @throws HttpRequestException
      */
     protected HttpResponse closeOutputQuietly() throws HttpRequestException {
@@ -2804,7 +2808,7 @@ public class HttpRequest {
      * given reference.
      *
      * @param output
-     * @return this request
+     * @return this response
      * @throws HttpRequestException
      */
     public HttpResponse body(final AtomicReference<String> output) throws HttpRequestException {
@@ -2818,7 +2822,7 @@ public class HttpRequest {
      *
      * @param output
      * @param charset
-     * @return this request
+     * @return this response
      * @throws HttpRequestException
      */
     public HttpResponse body(final AtomicReference<String> output, final String charset) throws HttpRequestException {
@@ -3264,13 +3268,15 @@ public class HttpRequest {
       }.call();
     }
   }
-
+  /**
+   * this method is used to execute a http request and get a HttpResponse
+   * @return
+   */
   public HttpResponse executeHttpRequest(){
     if (httpResponse ==null) {
       httpResponse = new HttpResponse();
     }
     return httpResponse;
   }
-
 
 }
