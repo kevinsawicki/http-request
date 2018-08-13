@@ -260,6 +260,14 @@ public class HttpRequest {
 
   private static HostnameVerifier TRUSTED_VERIFIER;
 
+  private static final int DEFAULT_READ_TIMEOUT = 5000;
+
+  private static final int DEFAULT_CONNECT_TIMEOUT = 5000;
+
+  private boolean defaultTimeOutFlag = false;
+
+  private HttpResponse httpResponse;
+
   private static String getValidCharset(final String charset) {
     if (charset != null && charset.length() > 0)
       return charset;
@@ -1549,120 +1557,6 @@ public class HttpRequest {
   }
 
   /**
-   * Get the status code of the response
-   *
-   * @return the response code
-   * @throws HttpRequestException
-   */
-  public int code() throws HttpRequestException {
-    try {
-      closeOutput();
-      return getConnection().getResponseCode();
-    } catch (IOException e) {
-      throw new HttpRequestException(e);
-    }
-  }
-
-  /**
-   * Set the value of the given {@link AtomicInteger} to the status code of the
-   * response
-   *
-   * @param output
-   * @return this request
-   * @throws HttpRequestException
-   */
-  public HttpRequest code(final AtomicInteger output)
-      throws HttpRequestException {
-    output.set(code());
-    return this;
-  }
-
-  /**
-   * Is the response code a 200 OK?
-   *
-   * @return true if 200, false otherwise
-   * @throws HttpRequestException
-   */
-  public boolean ok() throws HttpRequestException {
-    return HTTP_OK == code();
-  }
-
-  /**
-   * Is the response code a 201 Created?
-   *
-   * @return true if 201, false otherwise
-   * @throws HttpRequestException
-   */
-  public boolean created() throws HttpRequestException {
-    return HTTP_CREATED == code();
-  }
-
-  /**
-   * Is the response code a 204 No Content?
-   *
-   * @return true if 204, false otherwise
-   * @throws HttpRequestException
-   */
-  public boolean noContent() throws HttpRequestException {
-    return HTTP_NO_CONTENT == code();
-  }
-
-  /**
-   * Is the response code a 500 Internal Server Error?
-   *
-   * @return true if 500, false otherwise
-   * @throws HttpRequestException
-   */
-  public boolean serverError() throws HttpRequestException {
-    return HTTP_INTERNAL_ERROR == code();
-  }
-
-  /**
-   * Is the response code a 400 Bad Request?
-   *
-   * @return true if 400, false otherwise
-   * @throws HttpRequestException
-   */
-  public boolean badRequest() throws HttpRequestException {
-    return HTTP_BAD_REQUEST == code();
-  }
-
-  /**
-   * Is the response code a 404 Not Found?
-   *
-   * @return true if 404, false otherwise
-   * @throws HttpRequestException
-   */
-  public boolean notFound() throws HttpRequestException {
-    return HTTP_NOT_FOUND == code();
-  }
-
-  /**
-   * Is the response code a 304 Not Modified?
-   *
-   * @return true if 304, false otherwise
-   * @throws HttpRequestException
-   */
-  public boolean notModified() throws HttpRequestException {
-    return HTTP_NOT_MODIFIED == code();
-  }
-
-  /**
-   * Get status message of the response
-   *
-   * @return message
-   * @throws HttpRequestException
-   */
-  public String message() throws HttpRequestException {
-    try {
-      closeOutput();
-      return getConnection().getResponseMessage();
-    } catch (IOException e) {
-      throw new HttpRequestException(e);
-    }
-  }
-
-  /**
    * Disconnect the connection
    *
    * @return this request
@@ -1735,303 +1629,6 @@ public class HttpRequest {
     return this;
   }
 
-  /**
-   * Create byte array output stream
-   *
-   * @return stream
-   */
-  protected ByteArrayOutputStream byteStream() {
-    final int size = contentLength();
-    if (size > 0)
-      return new ByteArrayOutputStream(size);
-    else
-      return new ByteArrayOutputStream();
-  }
-
-  /**
-   * Get response as {@link String} in given character set
-   * <p>
-   * This will fall back to using the UTF-8 character set if the given charset
-   * is null
-   *
-   * @param charset
-   * @return string
-   * @throws HttpRequestException
-   */
-  public String body(final String charset) throws HttpRequestException {
-    final ByteArrayOutputStream output = byteStream();
-    try {
-      copy(buffer(), output);
-      return output.toString(getValidCharset(charset));
-    } catch (IOException e) {
-      throw new HttpRequestException(e);
-    }
-  }
-
-  /**
-   * Get response as {@link String} using character set returned from
-   * {@link #charset()}
-   *
-   * @return string
-   * @throws HttpRequestException
-   */
-  public String body() throws HttpRequestException {
-    return body(charset());
-  }
-
-  /**
-   * Get the response body as a {@link String} and set it as the value of the
-   * given reference.
-   *
-   * @param output
-   * @return this request
-   * @throws HttpRequestException
-   */
-  public HttpRequest body(final AtomicReference<String> output) throws HttpRequestException {
-    output.set(body());
-    return this;
-  }
-
-  /**
-   * Get the response body as a {@link String} and set it as the value of the
-   * given reference.
-   *
-   * @param output
-   * @param charset
-   * @return this request
-   * @throws HttpRequestException
-   */
-  public HttpRequest body(final AtomicReference<String> output, final String charset) throws HttpRequestException {
-    output.set(body(charset));
-    return this;
-  }
-
-
-  /**
-   * Is the response body empty?
-   *
-   * @return true if the Content-Length response header is 0, false otherwise
-   * @throws HttpRequestException
-   */
-  public boolean isBodyEmpty() throws HttpRequestException {
-    return contentLength() == 0;
-  }
-
-  /**
-   * Get response as byte array
-   *
-   * @return byte array
-   * @throws HttpRequestException
-   */
-  public byte[] bytes() throws HttpRequestException {
-    final ByteArrayOutputStream output = byteStream();
-    try {
-      copy(buffer(), output);
-    } catch (IOException e) {
-      throw new HttpRequestException(e);
-    }
-    return output.toByteArray();
-  }
-
-  /**
-   * Get response in a buffered stream
-   *
-   * @see #bufferSize(int)
-   * @return stream
-   * @throws HttpRequestException
-   */
-  public BufferedInputStream buffer() throws HttpRequestException {
-    return new BufferedInputStream(stream(), bufferSize);
-  }
-
-  /**
-   * Get stream to response body
-   *
-   * @return stream
-   * @throws HttpRequestException
-   */
-  public InputStream stream() throws HttpRequestException {
-    InputStream stream;
-    if (code() < HTTP_BAD_REQUEST)
-      try {
-        stream = getConnection().getInputStream();
-      } catch (IOException e) {
-        throw new HttpRequestException(e);
-      }
-    else {
-      stream = getConnection().getErrorStream();
-      if (stream == null)
-        try {
-          stream = getConnection().getInputStream();
-        } catch (IOException e) {
-          if (contentLength() > 0)
-            throw new HttpRequestException(e);
-          else
-            stream = new ByteArrayInputStream(new byte[0]);
-        }
-    }
-
-    if (!uncompress || !ENCODING_GZIP.equals(contentEncoding()))
-      return stream;
-    else
-      try {
-        return new GZIPInputStream(stream);
-      } catch (IOException e) {
-        throw new HttpRequestException(e);
-      }
-  }
-
-  /**
-   * Get reader to response body using given character set.
-   * <p>
-   * This will fall back to using the UTF-8 character set if the given charset
-   * is null
-   *
-   * @param charset
-   * @return reader
-   * @throws HttpRequestException
-   */
-  public InputStreamReader reader(final String charset)
-      throws HttpRequestException {
-    try {
-      return new InputStreamReader(stream(), getValidCharset(charset));
-    } catch (UnsupportedEncodingException e) {
-      throw new HttpRequestException(e);
-    }
-  }
-
-  /**
-   * Get reader to response body using the character set returned from
-   * {@link #charset()}
-   *
-   * @return reader
-   * @throws HttpRequestException
-   */
-  public InputStreamReader reader() throws HttpRequestException {
-    return reader(charset());
-  }
-
-  /**
-   * Get buffered reader to response body using the given character set r and
-   * the configured buffer size
-   *
-   *
-   * @see #bufferSize(int)
-   * @param charset
-   * @return reader
-   * @throws HttpRequestException
-   */
-  public BufferedReader bufferedReader(final String charset)
-      throws HttpRequestException {
-    return new BufferedReader(reader(charset), bufferSize);
-  }
-
-  /**
-   * Get buffered reader to response body using the character set returned from
-   * {@link #charset()} and the configured buffer size
-   *
-   * @see #bufferSize(int)
-   * @return reader
-   * @throws HttpRequestException
-   */
-  public BufferedReader bufferedReader() throws HttpRequestException {
-    return bufferedReader(charset());
-  }
-
-  /**
-   * Stream response body to file
-   *
-   * @param file
-   * @return this request
-   * @throws HttpRequestException
-   */
-  public HttpRequest receive(final File file) throws HttpRequestException {
-    final OutputStream output;
-    try {
-      output = new BufferedOutputStream(new FileOutputStream(file), bufferSize);
-    } catch (FileNotFoundException e) {
-      throw new HttpRequestException(e);
-    }
-    return new CloseOperation<HttpRequest>(output, ignoreCloseExceptions) {
-
-      @Override
-      protected HttpRequest run() throws HttpRequestException, IOException {
-        return receive(output);
-      }
-    }.call();
-  }
-
-  /**
-   * Stream response to given output stream
-   *
-   * @param output
-   * @return this request
-   * @throws HttpRequestException
-   */
-  public HttpRequest receive(final OutputStream output)
-      throws HttpRequestException {
-    try {
-      return copy(buffer(), output);
-    } catch (IOException e) {
-      throw new HttpRequestException(e);
-    }
-  }
-
-  /**
-   * Stream response to given print stream
-   *
-   * @param output
-   * @return this request
-   * @throws HttpRequestException
-   */
-  public HttpRequest receive(final PrintStream output)
-      throws HttpRequestException {
-    return receive((OutputStream) output);
-  }
-
-  /**
-   * Receive response into the given appendable
-   *
-   * @param appendable
-   * @return this request
-   * @throws HttpRequestException
-   */
-  public HttpRequest receive(final Appendable appendable)
-      throws HttpRequestException {
-    final BufferedReader reader = bufferedReader();
-    return new CloseOperation<HttpRequest>(reader, ignoreCloseExceptions) {
-
-      @Override
-      public HttpRequest run() throws IOException {
-        final CharBuffer buffer = CharBuffer.allocate(bufferSize);
-        int read;
-        while ((read = reader.read(buffer)) != -1) {
-          buffer.rewind();
-          appendable.append(buffer, 0, read);
-          buffer.rewind();
-        }
-        return HttpRequest.this;
-      }
-    }.call();
-  }
-
-  /**
-   * Receive response into the given writer
-   *
-   * @param writer
-   * @return this request
-   * @throws HttpRequestException
-   */
-  public HttpRequest receive(final Writer writer) throws HttpRequestException {
-    final BufferedReader reader = bufferedReader();
-    return new CloseOperation<HttpRequest>(reader, ignoreCloseExceptions) {
-
-      @Override
-      public HttpRequest run() throws IOException {
-        return copy(reader, writer);
-      }
-    }.call();
-  }
 
   /**
    * Set read timeout on connection to given value
@@ -2100,126 +1697,6 @@ public class HttpRequest {
    */
   public HttpRequest header(final Entry<String, String> header) {
     return header(header.getKey(), header.getValue());
-  }
-
-  /**
-   * Get a response header
-   *
-   * @param name
-   * @return response header
-   * @throws HttpRequestException
-   */
-  public String header(final String name) throws HttpRequestException {
-    closeOutputQuietly();
-    return getConnection().getHeaderField(name);
-  }
-
-  /**
-   * Get all the response headers
-   *
-   * @return map of response header names to their value(s)
-   * @throws HttpRequestException
-   */
-  public Map<String, List<String>> headers() throws HttpRequestException {
-    closeOutputQuietly();
-    return getConnection().getHeaderFields();
-  }
-
-  /**
-   * Get a date header from the response falling back to returning -1 if the
-   * header is missing or parsing fails
-   *
-   * @param name
-   * @return date, -1 on failures
-   * @throws HttpRequestException
-   */
-  public long dateHeader(final String name) throws HttpRequestException {
-    return dateHeader(name, -1L);
-  }
-
-  /**
-   * Get a date header from the response falling back to returning the given
-   * default value if the header is missing or parsing fails
-   *
-   * @param name
-   * @param defaultValue
-   * @return date, default value on failures
-   * @throws HttpRequestException
-   */
-  public long dateHeader(final String name, final long defaultValue)
-      throws HttpRequestException {
-    closeOutputQuietly();
-    return getConnection().getHeaderFieldDate(name, defaultValue);
-  }
-
-  /**
-   * Get an integer header from the response falling back to returning -1 if the
-   * header is missing or parsing fails
-   *
-   * @param name
-   * @return header value as an integer, -1 when missing or parsing fails
-   * @throws HttpRequestException
-   */
-  public int intHeader(final String name) throws HttpRequestException {
-    return intHeader(name, -1);
-  }
-
-  /**
-   * Get an integer header value from the response falling back to the given
-   * default value if the header is missing or if parsing fails
-   *
-   * @param name
-   * @param defaultValue
-   * @return header value as an integer, default value when missing or parsing
-   *         fails
-   * @throws HttpRequestException
-   */
-  public int intHeader(final String name, final int defaultValue)
-      throws HttpRequestException {
-    closeOutputQuietly();
-    return getConnection().getHeaderFieldInt(name, defaultValue);
-  }
-
-  /**
-   * Get all values of the given header from the response
-   *
-   * @param name
-   * @return non-null but possibly empty array of {@link String} header values
-   */
-  public String[] headers(final String name) {
-    final Map<String, List<String>> headers = headers();
-    if (headers == null || headers.isEmpty())
-      return EMPTY_STRINGS;
-
-    final List<String> values = headers.get(name);
-    if (values != null && !values.isEmpty())
-      return values.toArray(new String[values.size()]);
-    else
-      return EMPTY_STRINGS;
-  }
-
-  /**
-   * Get parameter with given name from header value in response
-   *
-   * @param headerName
-   * @param paramName
-   * @return parameter value or null if missing
-   */
-  public String parameter(final String headerName, final String paramName) {
-    return getParam(header(headerName), paramName);
-  }
-
-  /**
-   * Get all parameters from header value in response
-   * <p>
-   * This will be all key=value pairs after the first ';' that are separated by
-   * a ';'
-   *
-   * @param headerName
-   * @return non-null but possibly empty map of parameter headers
-   */
-  public Map<String, String> parameters(final String headerName) {
-    return getParams(header(headerName));
   }
 
   /**
@@ -2310,14 +1787,6 @@ public class HttpRequest {
     return null;
   }
 
-  /**
-   * Get 'charset' parameter from 'Content-Type' response header
-   *
-   * @return charset or null if none
-   */
-  public String charset() {
-    return parameter(HEADER_CONTENT_TYPE, PARAM_CHARSET);
-  }
 
   /**
    * Set the 'User-Agent' header to given value
@@ -2378,78 +1847,6 @@ public class HttpRequest {
    */
   public HttpRequest acceptCharset(final String acceptCharset) {
     return header(HEADER_ACCEPT_CHARSET, acceptCharset);
-  }
-
-  /**
-   * Get the 'Content-Encoding' header from the response
-   *
-   * @return this request
-   */
-  public String contentEncoding() {
-    return header(HEADER_CONTENT_ENCODING);
-  }
-
-  /**
-   * Get the 'Server' header from the response
-   *
-   * @return server
-   */
-  public String server() {
-    return header(HEADER_SERVER);
-  }
-
-  /**
-   * Get the 'Date' header from the response
-   *
-   * @return date value, -1 on failures
-   */
-  public long date() {
-    return dateHeader(HEADER_DATE);
-  }
-
-  /**
-   * Get the 'Cache-Control' header from the response
-   *
-   * @return cache control
-   */
-  public String cacheControl() {
-    return header(HEADER_CACHE_CONTROL);
-  }
-
-  /**
-   * Get the 'ETag' header from the response
-   *
-   * @return entity tag
-   */
-  public String eTag() {
-    return header(HEADER_ETAG);
-  }
-
-  /**
-   * Get the 'Expires' header from the response
-   *
-   * @return expires value, -1 on failures
-   */
-  public long expires() {
-    return dateHeader(HEADER_EXPIRES);
-  }
-
-  /**
-   * Get the 'Last-Modified' header from the response
-   *
-   * @return last modified value, -1 on failures
-   */
-  public long lastModified() {
-    return dateHeader(HEADER_LAST_MODIFIED);
-  }
-
-  /**
-   * Get the 'Location' header from the response
-   *
-   * @return location
-   */
-  public String location() {
-    return header(HEADER_LOCATION);
   }
 
   /**
@@ -2542,23 +1939,6 @@ public class HttpRequest {
       return header(HEADER_CONTENT_TYPE, contentType);
   }
 
-  /**
-   * Get the 'Content-Type' header from the response
-   *
-   * @return response header value
-   */
-  public String contentType() {
-    return header(HEADER_CONTENT_TYPE);
-  }
-
-  /**
-   * Get the 'Content-Length' header from the response
-   *
-   * @return response header value
-   */
-  public int contentLength() {
-    return intHeader(HEADER_CONTENT_LENGTH);
-  }
 
   /**
    * Set the 'Content-Length' request header to the given value
@@ -2608,12 +1988,12 @@ public class HttpRequest {
    * @return this request
    * @throws IOException
    */
-  protected HttpRequest copy(final InputStream input, final OutputStream output)
+  protected HttpResponse copy(final InputStream input, final OutputStream output)
       throws IOException {
-    return new CloseOperation<HttpRequest>(input, ignoreCloseExceptions) {
+    return new CloseOperation<HttpResponse>(input, ignoreCloseExceptions) {
 
       @Override
-      public HttpRequest run() throws IOException {
+      public HttpResponse run() throws IOException {
         final byte[] buffer = new byte[bufferSize];
         int read;
         while ((read = input.read(buffer)) != -1) {
@@ -2621,7 +2001,7 @@ public class HttpRequest {
           totalWritten += read;
           progress.onUpload(totalWritten, totalSize);
         }
-        return HttpRequest.this;
+        return HttpRequest.this.httpResponse;
       }
     }.call();
   }
@@ -2673,45 +2053,8 @@ public class HttpRequest {
     return this;
   }
 
-  /**
-   * Close output stream
-   *
-   * @return this request
-   * @throws HttpRequestException
-   * @throws IOException
-   */
-  protected HttpRequest closeOutput() throws IOException {
-    progress(null);
-    if (output == null)
-      return this;
-    if (multipart)
-      output.write(CRLF + "--" + BOUNDARY + "--" + CRLF);
-    if (ignoreCloseExceptions)
-      try {
-        output.close();
-      } catch (IOException ignored) {
-        // Ignored
-      }
-    else
-      output.close();
-    output = null;
-    return this;
-  }
 
-  /**
-   * Call {@link #closeOutput()} and re-throw a caught {@link IOException}s as
-   * an {@link HttpRequestException}
-   *
-   * @return this request
-   * @throws HttpRequestException
-   */
-  protected HttpRequest closeOutputQuietly() throws HttpRequestException {
-    try {
-      return closeOutput();
-    } catch (IOException e) {
-      throw new HttpRequestException(e);
-    }
-  }
+
 
   /**
    * Open output stream
@@ -3256,4 +2599,684 @@ public class HttpRequest {
     getConnection().setInstanceFollowRedirects(followRedirects);
     return this;
   }
+
+  private void setDefaultTimeOut() {
+    getConnection().setConnectTimeout(DEFAULT_CONNECT_TIMEOUT);
+    getConnection().setReadTimeout(DEFAULT_READ_TIMEOUT);
+  }
+
+  public HttpRequest defaultTimeOut() {
+    this.defaultTimeOutFlag = true;
+    return this;
+  }
+  /**
+   *
+   * HttpResponse collects the http response info and make the responsibility clearly(HttpRequest for request,HttpResponse for response)
+   *
+   */
+  public class HttpResponse{
+
+    /**
+     * Get the status code of the response
+     *
+     * @return the response code
+     * @throws HttpRequestException
+     */
+    public int code() throws HttpRequestException {
+      try {
+        closeOutput();
+        return getConnection().getResponseCode();
+      } catch (IOException e) {
+        throw new HttpRequestException(e);
+      }
+    }
+
+    /**
+     * Close output stream
+     *
+     * @return this response
+     * @throws HttpRequestException
+     * @throws IOException
+     */
+    protected HttpResponse closeOutput() throws IOException {
+      progress(null);
+      if (output == null)
+        return this;
+      if (multipart)
+        output.write(CRLF + "--" + BOUNDARY + "--" + CRLF);
+      if (ignoreCloseExceptions)
+        try {
+          output.close();
+        } catch (IOException ignored) {
+          // Ignored
+        }
+      else
+        output.close();
+      output = null;
+      return this;
+    }
+
+    /**
+     * Set the value of the given {@link AtomicInteger} to the status code of the
+     * response
+     *
+     * @param output
+     * @return this response
+     * @throws HttpRequestException
+     */
+    public HttpResponse code(final AtomicInteger output)
+        throws HttpRequestException {
+      output.set(code());
+      return this;
+    }
+
+    /**
+     * Call {@link #closeOutput()} and re-throw a caught {@link IOException}s as
+     * an {@link HttpRequestException}
+     *
+     * @return this response
+     * @throws HttpRequestException
+     */
+    protected HttpResponse closeOutputQuietly() throws HttpRequestException {
+      try {
+        return closeOutput();
+      } catch (IOException e) {
+        throw new HttpRequestException(e);
+      }
+    }
+
+    /**
+     * Is the response code a 200 OK?
+     *
+     * @return true if 200, false otherwise
+     * @throws HttpRequestException
+     */
+    public boolean ok() throws HttpRequestException {
+      return HTTP_OK == code();
+    }
+
+
+    /**
+     * Is the response code a 201 Created?
+     *
+     * @return true if 201, false otherwise
+     * @throws HttpRequestException
+     */
+    public boolean created() throws HttpRequestException {
+      return HTTP_CREATED == code();
+    }
+
+    /**
+     * Is the response code a 204 No Content?
+     *
+     * @return true if 204, false otherwise
+     * @throws HttpRequestException
+     */
+    public boolean noContent() throws HttpRequestException {
+      return HTTP_NO_CONTENT == code();
+    }
+
+    /**
+     * Is the response code a 500 Internal Server Error?
+     *
+     * @return true if 500, false otherwise
+     * @throws HttpRequestException
+     */
+    public boolean serverError() throws HttpRequestException {
+      return HTTP_INTERNAL_ERROR == code();
+    }
+
+    /**
+     * Is the response code a 400 Bad Request?
+     *
+     * @return true if 400, false otherwise
+     * @throws HttpRequestException
+     */
+    public boolean badRequest() throws HttpRequestException {
+      return HTTP_BAD_REQUEST == code();
+    }
+
+    /**
+     * Is the response code a 404 Not Found?
+     *
+     * @return true if 404, false otherwise
+     * @throws HttpRequestException
+     */
+    public boolean notFound() throws HttpRequestException {
+      return HTTP_NOT_FOUND == code();
+    }
+
+    /**
+     * Is the response code a 304 Not Modified?
+     *
+     * @return true if 304, false otherwise
+     * @throws HttpRequestException
+     */
+    public boolean notModified() throws HttpRequestException {
+      return HTTP_NOT_MODIFIED == code();
+    }
+
+    /**
+     * Get status message of the response
+     *
+     * @return message
+     * @throws HttpRequestException
+     */
+    public String message() throws HttpRequestException {
+      try {
+        closeOutput();
+        return getConnection().getResponseMessage();
+      } catch (IOException e) {
+        throw new HttpRequestException(e);
+      }
+    }
+
+
+    /**
+     * Get response as {@link String} in given character set
+     * <p>
+     * This will fall back to using the UTF-8 character set if the given charset
+     * is null
+     *
+     * @param charset
+     * @return string
+     * @throws HttpRequestException
+     */
+    public String body(final String charset) throws HttpRequestException {
+      final ByteArrayOutputStream output = byteStream();
+      try {
+        copy(buffer(), output);
+        return output.toString(getValidCharset(charset));
+      } catch (IOException e) {
+        throw new HttpRequestException(e);
+      }
+    }
+
+    /**
+     * Get response as {@link String} using character set returned from
+     * {@link #charset()}
+     *
+     * @return string
+     * @throws HttpRequestException
+     */
+    public String body() throws HttpRequestException {
+      return body(charset());
+    }
+
+    /**
+     * Get the response body as a {@link String} and set it as the value of the
+     * given reference.
+     *
+     * @param output
+     * @return this response
+     * @throws HttpRequestException
+     */
+    public HttpResponse body(final AtomicReference<String> output) throws HttpRequestException {
+      output.set(body());
+      return this;
+    }
+
+    /**
+     * Get the response body as a {@link String} and set it as the value of the
+     * given reference.
+     *
+     * @param output
+     * @param charset
+     * @return this response
+     * @throws HttpRequestException
+     */
+    public HttpResponse body(final AtomicReference<String> output, final String charset) throws HttpRequestException {
+      output.set(body(charset));
+      return this;
+    }
+
+
+    /**
+     * Is the response body empty?
+     *
+     * @return true if the Content-Length response header is 0, false otherwise
+     * @throws HttpRequestException
+     */
+    public boolean isBodyEmpty() throws HttpRequestException {
+      return contentLength() == 0;
+    }
+
+    /**
+     * Get response as byte array
+     *
+     * @return byte array
+     * @throws HttpRequestException
+     */
+    public byte[] bytes() throws HttpRequestException {
+      final ByteArrayOutputStream output = byteStream();
+      try {
+        copy(buffer(), output);
+      } catch (IOException e) {
+        throw new HttpRequestException(e);
+      }
+      return output.toByteArray();
+    }
+
+    /**
+     * Get response in a buffered stream
+     *
+     * @see #bufferSize(int)
+     * @return stream
+     * @throws HttpRequestException
+     */
+    public BufferedInputStream buffer() throws HttpRequestException {
+      return new BufferedInputStream(stream(), bufferSize);
+    }
+    /**
+     * Get a response header
+     *
+     * @param name
+     * @return response header
+     * @throws HttpRequestException
+     */
+    public String header(final String name) throws HttpRequestException {
+      closeOutputQuietly();
+      return getConnection().getHeaderField(name);
+    }
+
+    /**
+     * Get all the response headers
+     *
+     * @return map of response header names to their value(s)
+     * @throws HttpRequestException
+     */
+    public Map<String, List<String>> headers() throws HttpRequestException {
+      closeOutputQuietly();
+      return getConnection().getHeaderFields();
+    }
+
+    /**
+     * Get a date header from the response falling back to returning -1 if the
+     * header is missing or parsing fails
+     *
+     * @param name
+     * @return date, -1 on failures
+     * @throws HttpRequestException
+     */
+    public long dateHeader(final String name) throws HttpRequestException {
+      return dateHeader(name, -1L);
+    }
+
+    /**
+     * Get a date header from the response falling back to returning the given
+     * default value if the header is missing or parsing fails
+     *
+     * @param name
+     * @param defaultValue
+     * @return date, default value on failures
+     * @throws HttpRequestException
+     */
+    public long dateHeader(final String name, final long defaultValue)
+        throws HttpRequestException {
+      closeOutputQuietly();
+      return getConnection().getHeaderFieldDate(name, defaultValue);
+    }
+
+
+    /**
+     * Get the 'Content-Encoding' header from the response
+     *
+     * @return this request
+     */
+    public String contentEncoding() {
+      return header(HEADER_CONTENT_ENCODING);
+    }
+
+    /**
+     * Get the 'Server' header from the response
+     *
+     * @return server
+     */
+    public String server() {
+      return header(HEADER_SERVER);
+    }
+
+    /**
+     * Get the 'Date' header from the response
+     *
+     * @return date value, -1 on failures
+     */
+    public long date() {
+      return dateHeader(HEADER_DATE);
+    }
+
+    /**
+     * Get the 'Cache-Control' header from the response
+     *
+     * @return cache control
+     */
+    public String cacheControl() {
+      return header(HEADER_CACHE_CONTROL);
+    }
+
+    /**
+     * Get the 'ETag' header from the response
+     *
+     * @return entity tag
+     */
+    public String eTag() {
+      return header(HEADER_ETAG);
+    }
+
+    /**
+     * Get the 'Expires' header from the response
+     *
+     * @return expires value, -1 on failures
+     */
+    public long expires() {
+      return dateHeader(HEADER_EXPIRES);
+    }
+
+    /**
+     * Get the 'Last-Modified' header from the response
+     *
+     * @return last modified value, -1 on failures
+     */
+    public long lastModified() {
+      return dateHeader(HEADER_LAST_MODIFIED);
+    }
+
+    /**
+     * Get the 'Location' header from the response
+     *
+     * @return location
+     */
+    public String location() {
+      return header(HEADER_LOCATION);
+    }
+
+    /**
+     * Get parameter with given name from header value in response
+     *
+     * @param headerName
+     * @param paramName
+     * @return parameter value or null if missing
+     */
+    public String parameter(final String headerName, final String paramName) {
+      return getParam(header(headerName), paramName);
+    }
+
+    /**
+     * Get all parameters from header value in response
+     * <p>
+     * This will be all key=value pairs after the first ';' that are separated by
+     * a ';'
+     *
+     * @param headerName
+     * @return non-null but possibly empty map of parameter headers
+     */
+    public Map<String, String> parameters(final String headerName) {
+      return getParams(header(headerName));
+    }
+
+    /**
+     * Get 'charset' parameter from 'Content-Type' response header
+     *
+     * @return charset or null if none
+     */
+    public String charset() {
+      return parameter(HEADER_CONTENT_TYPE, PARAM_CHARSET);
+    }
+
+    /**
+     * Get all values of the given header from the response
+     *
+     * @param name
+     * @return non-null but possibly empty array of {@link String} header values
+     */
+    public String[] headers(final String name) {
+      final Map<String, List<String>> headers = headers();
+      if (headers == null || headers.isEmpty())
+        return EMPTY_STRINGS;
+
+      final List<String> values = headers.get(name);
+      if (values != null && !values.isEmpty())
+        return values.toArray(new String[values.size()]);
+      else
+        return EMPTY_STRINGS;
+    }
+
+
+    /**
+     * Create byte array output stream
+     *
+     * @return stream
+     */
+    protected ByteArrayOutputStream byteStream() {
+      final int size = contentLength();
+      if (size > 0)
+        return new ByteArrayOutputStream(size);
+      else
+        return new ByteArrayOutputStream();
+    }
+
+    /**
+     * Get the 'Content-Length' header from the response
+     *
+     * @return response header value
+     */
+    public int contentLength() {
+      return intHeader(HEADER_CONTENT_LENGTH);
+    }
+
+    /**
+     * Get an integer header from the response falling back to returning -1 if the
+     * header is missing or parsing fails
+     *
+     * @param name
+     * @return header value as an integer, -1 when missing or parsing fails
+     * @throws HttpRequestException
+     */
+    public int intHeader(final String name) throws HttpRequestException {
+      return intHeader(name, -1);
+    }
+
+    /**
+     * Get an integer header value from the response falling back to the given
+     * default value if the header is missing or if parsing fails
+     *
+     * @param name
+     * @param defaultValue
+     * @return header value as an integer, default value when missing or parsing
+     *         fails
+     * @throws HttpRequestException
+     */
+    public int intHeader(final String name, final int defaultValue)
+        throws HttpRequestException {
+      closeOutputQuietly();
+      return getConnection().getHeaderFieldInt(name, defaultValue);
+    }
+
+    /**
+     * Get stream to response body
+     *
+     * @return stream
+     * @throws HttpRequestException
+     */
+    public InputStream stream() throws HttpRequestException {
+      if (defaultTimeOutFlag) {
+        setDefaultTimeOut();
+      }
+      InputStream stream;
+      if (code() < HTTP_BAD_REQUEST)
+        try {
+          stream = getConnection().getInputStream();
+        } catch (IOException e) {
+          throw new HttpRequestException(e);
+        }
+      else {
+        stream = getConnection().getErrorStream();
+        if (stream == null)
+          try {
+            stream = getConnection().getInputStream();
+          } catch (IOException e) {
+            if (contentLength() > 0)
+              throw new HttpRequestException(e);
+            else
+              stream = new ByteArrayInputStream(new byte[0]);
+          }
+      }
+
+      if (!uncompress || !ENCODING_GZIP.equals(contentEncoding()))
+        return stream;
+      else
+        try {
+          return new GZIPInputStream(stream);
+        } catch (IOException e) {
+          throw new HttpRequestException(e);
+        }
+    }
+
+
+    /**
+     * Get reader to response body using given character set.
+     * <p>
+     * This will fall back to using the UTF-8 character set if the given charset
+     * is null
+     *
+     * @param charset
+     * @return reader
+     * @throws HttpRequestException
+     */
+    public InputStreamReader reader(final String charset)
+        throws HttpRequestException {
+      try {
+        return new InputStreamReader(stream(), getValidCharset(charset));
+      } catch (UnsupportedEncodingException e) {
+        throw new HttpRequestException(e);
+      }
+    }
+
+    /**
+     * Get reader to response body using the character set returned from
+     * {@link #charset()}
+     *
+     * @return reader
+     * @throws HttpRequestException
+     */
+    public InputStreamReader reader() throws HttpRequestException {
+      return reader(charset());
+    }
+
+
+    /**
+     * Get buffered reader to response body using the given character set r and
+     * the configured buffer size
+     *
+     *
+     * @see #bufferSize(int)
+     * @param charset
+     * @return reader
+     * @throws HttpRequestException
+     */
+    public BufferedReader bufferedReader(final String charset)
+        throws HttpRequestException {
+      return new BufferedReader(reader(charset), bufferSize);
+    }
+
+    /**
+     * Get buffered reader to response body using the character set returned from
+     * {@link #charset()} and the configured buffer size
+     *
+     * @see #bufferSize(int)
+     * @return reader
+     * @throws HttpRequestException
+     */
+    public BufferedReader bufferedReader() throws HttpRequestException {
+      return bufferedReader(charset());
+    }
+
+    /**
+     * Stream response body to file
+     *
+     * @param file
+     * @return this request
+     * @throws HttpRequestException
+     */
+    public HttpResponse receive(final File file) throws HttpRequestException {
+      final OutputStream output;
+      try {
+        output = new BufferedOutputStream(new FileOutputStream(file), bufferSize);
+      } catch (FileNotFoundException e) {
+        throw new HttpRequestException(e);
+      }
+      return new CloseOperation<HttpResponse>(output, ignoreCloseExceptions) {
+
+        @Override
+        protected HttpResponse run() throws HttpRequestException, IOException {
+          return receive(output);
+        }
+      }.call();
+    }
+
+    /**
+     * Stream response to given output stream
+     *
+     * @param output
+     * @return this request
+     * @throws HttpRequestException
+     */
+    public HttpResponse receive(final OutputStream output)
+        throws HttpRequestException {
+      try {
+        return copy(buffer(), output);
+      } catch (IOException e) {
+        throw new HttpRequestException(e);
+      }
+    }
+
+    /**
+     * Stream response to given print stream
+     *
+     * @param output
+     * @return this request
+     * @throws HttpRequestException
+     */
+    public HttpResponse receive(final PrintStream output)
+        throws HttpRequestException {
+      return receive((OutputStream) output);
+    }
+
+    /**
+     * Receive response into the given appendable
+     *
+     * @param appendable
+     * @return this request
+     * @throws HttpRequestException
+     */
+    public HttpResponse receive(final Appendable appendable)
+        throws HttpRequestException {
+      final BufferedReader reader = bufferedReader();
+      return new CloseOperation<HttpResponse>(reader, ignoreCloseExceptions) {
+
+        @Override
+        public HttpResponse run() throws IOException {
+          final CharBuffer buffer = CharBuffer.allocate(bufferSize);
+          int read;
+          while ((read = reader.read(buffer)) != -1) {
+            buffer.rewind();
+            appendable.append(buffer, 0, read);
+            buffer.rewind();
+          }
+          return HttpRequest.this.httpResponse;
+        }
+      }.call();
+    }
+  }
+  /**
+   * this method is used to execute a http request and get a HttpResponse
+   * @return
+   */
+  public HttpResponse executeHttpRequest(){
+    if (httpResponse ==null) {
+      httpResponse = new HttpResponse();
+    }
+    return httpResponse;
+  }
+
 }
