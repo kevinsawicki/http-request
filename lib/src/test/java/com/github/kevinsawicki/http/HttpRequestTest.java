@@ -3477,6 +3477,7 @@ public class HttpRequestTest extends ServerTestCase {
     HttpRequest.setConnectionFactory(factory);
     int code = get("http://not/a/real/url").code();
     assertEquals(200, code);
+    HttpRequest.setConnectionFactory(null);
   }
 
   /**
