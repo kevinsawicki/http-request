@@ -5,3 +5,7 @@ notifications:
 
 git:
   depth: 10
+
+cache:
+  directories:
+  - $HOME/.m2
