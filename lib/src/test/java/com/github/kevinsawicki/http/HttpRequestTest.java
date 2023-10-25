@@ -126,6 +126,7 @@ public class HttpRequestTest extends ServerTestCase {
   @After
   public void clearHandler() {
     handler = null;
+    HttpRequest.setConnectionFactory(null);
   }
 
   /**
